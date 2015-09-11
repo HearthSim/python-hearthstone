@@ -239,6 +239,9 @@ class GameTag(IntEnum):
 	# Deleted
 	DIVINE_SHIELD_READY = 314
 
+	# Missing, only present in logs
+	WEAPON = 334
+
 
 ##
 # Card enums
