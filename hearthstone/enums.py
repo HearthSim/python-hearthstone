@@ -531,7 +531,7 @@ class PlayState(IntEnum):
 	WON = 4
 	LOST = 5
 	TIED = 6
-	DISCONNECT = 7
+	DISCONNECTED = 7
 	QUIT = 8
 
 
