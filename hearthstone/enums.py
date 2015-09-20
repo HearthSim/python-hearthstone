@@ -509,6 +509,14 @@ class GoldRewardState(IntEnum):
 	OVER_CAIS = 6
 
 
+class MetaDataType(IntEnum):
+	# From HistoryMeta.Type
+	TARGET = 0
+	DAMAGE = 1
+	HEALING = 2
+	JOUST = 3
+
+
 class Mulligan(IntEnum):
 	INVALID = 0
 	INPUT = 1
