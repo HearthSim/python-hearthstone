@@ -317,6 +317,9 @@ class CardClass(IntEnum):
 	DREAM = 11
 	COUNT = 12
 
+	# alias
+	NEUTRAL = INVALID
+
 
 class CardSet(IntEnum):
 	INVALID = 0
