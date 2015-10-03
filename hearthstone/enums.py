@@ -42,6 +42,7 @@ class GameTag(IntEnum):
 	OWNER = 51
 	DEFINITION = 52
 	ENTITY_ID = 53
+	HISTORY_PROXY = 54
 	ELITE = 114
 	MAXRESOURCES = 176
 	CARD_SET = 183
@@ -208,6 +209,7 @@ class GameTag(IntEnum):
 	NUM_FRIENDLY_MINIONS_THAT_DIED_THIS_GAME = 412
 	CANNOT_ATTACK_HEROES = 413
 	LOCK_AND_LOAD = 414
+	SHADOWFORM = 416
 
 	# Only in card definitions
 	Collectible = 321
@@ -353,14 +355,15 @@ class CardType(IntEnum):
 	PLAYER = 2
 	HERO = 3
 	MINION = 4
-	ABILITY = 5
+	SPELL = 5
 	ENCHANTMENT = 6
 	WEAPON = 7
 	ITEM = 8
 	TOKEN = 9
 	HERO_POWER = 10
 
-	SPELL = ABILITY
+	# Renamed
+	ABILITY = SPELL
 
 
 class EnchantmentVisual(IntEnum):
