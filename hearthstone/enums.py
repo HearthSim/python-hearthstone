@@ -535,6 +535,11 @@ class MetaDataType(IntEnum):
 	HEALING = 2
 	JOUST = 3
 
+	# Renamed in 9786 from PowerHistoryMetaData.Type
+	META_TARGET = TARGET
+	META_DAMAGE = DAMAGE
+	META_HEALING = HEALING
+
 
 class Mulligan(IntEnum):
 	INVALID = 0
