@@ -5,8 +5,9 @@ from .enums import (
 
 
 class CardXML(object):
-	def __init__(self, xml):
+	def __init__(self, xml, locale="enUS"):
 		self.xml = xml
+		self.locale = locale
 		e = self.xml.findall("./Tag")
 		self.tags = {
 			GameTag(int(tag.attrib["enumID"])): self._get_tag(tag) for tag in e
@@ -32,7 +33,7 @@ class CardXML(object):
 	def _find_tag(self, id):
 		return self.xml.find('./Tag[@enumID="%i"]' % (id))
 
-	def _get_tag(self, element, locale="enUS"):
+	def _get_tag(self, element):
 		type = element.attrib.get("type", "Int")
 
 		if type == "Card":
@@ -42,7 +43,7 @@ class CardXML(object):
 			return element.text
 
 		if type == "LocString":
-			return element.find(locale).text
+			return element.find(self.locale).text
 
 		value = int(element.attrib["value"])
 		if type == "Bool":
@@ -115,11 +116,11 @@ class CardXML(object):
 		return self.tags.get(GameTag.COST, 0)
 
 
-def load(path):
+def load(path, locale="enUS"):
 	db = {}
 	with open(path, "r", encoding="utf8") as f:
 		xml = ElementTree.parse(f)
 		for carddata in xml.findall("Entity"):
-			card = CardXML(carddata)
+			card = CardXML(carddata, locale)
 			db[card.id] = card
 	return db, xml
