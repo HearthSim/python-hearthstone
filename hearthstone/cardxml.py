@@ -54,6 +54,9 @@ class CardXML(object):
 	def id(self):
 		return self.xml.attrib["CardID"]
 
+	##
+	# Localized values
+
 	@property
 	def name(self):
 		return self.tags[GameTag.CARDNAME]
@@ -62,6 +65,9 @@ class CardXML(object):
 	def description(self):
 		return self.tags.get(GameTag.CARDTEXT_INHAND, "")
 
+	##
+	# Enums
+
 	@property
 	def card_class(self):
 		return CardClass(self.tags.get(GameTag.CLASS, 0))
@@ -69,14 +75,6 @@ class CardXML(object):
 	@property
 	def card_set(self):
 		return CardSet(self.tags.get(GameTag.CARD_SET, 0))
-
-	@property
-	def collectible(self):
-		return bool(self.tags.get(GameTag.Collectible, False))
-
-	@property
-	def cost(self):
-		return self.tags.get(GameTag.COST, 0)
 
 	@property
 	def faction(self):
@@ -91,6 +89,17 @@ class CardXML(object):
 		return Rarity(self.tags.get(GameTag.RARITY, 0))
 
 	@property
+	def type(self):
+		return CardType(self.tags.get(GameTag.CARDTYPE, 0))
+
+	##
+	# Bools
+
+	@property
+	def collectible(self):
+		return bool(self.tags.get(GameTag.Collectible, False))
+
+	@property
 	def secret(self):
 		return bool(self.tags.get(GameTag.SECRET, False))
 
@@ -98,9 +107,12 @@ class CardXML(object):
 	def spare_part(self):
 		return bool(self.tags.get(GameTag.SPARE_PART, False))
 
+	##
+	# Tags
+
 	@property
-	def type(self):
-		return CardType(self.tags.get(GameTag.CARDTYPE, 0))
+	def cost(self):
+		return self.tags.get(GameTag.COST, 0)
 
 
 def load(path):
