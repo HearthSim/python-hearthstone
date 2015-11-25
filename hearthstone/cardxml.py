@@ -60,7 +60,7 @@ class CardXML(object):
 
 	@property
 	def name(self):
-		return self.tags[GameTag.CARDNAME]
+		return self.tags.get(GameTag.CARDNAME, "")
 
 	@property
 	def description(self):
