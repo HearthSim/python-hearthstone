@@ -724,4 +724,9 @@ class Locale(IntEnum):
 	itIT = 10
 	ptBR = 11
 	plPL = 12
+	ptPT = 13
 	jaJP = 14
+
+	@property
+	def unused(self):
+		return self in (self.UNKNOWN, self.enGB, self.ptPT)
