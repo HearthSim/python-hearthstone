@@ -46,7 +46,10 @@ class CardXML(object):
 			return element.text
 
 		if type == "LocString":
-			return element.find(self.locale).text
+			e = element.find(self.locale)
+			if e is None:
+				e = element.find("enUS")
+			return e.text
 
 		value = int(element.attrib["value"])
 		if type == "Bool":
