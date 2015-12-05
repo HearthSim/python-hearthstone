@@ -72,6 +72,26 @@ class CardXML(object):
 	def description(self):
 		return self.tags.get(GameTag.CARDTEXT_INHAND, "")
 
+	@property
+	def artist(self):
+		return self.tags.get(GameTag.ARTIST, "")
+
+	@property
+	def flavortext(self):
+		return self.tags.get(GameTag.FLAVORTEXT, "")
+
+	@property
+	def how_to_earn(self):
+		return self.tags.get(GameTag.HOW_TO_EARN, "")
+
+	@property
+	def how_to_earn_golden(self):
+		return self.tags.get(GameTag.HOW_TO_EARN_GOLDEN, "")
+
+	@property
+	def playtext(self):
+		return self.tags.get(GameTag.CardTextInPlay, "")
+
 	##
 	# Enums
 
@@ -107,6 +127,14 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.Collectible, False))
 
 	@property
+	def elite(self):
+		return bool(self.tags.get(GameTag.ELITE, False))
+
+	@property
+	def one_turn_effect(self):
+		return bool(self.tags.get(GameTag.TAG_ONE_TURN_EFFECT, False))
+
+	@property
 	def secret(self):
 		return bool(self.tags.get(GameTag.SECRET, False))
 
@@ -118,8 +146,20 @@ class CardXML(object):
 	# Tags
 
 	@property
+	def atk(self):
+		return self.tags.get(GameTag.ATK, 0)
+
+	@property
+	def durability(self):
+		return self.tags.get(GameTag.DURABILITY, 0)
+
+	@property
 	def cost(self):
 		return self.tags.get(GameTag.COST, 0)
+
+	@property
+	def health(self):
+		return self.tags.get(GameTag.HEALTH, 0)
 
 
 def load(path, locale="enUS"):
