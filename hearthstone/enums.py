@@ -223,6 +223,7 @@ class GameTag(IntEnum):
 	ELECTRIC_CHARGE_LEVEL = 420
 	HEAVILY_ARMORED = 421
 	DONT_SHOW_IMMUNE = 422
+	HISTORY_PROXY_NO_BIG_CARD = 427
 
 	# Only in card definitions
 	Collectible = 321
@@ -240,6 +241,7 @@ class GameTag(IntEnum):
 	CardTextInPlay = 252
 	TARGETING_ARROW_TEXT = 325
 	ARTISTNAME = 342
+	LocalizationNotes = 344
 	FLAVORTEXT = 351
 	HOW_TO_EARN = 364
 	HOW_TO_EARN_GOLDEN = 365
@@ -496,6 +498,9 @@ class Rarity(IntEnum):
 	RARE = 3
 	EPIC = 4
 	LEGENDARY = 5
+
+	# TB_BlingBrawl_Blade1e (10956)
+	UNKNOWN_6 = 6
 
 
 class Zone(IntEnum):
