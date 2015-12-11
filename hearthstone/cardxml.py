@@ -14,7 +14,8 @@ class CardXML(object):
 		for e in self.xml.findall("./Tag"):
 			tag = int(e.attrib["enumID"])
 			if tag in gametags:
-				self.tags[tag] = self._get_tag(e)
+				tag = GameTag(tag)
+			self.tags[tag] = self._get_tag(e)
 
 		e = self.xml.findall("HeroPower")
 		self.hero_power = e and e[0].attrib["cardID"] or None
