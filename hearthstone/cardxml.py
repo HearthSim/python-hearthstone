@@ -136,6 +136,10 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.TAG_ONE_TURN_EFFECT, False))
 
 	@property
+	def poisonous(self):
+		return bool(self.tags.get(GameTag.POISONOUS, False))
+
+	@property
 	def secret(self):
 		return bool(self.tags.get(GameTag.SECRET, False))
 
