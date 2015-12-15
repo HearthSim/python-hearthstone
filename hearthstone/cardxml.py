@@ -132,6 +132,10 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.ELITE, False))
 
 	@property
+	def forgetful(self):
+		return bool(self.tags.get(GameTag.FORGETFUL, False))
+
+	@property
 	def one_turn_effect(self):
 		return bool(self.tags.get(GameTag.TAG_ONE_TURN_EFFECT, False))
 
