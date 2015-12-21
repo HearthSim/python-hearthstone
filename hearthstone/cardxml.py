@@ -128,6 +128,10 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.Collectible, False))
 
 	@property
+	def deathrattle(self):
+		return bool(self.tags.get(GameTag.DEATHRATTLE, False))
+
+	@property
 	def elite(self):
 		return bool(self.tags.get(GameTag.ELITE, False))
 
