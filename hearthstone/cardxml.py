@@ -8,13 +8,13 @@ class CardXML(object):
 	def __init__(self, xml, locale="enUS"):
 		self.xml = xml
 		self.locale = locale
-		e = self.xml.findall("./Tag")
 		self.tags = {}
-		gametags = list(GameTag)
 		for e in self.xml.findall("./Tag"):
 			tag = int(e.attrib["enumID"])
-			if tag in gametags:
+			try:
 				tag = GameTag(tag)
+			except ValueError:
+				pass
 			self.tags[tag] = self._get_tag(e)
 
 		e = self.xml.findall("HeroPower")
