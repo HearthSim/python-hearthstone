@@ -353,8 +353,8 @@ class CardSet(IntEnum):
 	BLANK = 9
 	DEBUG_SP = 10
 	PROMO = 11
-	FP1 = 12
-	PE1 = 13
+	NAXX = 12
+	GVG = 13
 	BRM = 14
 	TGT = 15
 	CREDITS = 16
@@ -363,6 +363,11 @@ class CardSet(IntEnum):
 	SLUSH = 19
 	LOE = 20
 
+	# Aliased from the original enums
+	FP1 = 12
+	PE1 = 13
+
+	# Renamed
 	FP2 = BRM
 	PE2 = TGT
 
@@ -481,14 +486,14 @@ class Race(IntEnum):
 	MECHANICAL = 17
 	ELEMENTAL = 18
 	OGRE = 19
-	PET = 20
+	BEAST = 20
 	TOTEM = 21
 	NERUBIAN = 22
 	PIRATE = 23
 	DRAGON = 24
 
-	# Alias for PET
-	BEAST = 20
+	# Aliased
+	PET = 20
 
 
 class Rarity(IntEnum):
