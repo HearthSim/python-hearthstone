@@ -719,6 +719,9 @@ TAG_TYPES = {
 }
 
 
+LOCALIZED_TAGS = [k for k, v in TAG_TYPES.items() if v == Type.LOCSTRING]
+
+
 class Locale(IntEnum):
 	UNKNOWN = -1
 	enUS = 0
