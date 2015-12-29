@@ -70,9 +70,11 @@ class CardXML(object):
 		if tag not in self._localized_tags:
 			self._localized_tags[tag] = {}
 		if self.locale not in self._localized_tags[tag]:
-			e = self.xml.find('./Tag[@enumID="%i"]/%s' % (tag, self.locale))
-			self._localized_tags[tag][self.locale] = e.text if e else ""
-		return self._localized_tags[tag][self.locale]
+			e = self.xml.find('./Tag[@enumID="%i"]' % (tag))
+			if e is not None:
+				value = self._get_tag(e)
+				self._localized_tags[tag][self.locale] = value
+		return self._localized_tags[tag].get(self.locale, "")
 
 	@property
 	def name(self):
@@ -100,7 +102,7 @@ class CardXML(object):
 
 	@property
 	def artist(self):
-		return self.tags.get(GameTag.ARTIST, "")
+		return self.tags.get(GameTag.ARTISTNAME, "")
 
 	##
 	# Enums
