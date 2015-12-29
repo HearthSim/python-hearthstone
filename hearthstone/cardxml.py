@@ -66,38 +66,37 @@ class CardXML(object):
 	##
 	# Localized values
 
-	@property
-	def localized_tags(self):
-		if self.locale not in self._localized_tags:
-			self._localized_tags[self.locale] = {}
-			for e in self.xml.findall('./Tag[@type="LocString"]'):
-				tag = int(e.attrib["enumID"])
-				self._localized_tags[self.locale][tag] = self._get_tag(e)
-		return self._localized_tags[self.locale]
+	def get_localized_tag(self, tag):
+		if tag not in self._localized_tags:
+			self._localized_tags[tag] = {}
+		if self.locale not in self._localized_tags[tag]:
+			e = self.xml.find('./Tag[@enumID="%i"]/%s' % (tag, self.locale))
+			self._localized_tags[tag][self.locale] = e.text if e else ""
+		return self._localized_tags[tag][self.locale]
 
 	@property
 	def name(self):
-		return self.localized_tags.get(GameTag.CARDNAME, "")
+		return self.get_localized_tag(GameTag.CARDNAME)
 
 	@property
 	def description(self):
-		return self.localized_tags.get(GameTag.CARDTEXT_INHAND, "")
+		return self.get_localized_tag(GameTag.CARDTEXT_INHAND)
 
 	@property
 	def flavortext(self):
-		return self.localized_tags.get(GameTag.FLAVORTEXT, "")
+		return self.get_localized_tag(GameTag.FLAVORTEXT)
 
 	@property
 	def how_to_earn(self):
-		return self.localized_tags.get(GameTag.HOW_TO_EARN, "")
+		return self.get_localized_tag(GameTag.HOW_TO_EARN)
 
 	@property
 	def how_to_earn_golden(self):
-		return self.localized_tags.get(GameTag.HOW_TO_EARN_GOLDEN, "")
+		return self.get_localized_tag(GameTag.HOW_TO_EARN_GOLDEN)
 
 	@property
 	def playtext(self):
-		return self.localized_tags.get(GameTag.CardTextInPlay, "")
+		return self.get_localized_tag(GameTag.CardTextInPlay)
 
 	@property
 	def artist(self):
