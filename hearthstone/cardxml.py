@@ -101,6 +101,10 @@ class CardXML(object):
 		return self.get_localized_tag(GameTag.CardTextInPlay)
 
 	@property
+	def targeting_arrow_text(self):
+		return self.get_localized_tag(GameTag.TARGETING_ARROW_TEXT)
+
+	@property
 	def artist(self):
 		return self.tags.get(GameTag.ARTISTNAME, "")
 
