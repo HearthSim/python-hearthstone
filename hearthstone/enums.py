@@ -743,3 +743,13 @@ class Locale(IntEnum):
 	@property
 	def unused(self):
 		return self in (self.UNKNOWN, self.enGB, self.ptPT)
+
+
+if __name__ == "__main__":
+	import json
+
+	print(json.dumps({
+		k: dict(v.__members__) for k, v in globals().items() if (
+			isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
+		)
+	}))
