@@ -532,6 +532,29 @@ class Rarity(IntEnum):
 			Rarity.LEGENDARY,
 		)
 
+	@property
+	def crafting_costs(self):
+		return CRAFTING_COSTS.get(self, (0, 0))
+
+	@property
+	def disenchant_costs(self):
+		return DISENCHANT_COSTS.get(self, (0, 0))
+
+
+CRAFTING_COSTS = {
+	Rarity.COMMON: (40, 400),
+	Rarity.RARE: (100, 800),
+	Rarity.EPIC: (400, 1600),
+	Rarity.LEGENDARY: (1600, 3200),
+}
+
+DISENCHANT_COSTS = {
+	Rarity.COMMON: (5, 50),
+	Rarity.RARE: (20, 100),
+	Rarity.EPIC: (100, 400),
+	Rarity.LEGENDARY: (400, 1600),
+}
+
 
 class Zone(IntEnum):
 	INVALID = 0
