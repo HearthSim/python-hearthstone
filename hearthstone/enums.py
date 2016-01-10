@@ -371,6 +371,14 @@ class CardSet(IntEnum):
 	FP2 = BRM
 	PE2 = TGT
 
+	@property
+	def craftable(self):
+		return self in (
+			CardSet.EXPERT1,
+			CardSet.GVG,
+			CardSet.TGT,
+		)
+
 
 class CardType(IntEnum):
 	INVALID = 0
@@ -387,6 +395,14 @@ class CardType(IntEnum):
 
 	# Renamed
 	ABILITY = SPELL
+
+	@property
+	def craftable(self):
+		return self in (
+			CardType.MINION,
+			CardType.SPELL,
+			CardType.WEAPON,
+		)
 
 
 class EnchantmentVisual(IntEnum):
@@ -506,6 +522,15 @@ class Rarity(IntEnum):
 
 	# TB_BlingBrawl_Blade1e (10956)
 	UNKNOWN_6 = 6
+
+	@property
+	def craftable(self):
+		return self in (
+			Rarity.COMMON,
+			Rarity.RARE,
+			Rarity.EPIC,
+			Rarity.LEGENDARY,
+		)
 
 
 class Zone(IntEnum):
