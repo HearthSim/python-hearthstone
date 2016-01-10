@@ -63,6 +63,28 @@ class CardXML(object):
 	def id(self):
 		return self.xml.attrib["CardID"]
 
+	@property
+	def craftable(self):
+		if not self.card_set.craftable:
+			return False
+		if not self.type.craftable:
+			return False
+		if not self.rarity.craftable:
+			return False
+		return True
+
+	@property
+	def crafting_costs(self):
+		if not self.craftable:
+			return 0, 0
+		return self.rarity.crafting_costs
+
+	@property
+	def disenchant_costs(self):
+		if not self.craftable:
+			return 0, 0
+		return self.rarity.disenchant_costs
+
 	##
 	# Localized values
 
