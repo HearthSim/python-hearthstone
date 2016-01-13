@@ -764,6 +764,12 @@ TAG_TYPES = {
 	GameTag.AI_MUST_PLAY: Type.BOOL,
 	GameTag.AFFECTED_BY_SPELL_POWER: Type.BOOL,
 	GameTag.SPARE_PART: Type.BOOL,
+	GameTag.PLAYSTATE: PlayState,
+	GameTag.ZONE: Zone,
+	GameTag.STEP: Step,
+	GameTag.NEXT_STEP: Step,
+	GameTag.STATE: State,
+	GameTag.MULLIGAN_STATE: Mulligan,
 }
 
 
