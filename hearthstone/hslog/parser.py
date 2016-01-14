@@ -85,6 +85,9 @@ class LogBroadcastMixin:
 	def on_tag_change(self, entity, tag, value):
 		pass
 
+	def on_zone_change(self, entity, before, after):
+		pass
+
 
 class LogWatcher(LogBroadcastMixin):
 	def __init__(self):
@@ -251,7 +254,18 @@ class LogWatcher(LogBroadcastMixin):
 	def tag_change(self, ts, e, tag, value):
 		entity = self.parse_entity(e)
 		tag, value = parse_tag(tag, value)
-		self.on_tag_change(entity, tag, value)
+
+		# Hack to register player names...
+		if entity is None and tag == enums.GameTag.ENTITY_ID:
+			self.current_game.register_player_name(e, value)
+			entity = self.parse_entity(e)
+
+		if entity is not None:
+			# Not broadcasting here when None simplifies our life
+			self.on_tag_change(entity, tag, value)
+			if tag == enums.GameTag.ZONE:
+				self.on_zone_change(entity, entity.zone, value)
+
 		if not entity:
 			if tag == enums.GameTag.ENTITY_ID:
 				self.current_game.register_player_name(e, value)

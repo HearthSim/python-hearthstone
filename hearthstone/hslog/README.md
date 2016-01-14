@@ -27,3 +27,4 @@ The following methods are available:
 * `on_action(action)`: An action has completed (`ACTION_END`)
 * `on_metadata(metadata)`: Action metadata is ready.
 * `on_tag_change(entity, tag, value)`: A tag's value has changed on an entity.
+* `on_zone_change(entity, old, new)`: An entity moved between two zones.
