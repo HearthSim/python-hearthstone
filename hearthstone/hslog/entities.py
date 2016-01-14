@@ -1,3 +1,6 @@
+from hearthstone.enums import CardType, GameTag, Zone
+
+
 class Entity:
 	_args = ()
 
@@ -10,6 +13,18 @@ class Entity:
 			self.__class__.__name__, self.id,
 			", ".join("%s=%r" % (k, getattr(self, k)) for k in self._args)
 		)
+
+	@property
+	def controller(self):
+		return self.tags.get(GameTag.CONTROLLER, 0)
+
+	@property
+	def type(self):
+		return self.tags.get(GameTag.CARDTYPE, CardType.INVALID)
+
+	@property
+	def zone(self):
+		return self.tags.get(GameTag.ZONE, Zone.INVALID)
 
 	def tag_change(self, tag, value):
 		self.tags[tag] = value
