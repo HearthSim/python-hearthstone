@@ -17,7 +17,7 @@ class Entity:
 
 	@property
 	def controller(self):
-		return self.tags.get(GameTag.CONTROLLER, 0)
+		return self.game.entities.get(self.tags.get(GameTag.CONTROLLER, 0))
 
 	@property
 	def type(self):
