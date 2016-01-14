@@ -72,7 +72,21 @@ class ActionMetaData:
 		return "%s(type=%r, entity=%r)" % (self.__class__.__name__, self.type, self.entity)
 
 
-class LogWatcher:
+class LogBroadcastMixin:
+	def on_entity_update(self, entity):
+		pass
+
+	def on_action(self, action):
+		pass
+
+	def on_metadata(self, metadata):
+		pass
+
+	def on_tag_change(self, entity, tag, value):
+		pass
+
+
+class LogWatcher(LogBroadcastMixin):
 	def __init__(self):
 		self.games = []
 		self.line_regex = POWERLOG_LINE_RE
@@ -143,9 +157,11 @@ class LogWatcher:
 
 	def close_nodes(self):
 		if self._entity_node:
+			self.on_entity_update(self._entity_node)
 			self._entity_node = None
 
 		if self._metadata_node:
+			self.on_metadata(self._metadata_node)
 			self._metadata_node = None
 
 	def handle_action(self, ts, opcode, data):
@@ -206,6 +222,7 @@ class LogWatcher:
 
 	def action_end(self, ts):
 		self.current_action.end()
+		self.on_action(self.current_action)
 		self.current_action = self.current_action.parent
 
 	def full_entity(self, ts, id, cardid):
@@ -231,6 +248,7 @@ class LogWatcher:
 	def tag_change(self, ts, e, tag, value):
 		entity = self.parse_entity(e)
 		tag, value = parse_tag(tag, value)
+		self.on_tag_change(entity, tag, value)
 		if not entity:
 			if tag == enums.GameTag.ENTITY_ID:
 				self.current_game.register_player_name(e, value)
