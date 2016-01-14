@@ -6,6 +6,7 @@ class Entity:
 
 	def __init__(self, id):
 		self.id = id
+		self.game = None
 		self.tags = {}
 
 	def __repr__(self):
@@ -40,6 +41,7 @@ class Game(Entity):
 		self.actions = []
 
 	def register_entity(self, entity):
+		entity.game = self
 		self.entities[entity.id] = entity
 		if isinstance(entity, Player):
 			self.players.append(entity)
