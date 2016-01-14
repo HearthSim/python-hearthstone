@@ -137,9 +137,11 @@ class LogWatcher(LogBroadcastMixin):
 			return self.handle_action(ts, opcode, data)
 
 		if opcode == "GameEntity":
+			self.close_nodes()
 			sre = GAME_ENTITY_RE.match(data)
 			self.register_game(ts, *sre.groups())
 		elif opcode == "Player":
+			self.close_nodes()
 			sre = PLAYER_ENTITY_RE.match(data)
 			self.register_player(ts, *sre.groups())
 		elif opcode.startswith("tag="):
