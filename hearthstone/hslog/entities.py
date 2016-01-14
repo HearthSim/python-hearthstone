@@ -40,6 +40,11 @@ class Game(Entity):
 		self.entities = {}
 		self.actions = []
 
+	def in_zone(self, zone):
+		for entity in self.entities:
+			if entity.zone == zone:
+				yield entity
+
 	def register_entity(self, entity):
 		entity.game = self
 		self.entities[entity.id] = entity
@@ -64,6 +69,11 @@ class Player(Entity):
 		self.account_hi = hi
 		self.account_lo = lo
 		self.name = None
+
+	def in_zone(self, zone):
+		for entity in self.game.entities:
+			if entity.zone == zone and entity.controller == self:
+				yield entity
 
 
 class Card(Entity):
