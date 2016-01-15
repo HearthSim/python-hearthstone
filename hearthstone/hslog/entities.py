@@ -17,7 +17,7 @@ class Entity:
 
 	@property
 	def controller(self):
-		return self.game.entities.get(self.tags.get(GameTag.CONTROLLER, 0))
+		return self.game.get_player(self.tags.get(GameTag.CONTROLLER, 0))
 
 	@property
 	def type(self):
@@ -39,6 +39,11 @@ class Game(Entity):
 		self.players = []
 		self.entities = {}
 		self.actions = []
+
+	def get_player(self, id):
+		for player in self.players:
+			if player.player_id == id:
+				return player
 
 	def in_zone(self, zone):
 		for entity in self.entities:
