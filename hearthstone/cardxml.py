@@ -9,14 +9,9 @@ class CardXML(object):
 		self.xml = xml
 		self.locale = locale
 		self._localized_tags = {}
-		self.tags = {}
-		for e in self.xml.findall("./Tag"):
-			tag = int(e.attrib["enumID"])
-			try:
-				tag = GameTag(tag)
-			except ValueError:
-				pass
-			self.tags[tag] = self._get_tag(e)
+
+		self.tags = self._build_tag_dict("./Tag")
+		self.referenced_tags = self._build_tag_dict("./ReferencedTag")
 
 		e = self.xml.findall("HeroPower")
 		self.hero_power = e and e[0].attrib["cardID"] or None
@@ -34,6 +29,18 @@ class CardXML(object):
 
 	def __repr__(self):
 		return "<%s: %r>" % (self.id, self.name)
+
+	def _build_tag_dict(self, xpath):
+		tags = {}
+		for e in self.xml.findall(xpath):
+			tag = int(e.attrib["enumID"])
+			try:
+				tag = GameTag(tag)
+			except ValueError:
+				pass
+			tags[tag] = self._get_tag(e)
+
+		return tags
 
 	def _find_tag(self, id):
 		return self.xml.find('./Tag[@enumID="%i"]' % (id))
