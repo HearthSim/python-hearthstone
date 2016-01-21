@@ -701,6 +701,16 @@ class Step(IntEnum):
 	MAIN_START_TRIGGERS = 17
 
 
+##
+# Misc
+
+class Booster(IntEnum):
+	INVALID = 0
+	CLASSIC = 1
+	GOBLINS_VS_GNOMES = 9
+	THE_GRAND_TOURNAMENT = 10
+
+
 class Type(IntEnum):
 	UNKNOWN = 0
 	BOOL = 1
