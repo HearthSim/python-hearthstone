@@ -10,7 +10,7 @@ README = open(os.path.join(os.path.dirname(__file__), "README.md")).read()
 CLASSIFIERS = [
 	"Development Status :: 4 - Beta",
 	"Intended Audience :: Developers",
-	"License :: OSI Approved :: MIT License"
+	"License :: OSI Approved :: MIT License",
 	"Programming Language :: Python",
 	"Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.4",
