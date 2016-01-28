@@ -222,6 +222,7 @@ class LogWatcher(LogBroadcastMixin):
 	def action_start(self, ts, entity, type, index, target):
 		entity = self.parse_entity(entity)
 		type = parse_enum(enums.PowSubType, type)
+		index = int(index)
 		target = self.parse_entity(target)
 		action = Action(entity, type, index, target)
 		action.ts = ts
