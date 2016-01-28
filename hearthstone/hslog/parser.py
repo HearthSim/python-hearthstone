@@ -79,13 +79,18 @@ class ActionMetaData:
 
 class CreateGame:
 	class Player:
-		def __init__(self, entity):
+		def __init__(self, entity, playerid, hi, lo):
 			self.entity = entity
+			self.playerid = playerid
+			self.hi = hi
+			self.lo = lo
+			self.name = ""
 			self.tags = []
 
 	def __init__(self, entity):
 		self.entity = entity
 		self.tags = []
+		self.players = []
 
 
 class HideEntity:
@@ -259,6 +264,9 @@ class LogWatcher(LogBroadcastMixin):
 		player = Player(id, playerid, hi, lo)
 		self.current_game.register_entity(player)
 		self._entity_node = player
+		self._entity_packet = CreateGame.Player(id, playerid, hi, lo)
+		self._entity_packet.ts = ts
+		self._game_packet.players.append(self._entity_packet)
 
 	# Messages
 	def create_game(self, ts):
@@ -269,6 +277,7 @@ class LogWatcher(LogBroadcastMixin):
 		self._entity_packet = CreateGame(self.current_game)
 		self._entity_packet.ts = ts
 		self.current_node.packets.append(self._entity_packet)
+		self._game_packet = self._entity_packet
 
 	def action_start(self, ts, entity, type, index, target):
 		entity = self.parse_entity(entity)
