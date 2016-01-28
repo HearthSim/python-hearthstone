@@ -228,8 +228,9 @@ class LogWatcher(LogBroadcastMixin):
 
 	def action_end(self, ts):
 		self.current_action.end()
-		self.on_action(self.current_action)
+		action = self.current_action
 		self.current_action = self.current_action.parent
+		self.on_action(action)
 
 	def full_entity(self, ts, id, cardid):
 		id = int(id)
