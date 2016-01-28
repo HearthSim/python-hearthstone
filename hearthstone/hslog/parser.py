@@ -77,10 +77,28 @@ class ActionMetaData:
 		return "%s(type=%r, entity=%r)" % (self.__class__.__name__, self.type, self.entity)
 
 
+class CreateGame:
+	class Player:
+		def __init__(self, entity):
+			self.entity = entity
+			self.tags = []
+
+	def __init__(self, entity):
+		self.entity = entity
+		self.tags = []
+
+
 class HideEntity:
 	def __init__(self, entity, zone):
 		self.entity = entity
 		self.zone = zone
+
+
+class FullEntity:
+	def __init__(self, entity, cardid):
+		self.entity = entity
+		self.cardid = cardid
+		self.tags = []
 
 
 class ShowEntity:
@@ -182,7 +200,7 @@ class LogWatcher(LogBroadcastMixin):
 			sre = TAG_VALUE_RE.match(data)
 			tag, value = sre.groups()
 			tag, value = parse_tag(tag, value)
-			self._entity_node.tags[tag] = value
+			self._entity_packet.tags.append((tag, value))
 		elif opcode.startswith("Info["):
 			sre = METADATA_INFO_RE.match(data)
 			idx, entity = sre.groups()
@@ -193,6 +211,8 @@ class LogWatcher(LogBroadcastMixin):
 
 	def close_nodes(self):
 		if self._entity_node:
+			for k, v in self._entity_packet.tags:
+				self._entity_node.tags[k] = v
 			self.on_entity_update(self._entity_node)
 			self._entity_node = None
 
@@ -246,6 +266,9 @@ class LogWatcher(LogBroadcastMixin):
 		self.games.append(self.current_game)
 		self.current_game.ts = ts
 		self.current_game._broadcasted = False
+		self._entity_packet = CreateGame(self.current_game)
+		self._entity_packet.ts = ts
+		self.current_node.packets.append(self._entity_packet)
 
 	def action_start(self, ts, entity, type, index, target):
 		entity = self.parse_entity(entity)
@@ -269,6 +292,9 @@ class LogWatcher(LogBroadcastMixin):
 		entity = Card(id, cardid)
 		self.current_game.register_entity(entity)
 		self._entity_node = entity
+		packet = FullEntity(entity, cardid)
+		packet.ts = ts
+		self.current_node.packets.append(packet)
 
 		# The first packet in a game is always FULL_ENTITY so
 		# broadcast game_ready if we haven't yet for this game
