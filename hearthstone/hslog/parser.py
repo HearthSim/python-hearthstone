@@ -110,6 +110,7 @@ class ShowEntity:
 	def __init__(self, entity, cardid):
 		self.entity = entity
 		self.cardid = cardid
+		self.tags = []
 
 
 class TagChange:
@@ -315,9 +316,9 @@ class LogWatcher(LogBroadcastMixin):
 		entity = self.parse_entity(entity)
 		entity.reveal(cardid)
 		self._entity_node = entity
-		packet = ShowEntity(entity, cardid)
-		packet.ts = ts
-		self.current_node.packets.append(packet)
+		self._entity_packet = ShowEntity(entity, cardid)
+		self._entity_packet.ts = ts
+		self.current_node.packets.append(self._entity_packet)
 
 	def hide_entity(self, ts, entity, tag, value):
 		entity = self.parse_entity(entity)
