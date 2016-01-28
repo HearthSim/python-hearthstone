@@ -269,6 +269,8 @@ class LogWatcher(LogBroadcastMixin):
 		type = parse_enum(enums.MetaDataType, meta)
 		entity = self.parse_entity(data)
 		self._metadata_node = ActionMetaData(type, entity)
+		self._metadata_node.ts = ts
+		self.current_node.packets.append(self._metadata_node)
 
 	def tag_change(self, ts, e, tag, value):
 		entity = self.parse_entity(e)
