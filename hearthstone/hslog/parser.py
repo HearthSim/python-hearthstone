@@ -76,6 +76,13 @@ class ActionMetaData:
 		return "%s(type=%r, entity=%r)" % (self.__class__.__name__, self.type, self.entity)
 
 
+class TagChange:
+	def __init__(self, entity, tag, value):
+		self.entity = entity
+		self.tag = tag
+		self.value = value
+
+
 class LogBroadcastMixin:
 	def on_entity_update(self, entity):
 		pass
@@ -295,3 +302,7 @@ class LogWatcher(LogBroadcastMixin):
 				pass
 		else:
 			entity.tag_change(tag, value)
+
+		packet = TagChange(entity, tag, value)
+		packet.ts = ts
+		self.current_node.packets.append(packet)
