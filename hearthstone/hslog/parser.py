@@ -1,5 +1,6 @@
 import re
 from hearthstone import enums
+from ..enums import GameTag
 from .utils import parse_enum, parse_tag
 from .entities import Game, Player, Card
 
@@ -74,6 +75,12 @@ class ActionMetaData:
 
 	def __repr__(self):
 		return "%s(type=%r, entity=%r)" % (self.__class__.__name__, self.type, self.entity)
+
+
+class HideEntity:
+	def __init__(self, entity, zone):
+		self.entity = entity
+		self.zone = zone
 
 
 class TagChange:
@@ -271,6 +278,11 @@ class LogWatcher(LogBroadcastMixin):
 	def hide_entity(self, ts, entity, tag, value):
 		entity = self.parse_entity(entity)
 		entity.hide()
+		tag, value = parse_tag(tag, value)
+		assert tag == GameTag.ZONE
+		packet = HideEntity(entity, value)
+		packet.ts = ts
+		self.current_node.packets.append(packet)
 
 	def meta_data(self, ts, meta, data, info):
 		type = parse_enum(enums.MetaDataType, meta)
