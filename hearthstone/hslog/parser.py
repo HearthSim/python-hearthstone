@@ -106,6 +106,10 @@ class LogWatcher(LogBroadcastMixin):
 		self._entity_node = None
 		self._metadata_node = None
 
+	@property
+	def current_node(self):
+		return self.current_action or self.current_game
+
 	def read(self, fp):
 		for line in fp.readlines():
 			sre = self.line_regex.match(line)
@@ -231,10 +235,7 @@ class LogWatcher(LogBroadcastMixin):
 		action = Action(entity, type, index, target)
 		action.ts = ts
 		action.parent = self.current_action
-		if self.current_action:
-			self.current_action.packets.append(action)
-		else:
-			self.current_game.packets.append(action)
+		self.current_node.packets.append(action)
 		self.current_action = action
 
 	def action_end(self, ts):
