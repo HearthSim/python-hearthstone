@@ -38,7 +38,11 @@ class Game(Entity):
 		super().__init__(id)
 		self.players = []
 		self.entities = {}
-		self.actions = []
+		self.packets = []
+
+	def __iter__(self):
+		for packet in self.packets:
+			yield packet
 
 	def get_player(self, id):
 		for player in self.players:

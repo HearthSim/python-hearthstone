@@ -51,7 +51,7 @@ class Action:  # :)
 		self.index = index
 		self.target = target
 		self.ended = False
-		self.actions = []
+		self.packets = []
 
 	def __repr__(self):
 		return "%s(entity=%r, type=%r, index=%r, target=%r)" % (
@@ -225,9 +225,9 @@ class LogWatcher(LogBroadcastMixin):
 		action = Action(entity, type, index, target)
 		action.parent = self.current_action
 		if self.current_action:
-			self.current_action.actions.append(action)
+			self.current_action.packets.append(action)
 		else:
-			self.current_game.actions.append(action)
+			self.current_game.packets.append(action)
 		self.current_action = action
 
 	def action_end(self, ts):
