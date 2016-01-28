@@ -88,6 +88,9 @@ class LogBroadcastMixin:
 	def on_zone_change(self, entity, before, after):
 		pass
 
+	def on_game_ready(self, game, *players):
+		pass
+
 
 class LogWatcher(LogBroadcastMixin):
 	def __init__(self):
@@ -213,6 +216,7 @@ class LogWatcher(LogBroadcastMixin):
 	def create_game(self, ts):
 		self.current_game = Game(0)
 		self.games.append(self.current_game)
+		self.current_game._broadcasted = False
 
 	def action_start(self, ts, entity, type, index, target):
 		entity = self.parse_entity(entity)
@@ -237,6 +241,12 @@ class LogWatcher(LogBroadcastMixin):
 		entity = Card(id, cardid)
 		self.current_game.register_entity(entity)
 		self._entity_node = entity
+
+		# The first packet in a game is always FULL_ENTITY so
+		# broadcast game_ready if we haven't yet for this game
+		if not self.current_game._broadcasted:
+			self.current_game._broadcasted = True
+			self.on_game_ready(self.current_game, *self.current_game.players)
 
 	def show_entity(self, ts, entity, cardid):
 		entity = self.parse_entity(entity)
