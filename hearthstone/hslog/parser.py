@@ -53,6 +53,10 @@ class Action:  # :)
 		self.ended = False
 		self.packets = []
 
+	def __iter__(self):
+		for packet in self.packets:
+			yield packet
+
 	def __repr__(self):
 		return "%s(entity=%r, type=%r, index=%r, target=%r)" % (
 			self.__class__.__name__, self.entity, self.type, self.index, self.target
