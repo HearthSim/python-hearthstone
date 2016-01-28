@@ -216,6 +216,7 @@ class LogWatcher(LogBroadcastMixin):
 	def create_game(self, ts):
 		self.current_game = Game(0)
 		self.games.append(self.current_game)
+		self.current_game.ts = ts
 		self.current_game._broadcasted = False
 
 	def action_start(self, ts, entity, type, index, target):
@@ -223,6 +224,7 @@ class LogWatcher(LogBroadcastMixin):
 		type = parse_enum(enums.PowSubType, type)
 		target = self.parse_entity(target)
 		action = Action(entity, type, index, target)
+		action.ts = ts
 		action.parent = self.current_action
 		if self.current_action:
 			self.current_action.packets.append(action)
