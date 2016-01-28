@@ -301,9 +301,9 @@ class LogWatcher(LogBroadcastMixin):
 		entity = Card(id, cardid)
 		self.current_game.register_entity(entity)
 		self._entity_node = entity
-		packet = FullEntity(entity, cardid)
-		packet.ts = ts
-		self.current_node.packets.append(packet)
+		self._entity_packet = FullEntity(entity, cardid)
+		self._entity_packet.ts = ts
+		self.current_node.packets.append(self._entity_packet)
 
 		# The first packet in a game is always FULL_ENTITY so
 		# broadcast game_ready if we haven't yet for this game
