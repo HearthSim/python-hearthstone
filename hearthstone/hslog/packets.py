@@ -26,10 +26,10 @@ class Action(Packet):
 
 
 class ActionMetaData(Packet):
-	def __init__(self, ts, type, entity, count):
+	def __init__(self, ts, entity, type, count):
 		self.ts = ts
-		self.type = type
 		self.entity = entity
+		self.type = type
 		self.count = count
 		self.info = []
 
