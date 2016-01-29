@@ -83,7 +83,8 @@ class PowerHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintPower"):
 			self.handle_data(ts, msg)
-		super().add_data(ts, callback, msg)
+		else:
+			super().add_data(ts, callback, msg)
 
 	def handle_data(self, ts, msg):
 		data = msg.strip()
@@ -248,7 +249,8 @@ class ChoicesHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintEntityChoices"):
 			self.handle_entity_choices(ts, msg)
-		super().add_data(ts, callback, msg)
+		else:
+			super().add_data(ts, callback, msg)
 
 	def handle_entity_choices(self, ts, msg):
 		data = msg.strip()
