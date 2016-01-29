@@ -33,6 +33,11 @@ META_DATA_RE = re.compile(r"META_DATA - Meta=(\w+) Data=%s Info=(\d+)" % _E)
 TAG_VALUE_RE = re.compile(r"tag=(\w+) value=(\w+)")
 METADATA_INFO_RE = re.compile(r"Info\[(\d+)\] = %s" % _E)
 
+# Choices
+CHOICES_CHOICE_RE = re.compile(r"id=(\d+) Player=%s TaskList=(\d+)? ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$" % _E)
+CHOICES_SOURCE_RE = re.compile(r"Source=%s$" % _E)
+CHOICES_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=(\[.+\])$")
+
 
 MESSAGE_OPCODES = (
 	"CREATE_GAME",
@@ -239,7 +244,43 @@ class PowerHandler:
 			entity.tag_change(tag, value)
 
 
-class LogWatcher(PowerHandler, LogBroadcastMixin):
+class ChoicesHandler:
+	def add_data(self, ts, callback, msg):
+		if callback == self.parse_method("DebugPrintEntityChoices"):
+			self.handle_entity_choices(ts, msg)
+		super().add_data(ts, callback, msg)
+
+	def handle_entity_choices(self, ts, msg):
+		data = msg.strip()
+		if data.startswith("id="):
+			sre = CHOICES_CHOICE_RE.match(data)
+			self.register_choices(ts, *sre.groups())
+		elif data.startswith("Source="):
+			sre = CHOICES_SOURCE_RE.match(data)
+			entity, = sre.groups()
+			entity = self.parse_entity(entity)
+			self._choice_packet.source = entity
+		elif data.startswith("Entities["):
+			sre = CHOICES_ENTITIES_RE.match(data)
+			idx, entity = sre.groups()
+			entity = self.parse_entity(entity)
+			self._choice_packet.choices.append(entity)
+		else:
+			raise NotImplementedError("Unhandled entity choice: %r" % (data))
+
+	def register_choices(self, ts, id, player, tasklist, type, min, max):
+		id = int(id)
+		player = self.parse_entity(player)
+		tasklist = int(tasklist)
+		type = parse_enum(enums.ChoiceType, type)
+		min = int(min)
+		max = int(max)
+		self._choice_packet = packets.Choices(player, id, tasklist, type, min, max)
+		self._choice_packet.ts = ts
+		self.current_node.packets.append(self._choice_packet)
+
+
+class LogWatcher(PowerHandler, ChoicesHandler, LogBroadcastMixin):
 	def __init__(self):
 		super().__init__()
 		self.games = []

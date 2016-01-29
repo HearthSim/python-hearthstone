@@ -75,3 +75,19 @@ class TagChange(Packet):
 		self.entity = entity
 		self.tag = tag
 		self.value = value
+
+
+class Choices(Packet):
+	def __init__(self, entity, id, tasklist, type, min, max):
+		self.entity = entity
+		self.id = id
+		self.tasklist = tasklist
+		self.type = type
+		self.min = min
+		self.max = max
+		self.source = None
+		self.choices = []
+
+	@property
+	def player(self):
+		return self.entity
