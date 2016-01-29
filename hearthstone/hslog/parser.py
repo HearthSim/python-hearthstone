@@ -34,6 +34,7 @@ TAG_VALUE_RE = re.compile(r"tag=(\w+) value=(\w+)")
 METADATA_INFO_RE = re.compile(r"Info\[(\d+)\] = %s" % _E)
 
 # Choices
+CHOICES_CHOICE_OLD_RE = re.compile(r"id=(\d+) PlayerId=(\d+) ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$")
 CHOICES_CHOICE_RE = re.compile(r"id=(\d+) Player=%s TaskList=(\d+)? ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$" % _E)
 CHOICES_SOURCE_RE = re.compile(r"Source=%s$" % _E)
 CHOICES_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=(\[.+\])$")
@@ -312,12 +313,22 @@ class ChoicesHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintEntityChoices"):
 			self.handle_entity_choices(ts, msg)
+		elif callback == self.parse_method("DebugPrintChoices"):
+			self.handle_entity_choices_old(ts, msg)
 		elif callback == self.parse_method("SendChoices"):
 			self.handle_send_choices(ts, msg)
 		elif callback == self.parse_method("DebugPrintEntitiesChosen"):
 			self.handle_entities_chosen(ts, msg)
 		else:
 			super().add_data(ts, callback, msg)
+
+	def handle_entity_choices_old(self, ts, msg):
+		data = msg.strip()
+		if data.startswith("id="):
+			sre = CHOICES_CHOICE_OLD_RE.match(data)
+			self.register_choices_old(ts, *sre.groups())
+		else:
+			return self.handle_entity_choices(ts, msg)
 
 	def handle_entity_choices(self, ts, msg):
 		data = msg.strip()
@@ -336,6 +347,17 @@ class ChoicesHandler:
 			self._choice_packet.choices.append(entity)
 		else:
 			raise NotImplementedError("Unhandled entity choice: %r" % (data))
+
+	def register_choices_old(self, ts, id, playerid, type, min, max):
+		id = int(id)
+		playerid = int(playerid)
+		type = parse_enum(enums.ChoiceType, type)
+		min, max = int(min), int(max)
+		tasklist = None
+		player = self.current_game.get_player(playerid)
+		self._choice_packet = packets.Choices(player, id, tasklist, type, min, max)
+		self._choice_packet.ts = ts
+		self.current_node.packets.append(self._choice_packet)
 
 	def register_choices(self, ts, id, player, tasklist, type, min, max):
 		id = int(id)
