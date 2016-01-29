@@ -39,6 +39,8 @@ CHOICES_SOURCE_RE = re.compile(r"Source=%s$" % _E)
 CHOICES_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=(\[.+\])$")
 SEND_CHOICES_CHOICE_RE = re.compile(r"id=(\d+) ChoiceType=(.+)$")
 SEND_CHOICES_ENTITIES_RE = re.compile(r"m_chosenEntities\[(\d+)\]=(\[.+\])$")
+ENTITIES_CHOSEN_RE = re.compile(r"id=(\d+) Player=%s EntitiesCount=(\d+)$" % _E)
+ENTITIES_CHOSEN_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=%s$" % _E)
 
 
 MESSAGE_OPCODES = (
@@ -253,6 +255,8 @@ class ChoicesHandler:
 			self.handle_entity_choices(ts, msg)
 		elif callback == self.parse_method("SendChoices"):
 			self.handle_send_choices(ts, msg)
+		elif callback == self.parse_method("DebugPrintEntitiesChosen"):
+			self.handle_entities_chosen(ts, msg)
 		else:
 			super().add_data(ts, callback, msg)
 
@@ -302,6 +306,24 @@ class ChoicesHandler:
 			self._send_choice_packet.choices.append(entity)
 		else:
 			raise NotImplementedError("Unhandled send choice: %r" % (data))
+
+	def handle_entities_chosen(self, ts, msg):
+		data = msg.strip()
+		if data.startswith("id="):
+			sre = ENTITIES_CHOSEN_RE.match(data)
+			id, player, count = sre.groups()
+			id = int(id)
+			player = self.parse_entity(player)
+			self._chosen_packet_count = int(count)
+			self._chosen_packet = packets.ChosenEntities(player, id)
+			self._chosen_packet.ts = ts
+			self.current_node.packets.append(self._chosen_packet)
+		elif data.startswith("Entities["):
+			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
+			idx, entity = sre.groups()
+			entity = self.parse_entity(entity)
+			self._chosen_packet.choices.append(entity)
+			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
 
 
 class LogWatcher(PowerHandler, ChoicesHandler, LogBroadcastMixin):

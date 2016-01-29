@@ -99,3 +99,10 @@ class SendChoices(Packet):
 		self.id = id
 		self.type = type
 		self.choices = []
+
+
+class ChosenEntities(Packet):
+	def __init__(self, entity, id):
+		self.entity = entity
+		self.id = id
+		self.choices = []
