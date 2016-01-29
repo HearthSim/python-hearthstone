@@ -124,11 +124,19 @@ class LogWatcher(LogBroadcastMixin):
 		entity id from the log.
 		"""
 		game.entities[id].name = name
+
+		# Flush the player's buffer by name
 		if name in self._player_buffer:
 			entity = self.parse_entity(name)
 			for packet in self._player_buffer[name]:
 				packet.entity = entity
 			del self._player_buffer[name]
+
+		# Update the player's packet name
+		if id in self._player_buffer:
+			for packet in self._player_buffer[id]:
+				packet.name = name
+			del self._player_buffer[id]
 
 	def parse_method(self, m):
 		return "%s.%s" % (self._game_state_processor, m)
@@ -218,6 +226,7 @@ class LogWatcher(LogBroadcastMixin):
 		self._entity_packet = packets.CreateGame.Player(id, playerid, hi, lo)
 		self._entity_packet.ts = ts
 		self._game_packet.players.append(self._entity_packet)
+		self.buffer_packet_entity_update(self._entity_packet, id)
 
 	# Messages
 	def create_game(self, ts):
