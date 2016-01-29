@@ -163,6 +163,7 @@ class PowerHandler:
 
 	# Messages
 	def create_game(self, ts):
+		self.current_action = None
 		self.current_game = Game(0)
 		self.games.append(self.current_game)
 		self.current_game.ts = ts
