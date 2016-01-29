@@ -106,3 +106,12 @@ class ChosenEntities(Packet):
 		self.entity = entity
 		self.id = id
 		self.choices = []
+
+
+class SendOption(Packet):
+	def __init__(self, option, suboption, target, position):
+		self.entity = None
+		self.option = option
+		self.suboption = suboption
+		self.target = target
+		self.position = position

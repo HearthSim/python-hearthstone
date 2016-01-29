@@ -42,6 +42,9 @@ SEND_CHOICES_ENTITIES_RE = re.compile(r"m_chosenEntities\[(\d+)\]=(\[.+\])$")
 ENTITIES_CHOSEN_RE = re.compile(r"id=(\d+) Player=%s EntitiesCount=(\d+)$" % _E)
 ENTITIES_CHOSEN_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=%s$" % _E)
 
+# Options
+SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) selectedTarget=(\d+) selectedPosition=(\d+)")
+
 
 MESSAGE_OPCODES = (
 	"CREATE_GAME",
@@ -249,6 +252,25 @@ class PowerHandler:
 			entity.tag_change(tag, value)
 
 
+class OptionsHandler:
+	def add_data(self, ts, callback, msg):
+		if callback == self.parse_method("SendOption"):
+			self.handle_send_option(ts, msg)
+		else:
+			super().add_data(ts, callback, msg)
+
+	def handle_send_option(self, ts, msg):
+		data = msg.strip()
+		if data.startswith("selectedOption="):
+			sre = SEND_OPTION_RE.match(data)
+			option, suboption, target, position = sre.groups()
+			packet = packets.SendOption(int(option), int(suboption), int(target), int(position))
+			packet.ts = ts
+			self.current_node.packets.append(packet)
+		else:
+			raise NotImplementedError("Unhandled send option: %r" % (data))
+
+
 class ChoicesHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintEntityChoices"):
@@ -326,7 +348,7 @@ class ChoicesHandler:
 			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
 
 
-class LogWatcher(PowerHandler, ChoicesHandler, LogBroadcastMixin):
+class LogWatcher(PowerHandler, ChoicesHandler, OptionsHandler, LogBroadcastMixin):
 	def __init__(self):
 		super().__init__()
 		self.games = []
