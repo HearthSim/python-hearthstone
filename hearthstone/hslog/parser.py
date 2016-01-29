@@ -1,6 +1,7 @@
 import re
 from hearthstone import enums
 from ..enums import GameTag
+from . import packets
 from .utils import parse_enum, parse_tag
 from .entities import Game, Player, Card
 
@@ -43,81 +44,6 @@ MESSAGE_OPCODES = (
 	"TAG_CHANGE",
 	"META_DATA",
 )
-
-
-class Action:  # :)
-	def __init__(self, entity, type, index, target):
-		self.entity = entity
-		self.type = type
-		self.index = index
-		self.target = target
-		self.ended = False
-		self.packets = []
-
-	def __iter__(self):
-		for packet in self.packets:
-			yield packet
-
-	def __repr__(self):
-		return "%s(entity=%r, type=%r, index=%r, target=%r)" % (
-			self.__class__.__name__, self.entity, self.type, self.index, self.target
-		)
-
-	def end(self):
-		self.ended = True
-
-
-class ActionMetaData:
-	def __init__(self, type, entity):
-		self.type = type
-		self.entity = entity
-		self.info = []
-
-	def __repr__(self):
-		return "%s(type=%r, entity=%r)" % (self.__class__.__name__, self.type, self.entity)
-
-
-class CreateGame:
-	class Player:
-		def __init__(self, entity, playerid, hi, lo):
-			self.entity = entity
-			self.playerid = playerid
-			self.hi = hi
-			self.lo = lo
-			self.name = ""
-			self.tags = []
-
-	def __init__(self, entity):
-		self.entity = entity
-		self.tags = []
-		self.players = []
-
-
-class HideEntity:
-	def __init__(self, entity, zone):
-		self.entity = entity
-		self.zone = zone
-
-
-class FullEntity:
-	def __init__(self, entity, cardid):
-		self.entity = entity
-		self.cardid = cardid
-		self.tags = []
-
-
-class ShowEntity:
-	def __init__(self, entity, cardid):
-		self.entity = entity
-		self.cardid = cardid
-		self.tags = []
-
-
-class TagChange:
-	def __init__(self, entity, tag, value):
-		self.entity = entity
-		self.tag = tag
-		self.value = value
 
 
 class LogBroadcastMixin:
@@ -265,7 +191,7 @@ class LogWatcher(LogBroadcastMixin):
 		player = Player(id, playerid, hi, lo)
 		self.current_game.register_entity(player)
 		self._entity_node = player
-		self._entity_packet = CreateGame.Player(id, playerid, hi, lo)
+		self._entity_packet = packets.CreateGame.Player(id, playerid, hi, lo)
 		self._entity_packet.ts = ts
 		self._game_packet.players.append(self._entity_packet)
 
@@ -275,7 +201,7 @@ class LogWatcher(LogBroadcastMixin):
 		self.games.append(self.current_game)
 		self.current_game.ts = ts
 		self.current_game._broadcasted = False
-		self._entity_packet = CreateGame(self.current_game)
+		self._entity_packet = packets.CreateGame(self.current_game)
 		self._entity_packet.ts = ts
 		self.current_node.packets.append(self._entity_packet)
 		self._game_packet = self._entity_packet
@@ -285,7 +211,7 @@ class LogWatcher(LogBroadcastMixin):
 		type = parse_enum(enums.PowSubType, type)
 		index = int(index)
 		target = self.parse_entity(target)
-		action = Action(entity, type, index, target)
+		action = packets.Action(entity, type, index, target)
 		action.ts = ts
 		action.parent = self.current_action
 		self.current_node.packets.append(action)
@@ -302,7 +228,7 @@ class LogWatcher(LogBroadcastMixin):
 		entity = Card(id, cardid)
 		self.current_game.register_entity(entity)
 		self._entity_node = entity
-		self._entity_packet = FullEntity(entity, cardid)
+		self._entity_packet = packets.FullEntity(entity, cardid)
 		self._entity_packet.ts = ts
 		self.current_node.packets.append(self._entity_packet)
 
@@ -316,7 +242,7 @@ class LogWatcher(LogBroadcastMixin):
 		entity = self.parse_entity(entity)
 		entity.reveal(cardid)
 		self._entity_node = entity
-		self._entity_packet = ShowEntity(entity, cardid)
+		self._entity_packet = packets.ShowEntity(entity, cardid)
 		self._entity_packet.ts = ts
 		self.current_node.packets.append(self._entity_packet)
 
@@ -325,14 +251,14 @@ class LogWatcher(LogBroadcastMixin):
 		entity.hide()
 		tag, value = parse_tag(tag, value)
 		assert tag == GameTag.ZONE
-		packet = HideEntity(entity, value)
+		packet = packets.HideEntity(entity, value)
 		packet.ts = ts
 		self.current_node.packets.append(packet)
 
 	def meta_data(self, ts, meta, data, info):
 		type = parse_enum(enums.MetaDataType, meta)
 		entity = self.parse_entity(data)
-		self._metadata_node = ActionMetaData(type, entity)
+		self._metadata_node = packets.ActionMetaData(type, entity)
 		self._metadata_node.ts = ts
 		self.current_node.packets.append(self._metadata_node)
 
@@ -360,6 +286,6 @@ class LogWatcher(LogBroadcastMixin):
 		else:
 			entity.tag_change(tag, value)
 
-		packet = TagChange(entity, tag, value)
+		packet = packets.TagChange(entity, tag, value)
 		packet.ts = ts
 		self.current_node.packets.append(packet)
