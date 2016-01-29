@@ -34,11 +34,12 @@ class Entity:
 class Game(Entity):
 	_args = ("players", )
 
-	def __init__(self, id):
+	def __init__(self, id, ts):
 		super().__init__(id)
 		self.players = []
 		self.entities = {}
 		self.packets = []
+		self.ts = ts
 
 	def __iter__(self):
 		for packet in self.packets:

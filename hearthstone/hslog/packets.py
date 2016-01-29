@@ -3,7 +3,8 @@ class Packet:
 
 
 class Action(Packet):
-	def __init__(self, entity, type, index, target):
+	def __init__(self, ts, entity, type, index, target):
+		self.ts = ts
 		self.entity = entity
 		self.type = type
 		self.index = index
@@ -25,7 +26,8 @@ class Action(Packet):
 
 
 class ActionMetaData(Packet):
-	def __init__(self, type, entity, count):
+	def __init__(self, ts, type, entity, count):
+		self.ts = ts
 		self.type = type
 		self.entity = entity
 		self.count = count
@@ -37,7 +39,8 @@ class ActionMetaData(Packet):
 
 class CreateGame(Packet):
 	class Player:
-		def __init__(self, entity, playerid, hi, lo):
+		def __init__(self, ts, entity, playerid, hi, lo):
+			self.ts = ts
 			self.entity = entity
 			self.playerid = playerid
 			self.hi = hi
@@ -45,41 +48,47 @@ class CreateGame(Packet):
 			self.name = ""
 			self.tags = []
 
-	def __init__(self, entity):
+	def __init__(self, ts, entity):
+		self.ts = ts
 		self.entity = entity
 		self.tags = []
 		self.players = []
 
 
 class HideEntity(Packet):
-	def __init__(self, entity, zone):
+	def __init__(self, ts, entity, zone):
+		self.ts = ts
 		self.entity = entity
 		self.zone = zone
 
 
 class FullEntity(Packet):
-	def __init__(self, entity, cardid):
+	def __init__(self, ts, entity, cardid):
+		self.ts = ts
 		self.entity = entity
 		self.cardid = cardid
 		self.tags = []
 
 
 class ShowEntity(Packet):
-	def __init__(self, entity, cardid):
+	def __init__(self, ts, entity, cardid):
+		self.ts = ts
 		self.entity = entity
 		self.cardid = cardid
 		self.tags = []
 
 
 class TagChange(Packet):
-	def __init__(self, entity, tag, value):
+	def __init__(self, ts, entity, tag, value):
+		self.ts = ts
 		self.entity = entity
 		self.tag = tag
 		self.value = value
 
 
 class Choices(Packet):
-	def __init__(self, entity, id, tasklist, type, min, max):
+	def __init__(self, ts, entity, id, tasklist, type, min, max):
+		self.ts = ts
 		self.entity = entity
 		self.id = id
 		self.tasklist = tasklist
@@ -95,7 +104,8 @@ class Choices(Packet):
 
 
 class SendChoices(Packet):
-	def __init__(self, id, type):
+	def __init__(self, ts, id, type):
+		self.ts = ts
 		self.entity = None
 		self.id = id
 		self.type = type
@@ -103,21 +113,24 @@ class SendChoices(Packet):
 
 
 class ChosenEntities(Packet):
-	def __init__(self, entity, id):
+	def __init__(self, ts, entity, id):
+		self.ts = ts
 		self.entity = entity
 		self.id = id
 		self.choices = []
 
 
 class Options(Packet):
-	def __init__(self, id):
+	def __init__(self, ts, id):
+		self.ts = ts
 		self.entity = None
 		self.id = id
 		self.options = []
 
 
 class Option(Packet):
-	def __init__(self, entity, id, type, optype):
+	def __init__(self, ts, entity, id, type, optype):
+		self.ts = ts
 		self.entity = entity
 		self.id = id
 		self.type = type
@@ -126,7 +139,8 @@ class Option(Packet):
 
 
 class SendOption(Packet):
-	def __init__(self, option, suboption, target, position):
+	def __init__(self, ts, option, suboption, target, position):
+		self.ts = ts
 		self.entity = None
 		self.option = option
 		self.suboption = suboption

@@ -164,12 +164,10 @@ class PowerHandler:
 	# Messages
 	def create_game(self, ts):
 		self.current_action = None
-		self.current_game = Game(0)
+		self.current_game = Game(0, ts)
 		self.games.append(self.current_game)
-		self.current_game.ts = ts
 		self.current_game._broadcasted = False
-		self._entity_packet = packets.CreateGame(self.current_game)
-		self._entity_packet.ts = ts
+		self._entity_packet = packets.CreateGame(ts, self.current_game)
 		self.current_node.packets.append(self._entity_packet)
 		self._game_packet = self._entity_packet
 
@@ -178,8 +176,7 @@ class PowerHandler:
 		type = parse_enum(enums.PowSubType, type)
 		index = int(index)
 		target = self.parse_entity(target)
-		action = packets.Action(entity, type, index, target)
-		action.ts = ts
+		action = packets.Action(ts, entity, type, index, target)
 		action.parent = self.current_action
 		self.current_node.packets.append(action)
 		self.current_action = action
@@ -195,8 +192,7 @@ class PowerHandler:
 		entity = Card(id, cardid)
 		self.current_game.register_entity(entity)
 		self._entity_node = entity
-		self._entity_packet = packets.FullEntity(entity, cardid)
-		self._entity_packet.ts = ts
+		self._entity_packet = packets.FullEntity(ts, entity, cardid)
 		self.current_node.packets.append(self._entity_packet)
 
 		# The first packet in a game is always FULL_ENTITY so
@@ -209,8 +205,7 @@ class PowerHandler:
 		entity = self.parse_entity(entity)
 		entity.reveal(cardid)
 		self._entity_node = entity
-		self._entity_packet = packets.ShowEntity(entity, cardid)
-		self._entity_packet.ts = ts
+		self._entity_packet = packets.ShowEntity(ts, entity, cardid)
 		self.current_node.packets.append(self._entity_packet)
 
 	def hide_entity(self, ts, entity, tag, value):
@@ -218,16 +213,14 @@ class PowerHandler:
 		entity.hide()
 		tag, value = parse_tag(tag, value)
 		assert tag == GameTag.ZONE
-		packet = packets.HideEntity(entity, value)
-		packet.ts = ts
+		packet = packets.HideEntity(ts, entity, value)
 		self.current_node.packets.append(packet)
 
 	def meta_data(self, ts, meta, data, info):
 		type = parse_enum(enums.MetaDataType, meta)
 		entity = self.parse_entity(data)
 		count = int(info)
-		self._metadata_node = packets.ActionMetaData(type, entity, count)
-		self._metadata_node.ts = ts
+		self._metadata_node = packets.ActionMetaData(ts, type, entity, count)
 		self.current_node.packets.append(self._metadata_node)
 
 	def tag_change(self, ts, e, tag, value):
@@ -245,8 +238,7 @@ class PowerHandler:
 			if tag == enums.GameTag.ZONE:
 				self.on_zone_change(entity, entity.zone, value)
 
-		packet = packets.TagChange(entity, tag, value)
-		packet.ts = ts
+		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_node.packets.append(packet)
 
 		if not entity:
@@ -273,8 +265,7 @@ class OptionsHandler:
 			sre = OPTIONS_ENTITY_RE.match(data)
 			id, = sre.groups()
 			id = int(id)
-			self._options_packet = packets.Options(id)
-			self._options_packet.ts = ts
+			self._options_packet = packets.Options(ts, id)
 			self.current_node.packets.append(self._options_packet)
 		elif data.startswith("option "):
 			sre = OPTIONS_OPTION_RE.match(data)
@@ -282,8 +273,7 @@ class OptionsHandler:
 			id = int(id)
 			type = parse_enum(enums.OptionType, type)
 			entity = self.parse_entity(entity) if entity else None
-			self._option_packet = packets.Option(entity, id, type, "option")
-			self._option_packet.ts = ts
+			self._option_packet = packets.Option(ts, entity, id, type, "option")
 			self._options_packet.options.append(self._option_packet)
 			self._suboption_packet = None
 		elif data.startswith(("subOption ", "target ")):
@@ -291,7 +281,7 @@ class OptionsHandler:
 			type, id, entity = sre.groups()
 			id = int(id)
 			entity = self.parse_entity(entity)
-			packet = packets.Option(entity, id, None, type)
+			packet = packets.Option(ts, entity, id, None, type)
 			if type == "subOption":
 				self._suboption_packet = packet
 				node = self._option_packet
@@ -304,8 +294,7 @@ class OptionsHandler:
 		if data.startswith("selectedOption="):
 			sre = SEND_OPTION_RE.match(data)
 			option, suboption, target, position = sre.groups()
-			packet = packets.SendOption(int(option), int(suboption), int(target), int(position))
-			packet.ts = ts
+			packet = packets.SendOption(ts, int(option), int(suboption), int(target), int(position))
 			self.current_node.packets.append(packet)
 		else:
 			raise NotImplementedError("Unhandled send option: %r" % (data))
@@ -357,8 +346,7 @@ class ChoicesHandler:
 		min, max = int(min), int(max)
 		tasklist = None
 		player = self.current_game.get_player(playerid)
-		self._choice_packet = packets.Choices(player, id, tasklist, type, min, max)
-		self._choice_packet.ts = ts
+		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
 		self.current_node.packets.append(self._choice_packet)
 
 	def register_choices(self, ts, id, player, tasklist, type, min, max):
@@ -366,10 +354,8 @@ class ChoicesHandler:
 		player = self.parse_entity(player)
 		tasklist = int(tasklist)
 		type = parse_enum(enums.ChoiceType, type)
-		min = int(min)
-		max = int(max)
-		self._choice_packet = packets.Choices(player, id, tasklist, type, min, max)
-		self._choice_packet.ts = ts
+		min, max = int(min), int(max)
+		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
 		self.current_node.packets.append(self._choice_packet)
 
 	def handle_send_choices(self, ts, msg):
@@ -379,8 +365,7 @@ class ChoicesHandler:
 			id, type = sre.groups()
 			id = int(id)
 			type = parse_enum(enums.ChoiceType, type)
-			self._send_choice_packet = packets.SendChoices(id, type)
-			self._send_choice_packet.ts = ts
+			self._send_choice_packet = packets.SendChoices(ts, id, type)
 			self.current_node.packets.append(self._send_choice_packet)
 		elif data.startswith("m_chosenEntities"):
 			sre = SEND_CHOICES_ENTITIES_RE.match(data)
@@ -398,8 +383,7 @@ class ChoicesHandler:
 			id = int(id)
 			player = self.parse_entity(player)
 			self._chosen_packet_count = int(count)
-			self._chosen_packet = packets.ChosenEntities(player, id)
-			self._chosen_packet.ts = ts
+			self._chosen_packet = packets.ChosenEntities(ts, player, id)
 			self.current_node.packets.append(self._chosen_packet)
 		elif data.startswith("Entities["):
 			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
@@ -499,7 +483,6 @@ class LogWatcher(PowerHandler, ChoicesHandler, OptionsHandler, LogBroadcastMixin
 		player = Player(id, playerid, hi, lo)
 		self.current_game.register_entity(player)
 		self._entity_node = player
-		self._entity_packet = packets.CreateGame.Player(id, playerid, hi, lo)
-		self._entity_packet.ts = ts
+		self._entity_packet = packets.CreateGame.Player(ts, id, playerid, hi, lo)
 		self._game_packet.players.append(self._entity_packet)
 		self.buffer_packet_entity_update(self._entity_packet, id)
