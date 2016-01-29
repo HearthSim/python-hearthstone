@@ -43,6 +43,9 @@ ENTITIES_CHOSEN_RE = re.compile(r"id=(\d+) Player=%s EntitiesCount=(\d+)$" % _E)
 ENTITIES_CHOSEN_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=%s$" % _E)
 
 # Options
+OPTIONS_ENTITY_RE = re.compile(r"id=(\d+)$")
+OPTIONS_OPTION_RE = re.compile(r"option (\d+) type=(\w+) mainEntity=%s?$" % _E)
+OPTIONS_SUBOPTION_RE = re.compile(r"(subOption|target) (\d+) entity=%s?$" % _E)
 SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) selectedTarget=(\d+) selectedPosition=(\d+)")
 
 
@@ -256,8 +259,42 @@ class OptionsHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("SendOption"):
 			self.handle_send_option(ts, msg)
+		elif callback == self.parse_method("DebugPrintOptions"):
+			self.handle_options(ts, msg)
 		else:
 			super().add_data(ts, callback, msg)
+
+	def handle_options(self, ts, msg):
+		data = msg.strip()
+		if data.startswith("id="):
+			sre = OPTIONS_ENTITY_RE.match(data)
+			id, = sre.groups()
+			id = int(id)
+			self._options_packet = packets.Options(id)
+			self._options_packet.ts = ts
+			self.current_node.packets.append(self._options_packet)
+		elif data.startswith("option "):
+			sre = OPTIONS_OPTION_RE.match(data)
+			id, type, entity = sre.groups()
+			id = int(id)
+			type = parse_enum(enums.OptionType, type)
+			entity = self.parse_entity(entity) if entity else None
+			self._option_packet = packets.Option(entity, id, type, "option")
+			self._option_packet.ts = ts
+			self._options_packet.options.append(self._option_packet)
+			self._suboption_packet = None
+		elif data.startswith(("subOption ", "target ")):
+			sre = OPTIONS_SUBOPTION_RE.match(data)
+			type, id, entity = sre.groups()
+			id = int(id)
+			entity = self.parse_entity(entity)
+			packet = packets.Option(entity, id, None, type)
+			if type == "subOption":
+				self._suboption_packet = packet
+				node = self._option_packet
+			elif type == "target":
+				node = self._suboption_packet or self._option_packet
+			node.options.append(packet)
 
 	def handle_send_option(self, ts, msg):
 		data = msg.strip()
