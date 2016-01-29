@@ -91,3 +91,11 @@ class Choices(Packet):
 	@property
 	def player(self):
 		return self.entity
+
+
+class SendChoices(Packet):
+	def __init__(self, id, type):
+		self.entity = None
+		self.id = id
+		self.type = type
+		self.choices = []
