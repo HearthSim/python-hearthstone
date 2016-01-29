@@ -225,7 +225,8 @@ class PowerHandler:
 	def meta_data(self, ts, meta, data, info):
 		type = parse_enum(enums.MetaDataType, meta)
 		entity = self.parse_entity(data)
-		self._metadata_node = packets.ActionMetaData(type, entity)
+		count = int(info)
+		self._metadata_node = packets.ActionMetaData(type, entity, count)
 		self._metadata_node.ts = ts
 		self.current_node.packets.append(self._metadata_node)
 
