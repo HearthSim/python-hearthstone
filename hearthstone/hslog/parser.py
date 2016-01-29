@@ -75,6 +75,7 @@ class LogWatcher(LogBroadcastMixin):
 		self.current_action = None
 		self._entity_node = None
 		self._metadata_node = None
+		self._player_buffer = {}
 
 	@property
 	def current_node(self):
@@ -105,6 +106,29 @@ class LogWatcher(LogBroadcastMixin):
 		if not id:
 			return self.current_game.find_player(entity)
 		return self.current_game.entities[id]
+
+	def buffer_packet_entity_update(self, packet, name):
+		"""
+		Add a packet with a missing player entity to a buffer.
+		The buffer will be updated with the correct entity once
+		the player's name is registered.
+		"""
+		if name not in self._player_buffer:
+			self._player_buffer[name] = []
+		self._player_buffer[name].append(packet)
+
+	def register_player_name(self, game, name, id):
+		"""
+		Register a player entity with a specific name.
+		This is needed before a player name can be parsed as an
+		entity id from the log.
+		"""
+		game.entities[id].name = name
+		if name in self._player_buffer:
+			entity = self.parse_entity(name)
+			for packet in self._player_buffer[name]:
+				packet.entity = entity
+			del self._player_buffer[name]
 
 	def parse_method(self, m):
 		return "%s.%s" % (self._game_state_processor, m)
@@ -268,7 +292,7 @@ class LogWatcher(LogBroadcastMixin):
 
 		# Hack to register player names...
 		if entity is None and tag == enums.GameTag.ENTITY_ID:
-			self.current_game.register_player_name(e, value)
+			self.register_player_name(self.current_game, e, value)
 			entity = self.parse_entity(e)
 
 		if entity is not None:
@@ -277,15 +301,14 @@ class LogWatcher(LogBroadcastMixin):
 			if tag == enums.GameTag.ZONE:
 				self.on_zone_change(entity, entity.zone, value)
 
-		if not entity:
-			if tag == enums.GameTag.ENTITY_ID:
-				self.current_game.register_player_name(e, value)
-			else:
-				# print("Warning: Unknown entity %r" % (e))
-				pass
-		else:
-			entity.tag_change(tag, value)
-
 		packet = packets.TagChange(entity, tag, value)
 		packet.ts = ts
 		self.current_node.packets.append(packet)
+
+		if not entity:
+			if tag == enums.GameTag.ENTITY_ID:
+				self.register_player_name(self.current_game, e, value)
+			else:
+				self.buffer_packet_entity_update(packet, e)
+		else:
+			entity.tag_change(tag, value)

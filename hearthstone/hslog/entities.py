@@ -60,9 +60,6 @@ class Game(Entity):
 		if isinstance(entity, Player):
 			self.players.append(entity)
 
-	def register_player_name(self, name, id):
-		self.entities[id].name = name
-
 	def find_player(self, name):
 		for player in self.players:
 			if name == player.name:
