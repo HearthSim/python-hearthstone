@@ -65,85 +65,20 @@ class LogBroadcastMixin:
 	def on_game_ready(self, game, *players):
 		pass
 
+	def add_data(self, ts, callback, msg):
+		pass
 
-class LogWatcher(LogBroadcastMixin):
+
+class PowerHandler:
 	def __init__(self):
-		self.games = []
-		self.line_regex = POWERLOG_LINE_RE
-		self._game_state_processor = "GameState"
-		self.current_game = None
 		self.current_action = None
 		self._entity_node = None
 		self._metadata_node = None
-		self._player_buffer = {}
-
-	@property
-	def current_node(self):
-		return self.current_action or self.current_game
-
-	def read(self, fp):
-		for line in fp.readlines():
-			sre = self.line_regex.match(line)
-			if not sre:
-				continue
-			ts, method, msg = sre.groups()
-			self.add_data(ts, method, msg)
-
-	def parse_entity_id(self, entity):
-		if entity.isdigit():
-			return int(entity)
-
-		if entity == "GameEntity":
-			return self.current_game.id
-
-		sre = ENTITY_RE.match(entity)
-		if sre:
-			id = sre.groups()[0]
-			return int(id)
-
-	def parse_entity(self, entity):
-		id = self.parse_entity_id(entity)
-		if not id:
-			return self.current_game.find_player(entity)
-		return self.current_game.entities[id]
-
-	def buffer_packet_entity_update(self, packet, name):
-		"""
-		Add a packet with a missing player entity to a buffer.
-		The buffer will be updated with the correct entity once
-		the player's name is registered.
-		"""
-		if name not in self._player_buffer:
-			self._player_buffer[name] = []
-		self._player_buffer[name].append(packet)
-
-	def register_player_name(self, game, name, id):
-		"""
-		Register a player entity with a specific name.
-		This is needed before a player name can be parsed as an
-		entity id from the log.
-		"""
-		game.entities[id].name = name
-
-		# Flush the player's buffer by name
-		if name in self._player_buffer:
-			entity = self.parse_entity(name)
-			for packet in self._player_buffer[name]:
-				packet.entity = entity
-			del self._player_buffer[name]
-
-		# Update the player's packet name
-		if id in self._player_buffer:
-			for packet in self._player_buffer[id]:
-				packet.name = name
-			del self._player_buffer[id]
-
-	def parse_method(self, m):
-		return "%s.%s" % (self._game_state_processor, m)
 
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintPower"):
 			self.handle_data(ts, msg)
+		super().add_data(ts, callback, msg)
 
 	def handle_data(self, ts, msg):
 		data = msg.strip()
@@ -208,25 +143,6 @@ class LogWatcher(LogBroadcastMixin):
 
 		sre = regex.match(data)
 		callback(ts, *sre.groups())
-
-	def register_game(self, ts, id):
-		id = int(id)
-		self.current_game.id = id
-		self.current_game.register_entity(self.current_game)
-		self._entity_node = self.current_game
-
-	def register_player(self, ts, id, playerid, hi, lo):
-		id = int(id)
-		playerid = int(playerid)
-		hi = int(hi)
-		lo = int(lo)
-		player = Player(id, playerid, hi, lo)
-		self.current_game.register_entity(player)
-		self._entity_node = player
-		self._entity_packet = packets.CreateGame.Player(id, playerid, hi, lo)
-		self._entity_packet.ts = ts
-		self._game_packet.players.append(self._entity_packet)
-		self.buffer_packet_entity_update(self._entity_packet, id)
 
 	# Messages
 	def create_game(self, ts):
@@ -321,3 +237,99 @@ class LogWatcher(LogBroadcastMixin):
 				self.buffer_packet_entity_update(packet, e)
 		else:
 			entity.tag_change(tag, value)
+
+
+class LogWatcher(PowerHandler, LogBroadcastMixin):
+	def __init__(self):
+		super().__init__()
+		self.games = []
+		self.line_regex = POWERLOG_LINE_RE
+		self._game_state_processor = "GameState"
+		self.current_game = None
+		self._player_buffer = {}
+
+	@property
+	def current_node(self):
+		return self.current_action or self.current_game
+
+	def add_data(self, ts, callback, msg):
+		super().add_data(ts, callback, msg)
+
+	def read(self, fp):
+		for line in fp.readlines():
+			sre = self.line_regex.match(line)
+			if not sre:
+				continue
+			ts, method, msg = sre.groups()
+			self.add_data(ts, method, msg)
+
+	def parse_entity_id(self, entity):
+		if entity.isdigit():
+			return int(entity)
+
+		if entity == "GameEntity":
+			return self.current_game.id
+
+		sre = ENTITY_RE.match(entity)
+		if sre:
+			id = sre.groups()[0]
+			return int(id)
+
+	def parse_entity(self, entity):
+		id = self.parse_entity_id(entity)
+		if not id:
+			return self.current_game.find_player(entity)
+		return self.current_game.entities[id]
+
+	def buffer_packet_entity_update(self, packet, name):
+		"""
+		Add a packet with a missing player entity to a buffer.
+		The buffer will be updated with the correct entity once
+		the player's name is registered.
+		"""
+		if name not in self._player_buffer:
+			self._player_buffer[name] = []
+		self._player_buffer[name].append(packet)
+
+	def register_player_name(self, game, name, id):
+		"""
+		Register a player entity with a specific name.
+		This is needed before a player name can be parsed as an
+		entity id from the log.
+		"""
+		game.entities[id].name = name
+
+		# Flush the player's buffer by name
+		if name in self._player_buffer:
+			entity = self.parse_entity(name)
+			for packet in self._player_buffer[name]:
+				packet.entity = entity
+			del self._player_buffer[name]
+
+		# Update the player's packet name
+		if id in self._player_buffer:
+			for packet in self._player_buffer[id]:
+				packet.name = name
+			del self._player_buffer[id]
+
+	def parse_method(self, m):
+		return "%s.%s" % (self._game_state_processor, m)
+
+	def register_game(self, ts, id):
+		id = int(id)
+		self.current_game.id = id
+		self.current_game.register_entity(self.current_game)
+		self._entity_node = self.current_game
+
+	def register_player(self, ts, id, playerid, hi, lo):
+		id = int(id)
+		playerid = int(playerid)
+		hi = int(hi)
+		lo = int(lo)
+		player = Player(id, playerid, hi, lo)
+		self.current_game.register_entity(player)
+		self._entity_node = player
+		self._entity_packet = packets.CreateGame.Player(id, playerid, hi, lo)
+		self._entity_packet.ts = ts
+		self._game_packet.players.append(self._entity_packet)
+		self.buffer_packet_entity_update(self._entity_packet, id)
