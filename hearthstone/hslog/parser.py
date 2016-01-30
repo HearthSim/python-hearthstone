@@ -73,9 +73,8 @@ class PowerHandler:
 			self.handle_data(ts, msg)
 			return True
 
-	def handle_data(self, ts, msg):
-		data = msg.strip()
-		opcode = msg.split()[0]
+	def handle_data(self, ts, data):
+		opcode = data.split()[0]
 
 		if opcode in MESSAGE_OPCODES:
 			return self.handle_action(ts, opcode, data)
@@ -220,8 +219,7 @@ class OptionsHandler:
 		elif callback == self.parse_method("DebugPrintOptions"):
 			return self.handle_options(ts, msg)
 
-	def handle_options(self, ts, msg):
-		data = msg.strip()
+	def handle_options(self, ts, data):
 		if data.startswith("id="):
 			sre = OPTIONS_ENTITY_RE.match(data)
 			id, = sre.groups()
@@ -252,8 +250,7 @@ class OptionsHandler:
 			node.options.append(packet)
 			return packet
 
-	def handle_send_option(self, ts, msg):
-		data = msg.strip()
+	def handle_send_option(self, ts, data):
 		if data.startswith("selectedOption="):
 			sre = SEND_OPTION_RE.match(data)
 			option, suboption, target, position = sre.groups()
@@ -274,16 +271,14 @@ class ChoicesHandler:
 		elif callback == self.parse_method("DebugPrintEntitiesChosen"):
 			return self.handle_entities_chosen(ts, msg)
 
-	def handle_entity_choices_old(self, ts, msg):
-		data = msg.strip()
+	def handle_entity_choices_old(self, ts, data):
 		if data.startswith("id="):
 			sre = CHOICES_CHOICE_OLD_RE.match(data)
 			self.register_choices_old(ts, *sre.groups())
 		else:
 			return self.handle_entity_choices(ts, msg)
 
-	def handle_entity_choices(self, ts, msg):
-		data = msg.strip()
+	def handle_entity_choices(self, ts, data):
 		if data.startswith("id="):
 			sre = CHOICES_CHOICE_RE.match(data)
 			return self.register_choices(ts, *sre.groups())
@@ -322,8 +317,7 @@ class ChoicesHandler:
 		self.current_node.packets.append(self._choice_packet)
 		return self._choice_packet
 
-	def handle_send_choices(self, ts, msg):
-		data = msg.strip()
+	def handle_send_choices(self, ts, data):
 		if data.startswith("id="):
 			sre = SEND_CHOICES_CHOICE_RE.match(data)
 			id, type = sre.groups()
@@ -340,8 +334,7 @@ class ChoicesHandler:
 			return entity
 		raise NotImplementedError("Unhandled send choice: %r" % (data))
 
-	def handle_entities_chosen(self, ts, msg):
-		data = msg.strip()
+	def handle_entities_chosen(self, ts, data):
 		if data.startswith("id="):
 			sre = ENTITIES_CHOSEN_RE.match(data)
 			id, player, count = sre.groups()
@@ -375,6 +368,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler):
 		return self.current_action or self.current_game
 
 	def add_data(self, ts, callback, msg):
+		msg = msg.strip()
 		for handler in PowerHandler, ChoicesHandler, OptionsHandler:
 			ret = handler.add_data(self, ts, callback, msg)
 			if ret:
