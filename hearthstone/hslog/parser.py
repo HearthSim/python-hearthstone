@@ -11,7 +11,8 @@ _E = r"(GameEntity|UNKNOWN HUMAN PLAYER|\[.+\]|\d+|.+)"
 ENTITY_RE = re.compile("\[.*\s*id=(\d+)\s*.*\]")
 
 # Line format
-POWERLOG_LINE_RE = re.compile(r"^D ([\d:.]+) ([^(]+)\(\) - (.+)$")
+TIMESTAMP_RE = re.compile(r"^D ([\d:.]+) (.+)$")
+POWERLOG_LINE_RE = re.compile(r"([^(]+)\(\) - (.+)$")
 OUTPUTLOG_LINE_RE = re.compile(r"\[Power\] ()([^(]+)\(\) - (.+)$")
 
 # Game / Player
@@ -376,11 +377,17 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler):
 
 	def read(self, fp):
 		for line in fp.readlines():
-			sre = self.line_regex.match(line)
-			if not sre:
-				continue
-			ts, method, msg = sre.groups()
-			self.add_data(ts, method, msg)
+			self.read_line(line)
+
+	def read_line(self, line):
+		sre = TIMESTAMP_RE.match(line)
+		if not sre:
+			raise ValueError("Invalid line format: %r" % (line))
+
+		ts, line = sre.groups()
+		sre = self.line_regex.match(line)
+		if sre:
+			self.add_data(ts, *sre.groups())
 
 	def parse_entity_id(self, entity):
 		if entity.isdigit():
