@@ -50,6 +50,14 @@ OPTIONS_OPTION_RE = re.compile(r"option (\d+) type=(\w+) mainEntity=%s?$" % _E)
 OPTIONS_SUBOPTION_RE = re.compile(r"(subOption|target) (\d+) entity=%s?$" % _E)
 SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) selectedTarget=(\d+) selectedPosition=(\d+)")
 
+# Spectator mode
+SPECTATOR_MODE_TOKEN = "=================="
+SPECTATOR_MODE_BEGIN_GAME = "Begin Spectator Game"
+SPECTATOR_MODE_BEGIN_FIRST = "Begin Spectating 1st player"
+SPECTATOR_MODE_BEGIN_SECOND = "Begin Spectating 2nd player"
+SPECTATOR_MODE_END_MODE = "End Spectator Mode"
+SPECTATOR_MODE_END_GAME = "End Spectator Game"
+
 
 MESSAGE_OPCODES = (
 	"CREATE_GAME",
@@ -65,6 +73,7 @@ MESSAGE_OPCODES = (
 
 class PowerHandler:
 	def __init__(self):
+		super().__init__()
 		self.current_action = None
 		self._entity_node = None
 		self._metadata_node = None
@@ -144,6 +153,7 @@ class PowerHandler:
 		self._entity_packet = packets.CreateGame(ts, self.current_game)
 		self.current_node.packets.append(self._entity_packet)
 		self._game_packet = self._entity_packet
+		self.current_game.spectator_mode = self.spectator_mode
 
 	def action_start(self, ts, entity, type, index, target):
 		entity = self.parse_entity(entity)
@@ -355,7 +365,37 @@ class ChoicesHandler:
 		raise NotImplementedError("Unhandled entities chosen: %r" % (data))
 
 
-class LogParser(PowerHandler, ChoicesHandler, OptionsHandler):
+class SpectatorModeHandler:
+	def __init__(self):
+		super().__init__()
+		self.spectating_first_player = False
+		self.spectating_second_player = False
+
+	@property
+	def spectator_mode(self):
+		return self.spectating_first_player or self.spectating_second_player
+
+	def set_spectating(self, first, second=None):
+		self.spectating_first_player = first
+		if second is not None:
+			self.spectating_second_player = second
+
+	def process_spectator_mode(self, line):
+		if line == SPECTATOR_MODE_BEGIN_GAME:
+			self.set_spectating(True)
+		elif line == SPECTATOR_MODE_BEGIN_FIRST:
+			self.set_spectating(True, False)
+		elif line == SPECTATOR_MODE_BEGIN_SECOND:
+			self.set_spectating(True, True)
+		elif line == SPECTATOR_MODE_END_MODE:
+			self.set_spectating(False, False)
+		elif line == SPECTATOR_MODE_END_GAME:
+			self.set_spectating(False, False)
+		else:
+			raise NotImplementedError("Unhandled spectator mode: %r" % (line))
+
+
+class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandler):
 	def __init__(self):
 		super().__init__()
 		self.games = []
@@ -385,6 +425,10 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler):
 			raise ValueError("Invalid line format: %r" % (line))
 
 		ts, line = sre.groups()
+		if line.startswith(SPECTATOR_MODE_TOKEN):
+			line = line.replace(SPECTATOR_MODE_TOKEN, "").strip()
+			return self.process_spectator_mode(line)
+
 		sre = self.line_regex.match(line)
 		if sre:
 			self.add_data(ts, *sre.groups())
