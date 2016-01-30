@@ -62,29 +62,6 @@ MESSAGE_OPCODES = (
 )
 
 
-class LogBroadcastMixin:
-	def on_entity_update(self, entity):
-		pass
-
-	def on_action(self, action):
-		pass
-
-	def on_metadata(self, metadata):
-		pass
-
-	def on_tag_change(self, entity, tag, value):
-		pass
-
-	def on_zone_change(self, entity, before, after):
-		pass
-
-	def on_game_ready(self, game, *players):
-		pass
-
-	def add_data(self, ts, callback, msg):
-		pass
-
-
 class PowerHandler:
 	def __init__(self):
 		self.current_action = None
@@ -94,8 +71,7 @@ class PowerHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintPower"):
 			self.handle_data(ts, msg)
-		else:
-			super().add_data(ts, callback, msg)
+			return True
 
 	def handle_data(self, ts, msg):
 		data = msg.strip()
@@ -129,11 +105,9 @@ class PowerHandler:
 		if self._entity_node:
 			for k, v in self._entity_packet.tags:
 				self._entity_node.tags[k] = v
-			self.on_entity_update(self._entity_node)
 			self._entity_node = None
 
 		if self._metadata_node:
-			self.on_metadata(self._metadata_node)
 			self._metadata_node = None
 
 	def handle_action(self, ts, opcode, data):
@@ -185,7 +159,7 @@ class PowerHandler:
 		self.current_action.end()
 		action = self.current_action
 		self.current_action = self.current_action.parent
-		self.on_action(action)
+		return action
 
 	def full_entity(self, ts, id, cardid):
 		id = int(id)
@@ -194,12 +168,6 @@ class PowerHandler:
 		self._entity_node = entity
 		self._entity_packet = packets.FullEntity(ts, entity, cardid)
 		self.current_node.packets.append(self._entity_packet)
-
-		# The first packet in a game is always FULL_ENTITY so
-		# broadcast game_ready if we haven't yet for this game
-		if not self.current_game._broadcasted:
-			self.current_game._broadcasted = True
-			self.on_game_ready(self.current_game, *self.current_game.players)
 
 	def show_entity(self, ts, entity, cardid):
 		entity = self.parse_entity(entity)
@@ -232,12 +200,6 @@ class PowerHandler:
 			self.register_player_name(self.current_game, e, value)
 			entity = self.parse_entity(e)
 
-		if entity is not None:
-			# Not broadcasting here when None simplifies our life
-			self.on_tag_change(entity, tag, value)
-			if tag == enums.GameTag.ZONE:
-				self.on_zone_change(entity, entity.zone, value)
-
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_node.packets.append(packet)
 
@@ -248,16 +210,15 @@ class PowerHandler:
 				self.buffer_packet_entity_update(packet, e)
 		else:
 			entity.tag_change(tag, value)
+		return entity
 
 
 class OptionsHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("SendOption"):
-			self.handle_send_option(ts, msg)
+			return self.handle_send_option(ts, msg)
 		elif callback == self.parse_method("DebugPrintOptions"):
-			self.handle_options(ts, msg)
-		else:
-			super().add_data(ts, callback, msg)
+			return self.handle_options(ts, msg)
 
 	def handle_options(self, ts, msg):
 		data = msg.strip()
@@ -276,6 +237,7 @@ class OptionsHandler:
 			self._option_packet = packets.Option(ts, entity, id, type, "option")
 			self._options_packet.options.append(self._option_packet)
 			self._suboption_packet = None
+			return self._option_packet
 		elif data.startswith(("subOption ", "target ")):
 			sre = OPTIONS_SUBOPTION_RE.match(data)
 			type, id, entity = sre.groups()
@@ -288,6 +250,7 @@ class OptionsHandler:
 			elif type == "target":
 				node = self._suboption_packet or self._option_packet
 			node.options.append(packet)
+			return packet
 
 	def handle_send_option(self, ts, msg):
 		data = msg.strip()
@@ -296,22 +259,20 @@ class OptionsHandler:
 			option, suboption, target, position = sre.groups()
 			packet = packets.SendOption(ts, int(option), int(suboption), int(target), int(position))
 			self.current_node.packets.append(packet)
-		else:
-			raise NotImplementedError("Unhandled send option: %r" % (data))
+			return packet
+		raise NotImplementedError("Unhandled send option: %r" % (data))
 
 
 class ChoicesHandler:
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintEntityChoices"):
-			self.handle_entity_choices(ts, msg)
+			return self.handle_entity_choices(ts, msg)
 		elif callback == self.parse_method("DebugPrintChoices"):
-			self.handle_entity_choices_old(ts, msg)
+			return self.handle_entity_choices_old(ts, msg)
 		elif callback == self.parse_method("SendChoices"):
-			self.handle_send_choices(ts, msg)
+			return self.handle_send_choices(ts, msg)
 		elif callback == self.parse_method("DebugPrintEntitiesChosen"):
-			self.handle_entities_chosen(ts, msg)
-		else:
-			super().add_data(ts, callback, msg)
+			return self.handle_entities_chosen(ts, msg)
 
 	def handle_entity_choices_old(self, ts, msg):
 		data = msg.strip()
@@ -325,19 +286,20 @@ class ChoicesHandler:
 		data = msg.strip()
 		if data.startswith("id="):
 			sre = CHOICES_CHOICE_RE.match(data)
-			self.register_choices(ts, *sre.groups())
+			return self.register_choices(ts, *sre.groups())
 		elif data.startswith("Source="):
 			sre = CHOICES_SOURCE_RE.match(data)
 			entity, = sre.groups()
 			entity = self.parse_entity(entity)
 			self._choice_packet.source = entity
+			return entity
 		elif data.startswith("Entities["):
 			sre = CHOICES_ENTITIES_RE.match(data)
 			idx, entity = sre.groups()
 			entity = self.parse_entity(entity)
 			self._choice_packet.choices.append(entity)
-		else:
-			raise NotImplementedError("Unhandled entity choice: %r" % (data))
+			return entity
+		raise NotImplementedError("Unhandled entity choice: %r" % (data))
 
 	def register_choices_old(self, ts, id, playerid, type, min, max):
 		id = int(id)
@@ -348,6 +310,7 @@ class ChoicesHandler:
 		player = self.current_game.get_player(playerid)
 		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
 		self.current_node.packets.append(self._choice_packet)
+		return self._choice_packet
 
 	def register_choices(self, ts, id, player, tasklist, type, min, max):
 		id = int(id)
@@ -357,6 +320,7 @@ class ChoicesHandler:
 		min, max = int(min), int(max)
 		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
 		self.current_node.packets.append(self._choice_packet)
+		return self._choice_packet
 
 	def handle_send_choices(self, ts, msg):
 		data = msg.strip()
@@ -367,13 +331,14 @@ class ChoicesHandler:
 			type = parse_enum(enums.ChoiceType, type)
 			self._send_choice_packet = packets.SendChoices(ts, id, type)
 			self.current_node.packets.append(self._send_choice_packet)
+			return self._send_choice_packet
 		elif data.startswith("m_chosenEntities"):
 			sre = SEND_CHOICES_ENTITIES_RE.match(data)
 			idx, entity = sre.groups()
 			entity = self.parse_entity(entity)
 			self._send_choice_packet.choices.append(entity)
-		else:
-			raise NotImplementedError("Unhandled send choice: %r" % (data))
+			return entity
+		raise NotImplementedError("Unhandled send choice: %r" % (data))
 
 	def handle_entities_chosen(self, ts, msg):
 		data = msg.strip()
@@ -385,15 +350,18 @@ class ChoicesHandler:
 			self._chosen_packet_count = int(count)
 			self._chosen_packet = packets.ChosenEntities(ts, player, id)
 			self.current_node.packets.append(self._chosen_packet)
+			return self._chosen_packet
 		elif data.startswith("Entities["):
 			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
 			idx, entity = sre.groups()
 			entity = self.parse_entity(entity)
 			self._chosen_packet.choices.append(entity)
 			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
+			return entity
+		raise NotImplementedError("Unhandled entities chosen: %r" % (data))
 
 
-class LogWatcher(PowerHandler, ChoicesHandler, OptionsHandler, LogBroadcastMixin):
+class LogParser(PowerHandler, ChoicesHandler, OptionsHandler):
 	def __init__(self):
 		super().__init__()
 		self.games = []
@@ -407,7 +375,10 @@ class LogWatcher(PowerHandler, ChoicesHandler, OptionsHandler, LogBroadcastMixin
 		return self.current_action or self.current_game
 
 	def add_data(self, ts, callback, msg):
-		super().add_data(ts, callback, msg)
+		for handler in PowerHandler, ChoicesHandler, OptionsHandler:
+			ret = handler.add_data(self, ts, callback, msg)
+			if ret:
+				break
 
 	def read(self, fp):
 		for line in fp.readlines():
