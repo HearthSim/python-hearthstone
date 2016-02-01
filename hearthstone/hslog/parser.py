@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from hearthstone import enums
 from ..enums import GameTag
 from . import packets
@@ -11,6 +12,7 @@ _E = r"(GameEntity|UNKNOWN HUMAN PLAYER|\[.+\]|\d+|.+)"
 ENTITY_RE = re.compile("\[.*\s*id=(\d+)\s*.*\]")
 
 # Line format
+TIMESTAMP_POWERLOG_FORMAT = r"%H:%M:%S.%f"
 TIMESTAMP_RE = re.compile(r"^D ([\d:.]+) (.+)$")
 POWERLOG_LINE_RE = re.compile(r"([^(]+)\(\) - (.+)$")
 OUTPUTLOG_LINE_RE = re.compile(r"\[Power\] ()([^(]+)\(\) - (.+)$")
@@ -400,6 +402,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		super().__init__()
 		self.games = []
 		self.line_regex = POWERLOG_LINE_RE
+		self.timestamp_format = TIMESTAMP_POWERLOG_FORMAT
 		self._game_state_processor = "GameState"
 		self.current_game = None
 		self._player_buffer = {}
@@ -415,6 +418,14 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			if ret:
 				break
 
+	def parse_timestamp(self, ts):
+		# Unity logs have one character precision too much...
+		ret = datetime.strptime(ts[:-1], self.timestamp_format)
+		if ret.year == 1900:
+			# Logs without date :(
+			return ret.time()
+		return ret
+
 	def read(self, fp):
 		for line in fp.readlines():
 			self.read_line(line)
@@ -425,6 +436,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			raise ValueError("Invalid line format: %r" % (line))
 
 		ts, line = sre.groups()
+		ts = self.parse_timestamp(ts)
 		if line.startswith(SPECTATOR_MODE_TOKEN):
 			line = line.replace(SPECTATOR_MODE_TOKEN, "").strip()
 			return self.process_spectator_mode(line)
