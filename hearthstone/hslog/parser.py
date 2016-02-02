@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime
 from hearthstone import enums
@@ -5,6 +6,20 @@ from ..enums import GameTag
 from . import packets
 from .utils import parse_enum, parse_tag
 from .entities import Game, Player, Card
+
+
+# Timestamp parsing
+try:
+	import dateutil.parser
+	_default_date = datetime(1900, 1, 1)
+	parse_timestamp = lambda ts: dateutil.parser.parse(ts, default=_default_date)
+except ImportError:
+	logging.warning(
+		"python-dateutil is not installed. Timestamp parsing may not work properly."
+	)
+	def parse_timestamp(ts):
+		# Unity logs have one character precision too much...
+		return datetime.strptime(ts[:-1], self.timestamp_format)
 
 
 # Entity format
@@ -419,8 +434,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 				break
 
 	def parse_timestamp(self, ts):
-		# Unity logs have one character precision too much...
-		ret = datetime.strptime(ts[:-1], self.timestamp_format)
+		ret = parse_timestamp(ts)
 		if ret.year == 1900:
 			# Logs without date :(
 			return ret.time()
