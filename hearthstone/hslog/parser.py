@@ -230,7 +230,7 @@ class PowerHandler:
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_node.packets.append(packet)
 
-		if not entity:
+		if not entity or isinstance(entity, str):
 			if tag == enums.GameTag.ENTITY_ID:
 				self.register_player_name(self.current_game, e, value)
 			else:
@@ -474,7 +474,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 	def parse_entity(self, entity):
 		id = self.parse_entity_id(entity)
 		if not id:
-			return self.current_game.find_player(entity)
+			return self.current_game.find_player(entity) or entity
 		return self.current_game.entities[id]
 
 	def buffer_packet_entity_update(self, packet, name):
