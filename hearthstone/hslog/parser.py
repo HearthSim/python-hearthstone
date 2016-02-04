@@ -304,7 +304,7 @@ class ChoicesHandler:
 			sre = CHOICES_CHOICE_OLD_RE.match(data)
 			self.register_choices_old(ts, *sre.groups())
 		else:
-			return self.handle_entity_choices(ts, msg)
+			return self.handle_entity_choices(ts, data)
 
 	def handle_entity_choices(self, ts, data):
 		if data.startswith("id="):
