@@ -19,7 +19,7 @@ except ImportError:
 	)
 	def parse_timestamp(ts):
 		# Unity logs have one character precision too much...
-		return datetime.strptime(ts[:-1], self.timestamp_format)
+		return datetime.strptime(ts[:-1], TIMESTAMP_POWERLOG_FORMAT)
 
 
 # Entity format
@@ -417,7 +417,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		super().__init__()
 		self.games = []
 		self.line_regex = POWERLOG_LINE_RE
-		self.timestamp_format = TIMESTAMP_POWERLOG_FORMAT
 		self._game_state_processor = "GameState"
 		self.current_game = None
 		self._player_buffer = {}
