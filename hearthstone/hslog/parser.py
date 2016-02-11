@@ -146,7 +146,10 @@ class PowerHandler:
 		elif opcode == "ACTION_END":
 			regex, callback = ACTION_END_RE, self.action_end
 		elif opcode == "FULL_ENTITY":
-			regex, callback = FULL_ENTITY_CREATE_RE, self.full_entity
+			if data.startswith("FULL_ENTITY - Updating"):
+				regex, callback = FULL_ENTITY_UPDATE_RE, self.full_entity_update
+			else:
+				regex, callback = FULL_ENTITY_CREATE_RE, self.full_entity
 		elif opcode == "SHOW_ENTITY":
 			regex, callback = SHOW_ENTITY_RE, self.show_entity
 		elif opcode == "HIDE_ENTITY":
@@ -195,6 +198,10 @@ class PowerHandler:
 		self._entity_node = entity
 		self._entity_packet = packets.FullEntity(ts, entity, cardid)
 		self.current_node.packets.append(self._entity_packet)
+
+	def full_entity_update(self, ts, entity, cardid):
+		id = self.parse_entity_id(entity)
+		return self.full_entity(ts, id, cardid)
 
 	def show_entity(self, ts, entity, cardid):
 		entity = self.parse_entity(entity)
