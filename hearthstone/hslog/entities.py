@@ -40,6 +40,7 @@ class Game(Entity):
 		self.entities = {}
 		self.packets = []
 		self.ts = ts
+		self.mulligan = {}
 
 	def __iter__(self):
 		for packet in self.packets:

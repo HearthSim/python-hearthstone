@@ -337,6 +337,9 @@ class ChoicesHandler:
 		min, max = int(min), int(max)
 		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
 		self.current_node.packets.append(self._choice_packet)
+		if type == enums.ChoiceType.MULLIGAN:
+			# Make mulligan packets available in Game.mulligan
+			self.current_game.mulligan[player] = self._choice_packet
 		return self._choice_packet
 
 	def register_choices_old(self, ts, id, playerid, type, min, max):
