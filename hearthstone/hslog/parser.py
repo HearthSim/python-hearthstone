@@ -331,26 +331,24 @@ class ChoicesHandler:
 			return entity
 		raise NotImplementedError("Unhandled entity choice: %r" % (data))
 
-	def register_choices_old(self, ts, id, playerid, type, min, max):
+	def _register_choices(self, ts, id, player, tasklist, type, min, max):
 		id = int(id)
-		playerid = int(playerid)
 		type = parse_enum(enums.ChoiceType, type)
 		min, max = int(min), int(max)
-		tasklist = None
-		player = self.current_game.get_player(playerid)
 		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
 		self.current_node.packets.append(self._choice_packet)
 		return self._choice_packet
 
+	def register_choices_old(self, ts, id, playerid, type, min, max):
+		playerid = int(playerid)
+		player = self.current_game.get_player(playerid)
+		tasklist = None
+		return self._register_choices(ts, id, player, tasklist, type, min, max)
+
 	def register_choices(self, ts, id, player, tasklist, type, min, max):
-		id = int(id)
 		player = self.parse_entity(player)
 		tasklist = int(tasklist)
-		type = parse_enum(enums.ChoiceType, type)
-		min, max = int(min), int(max)
-		self._choice_packet = packets.Choices(ts, player, id, tasklist, type, min, max)
-		self.current_node.packets.append(self._choice_packet)
-		return self._choice_packet
+		return self._register_choices(ts, id, player, tasklist, type, min, max)
 
 	def handle_send_choices(self, ts, data):
 		if data.startswith("id="):
