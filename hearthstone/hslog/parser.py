@@ -95,6 +95,15 @@ class PowerHandler:
 		self._entity_node = None
 		self._metadata_node = None
 
+	def _check_for_mulligan_hack(self, ts, entity, tag, value):
+		# Old game logs didn't handle asynchronous mulligans properly.
+		# If we're missing an ACTION_END packet after the mulligan SendChoices,
+		# we just close it out manually.
+		if tag == enums.GameTag.MULLIGAN_STATE and value == enums.Mulligan.DEALING:
+			if self.current_action:
+				logging.warning("WARNING: Broken mulligan nesting. Working around...")
+				self.action_end(ts)
+
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintPower"):
 			self.handle_data(ts, msg)
@@ -228,6 +237,7 @@ class PowerHandler:
 	def tag_change(self, ts, e, tag, value):
 		entity = self.parse_entity(e)
 		tag, value = parse_tag(tag, value)
+		self._check_for_mulligan_hack(ts, entity, tag, value)
 
 		# Hack to register player names...
 		if entity is None and tag == enums.GameTag.ENTITY_ID:
