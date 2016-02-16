@@ -261,6 +261,10 @@ class GameTag(IntEnum):
 	# Missing, only present in logs
 	WEAPON = 334
 
+	@property
+	def string_type(self):
+		return TAG_TYPES.get(self) == Type.LOCSTRING
+
 
 TAG_NAMES = {
 	GameTag.TRIGGER_VISUAL: "TriggerVisual",
