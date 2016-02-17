@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from hearthstone import enums
 from ..enums import GameTag
 from . import packets
@@ -438,6 +438,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		self._game_state_processor = "GameState"
 		self.current_game = None
 		self._player_buffer = {}
+		self._current_date = None
 
 	@property
 	def current_node(self):
@@ -454,7 +455,19 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		ret = parse_timestamp(ts)
 		if ret.year == 1900:
 			# Logs without date :(
-			return ret.time()
+			if self._current_date is None:
+				return ret.time()
+			else:
+				ret = ret.replace(
+					year=self._current_date.year,
+					month=self._current_date.month,
+					day=self._current_date.day
+				)
+				if ret < self._current_date:
+					# If the new date falls before the last saved date, that
+					# means we rolled over and need to increment the day by 1.
+					ret += timedelta(days=1)
+				self._current_date = ret
 		return ret
 
 	def read(self, fp):
