@@ -21,7 +21,6 @@ class CardXML(object):
 			PlayReq(int(t.attrib["reqID"])): int(t.attrib["param"] or 0) for t in e
 		}
 
-		self.choose_cards = [t.attrib["cardID"] for t in xml.findall("ChooseCard")]
 		self.entourage = [t.attrib["cardID"] for t in xml.findall("EntourageCard")]
 
 	def __str__(self):
