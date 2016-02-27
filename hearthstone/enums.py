@@ -715,6 +715,14 @@ class Booster(IntEnum):
 	THE_GRAND_TOURNAMENT = 10
 
 
+class DeckType(IntEnum):
+	NORMAL_DECK = 1
+	AI_DECK = 2
+	DRAFT_DECK = 4
+	PRECON_DECK = 5
+	TAVERN_BRAWL_DECK = 6
+
+
 class Type(IntEnum):
 	UNKNOWN = 0
 	BOOL = 1
