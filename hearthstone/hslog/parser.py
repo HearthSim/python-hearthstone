@@ -240,7 +240,7 @@ class PowerHandler:
 		self._check_for_mulligan_hack(ts, entity, tag, value)
 
 		# Hack to register player names...
-		if entity is None and tag == enums.GameTag.ENTITY_ID:
+		if isinstance(entity, str) and tag == enums.GameTag.ENTITY_ID:
 			self.register_player_name(self.current_game, e, value)
 			entity = self.parse_entity(e)
 
