@@ -239,10 +239,16 @@ class PowerHandler:
 		tag, value = parse_tag(tag, value)
 		self._check_for_mulligan_hack(ts, entity, tag, value)
 
-		# Hack to register player names...
-		if isinstance(entity, str) and tag == enums.GameTag.ENTITY_ID:
-			self.register_player_name(self.current_game, e, value)
-			entity = self.parse_entity(e)
+		if isinstance(entity, str):
+			# Hack to register player names...
+			if tag == enums.GameTag.ENTITY_ID:
+				self.register_player_name(self.current_game, e, value)
+				entity = self.parse_entity(e)
+
+			# Fallback hack (eg. in case of reconnected games)
+			if tag == enums.GameTag.CURRENT_PLAYER and self.current_game.setup_done:
+				self.register_current_player_name(self.current_game, e, value)
+				entity = self.parse_entity(e)
 
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_node.packets.append(packet)
@@ -516,6 +522,32 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		if name not in self._player_buffer:
 			self._player_buffer[name] = []
 		self._player_buffer[name].append(packet)
+
+	def register_current_player_name(self, game, e, value):
+		"""
+		If we reconnect to a game, we watch for the CURRENT_PLAYER tag changes.
+		When the current player changes, CURRENT_PLAYER is first *unset* on the
+		current player and *then* set on the next player.
+		"""
+		current_player = game.current_player
+		if not value:
+			# First, this. We register the name to the current player.
+			assert current_player
+			self.register_player_name(game, e, current_player.id)
+		else:
+			# And now, this. The name is registered to the non-current player
+			# (meaning the one left without a name)
+			assert not current_player
+			for player in game.players:
+				if not player.name:
+					self.register_player_name(game, e, player.id)
+					break
+			else:
+				# There is one remaining case: When the name "changes". This can
+				# only happen if the name was unknown during setup.
+				for player in game.players:
+					if player.name == "UNKNOWN HUMAN PLAYER":
+						self.register_player_name(game, e, player.id)
 
 	def register_player_name(self, game, name, id):
 		"""
