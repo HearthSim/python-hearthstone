@@ -46,6 +46,12 @@ class Game(Entity):
 		for packet in self.packets:
 			yield packet
 
+	@property
+	def current_player(self):
+		for player in self.players:
+			if player.tags.get(GameTag.CURRENT_PLAYER):
+				return player
+
 	def get_player(self, id):
 		for player in self.players:
 			if player.player_id == id:
