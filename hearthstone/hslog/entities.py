@@ -52,9 +52,9 @@ class Game(Entity):
 			if player.tags.get(GameTag.CURRENT_PLAYER):
 				return player
 
-	def get_player(self, id):
+	def get_player(self, value):
 		for player in self.players:
-			if player.player_id == id:
+			if value in (player.player_id, player.name):
 				return player
 
 	def in_zone(self, zone):
@@ -67,11 +67,6 @@ class Game(Entity):
 		self.entities[entity.id] = entity
 		if isinstance(entity, Player):
 			self.players.append(entity)
-
-	def find_player(self, name):
-		for player in self.players:
-			if name == player.name:
-				return player
 
 
 class Player(Entity):

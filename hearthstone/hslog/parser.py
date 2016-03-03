@@ -504,7 +504,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 	def parse_entity(self, entity):
 		id = self.parse_entity_id(entity)
 		if not id:
-			return self.current_game.find_player(entity) or entity
+			return self.current_game.get_player(entity) or entity
 		return self.current_game.entities[id]
 
 	def buffer_packet_entity_update(self, packet, name):
