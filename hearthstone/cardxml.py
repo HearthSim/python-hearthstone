@@ -13,6 +13,9 @@ class CardXML(object):
 		self.tags = self._build_tag_dict("./Tag")
 		self.referenced_tags = self._build_tag_dict("./ReferencedTag")
 
+		e = self.xml.findall("MasterPower")
+		self.master_power = e and e[0].text or None
+
 		e = self.xml.findall("HeroPower")
 		self.hero_power = e and e[0].attrib["cardID"] or None
 
