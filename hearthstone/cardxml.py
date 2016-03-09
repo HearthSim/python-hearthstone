@@ -16,6 +16,9 @@ class CardXML(object):
 		e = self.xml.findall("HeroPower")
 		self.hero_power = e and e[0].attrib["cardID"] or None
 
+		e = self.xml.findall("Texture")
+		self.texture = e and e[0].text or ""
+
 		e = self.xml.findall("Power[PlayRequirement]/PlayRequirement")
 		self.requirements = {
 			PlayReq(int(t.attrib["reqID"])): int(t.attrib["param"] or 0) for t in e
