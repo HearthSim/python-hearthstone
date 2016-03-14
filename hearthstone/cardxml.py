@@ -5,10 +5,22 @@ from .enums import (
 
 
 class CardXML(object):
-	def __init__(self, xml, locale="enUS"):
-		self.xml = xml
+	def __init__(self, locale="enUS"):
 		self.locale = locale
 		self._localized_tags = {}
+
+		self.tags = {}
+		self.referenced_tags = {}
+		self.master_power = None
+		self.hero_power = None
+		self.texture = ""
+		self.requirements = {}
+		self.entourage = {}
+
+	def load_xml(self, xml):
+		self.xml = xml
+
+		self.id = self.xml.attrib["CardID"]
 
 		self.tags = self._build_tag_dict("./Tag")
 		self.referenced_tags = self._build_tag_dict("./ReferencedTag")
@@ -70,10 +82,6 @@ class CardXML(object):
 			return bool(value)
 
 		return value
-
-	@property
-	def id(self):
-		return self.xml.attrib["CardID"]
 
 	@property
 	def craftable(self):
@@ -229,6 +237,7 @@ def load(path, locale="enUS"):
 	with open(path, "r", encoding="utf8") as f:
 		xml = ElementTree.parse(f)
 		for carddata in xml.findall("Entity"):
-			card = CardXML(carddata, locale)
+			card = CardXML(locale)
+			card.load_xml(carddata)
 			db[card.id] = card
 	return db, xml
