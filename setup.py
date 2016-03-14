@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 README = open(os.path.join(os.path.dirname(__file__), "README.md")).read()
 
 CLASSIFIERS = [
-	"Development Status :: 4 - Beta",
+	"Development Status :: 5 - Production/Stable",
 	"Intended Audience :: Developers",
 	"License :: OSI Approved :: MIT License",
 	"Programming Language :: Python",
