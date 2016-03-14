@@ -16,6 +16,8 @@ and Hearthstone enums.
 ### License
 
 This project is licensed under the MIT license.
+The CardDefs.xml file distributed on PyPI contains Hearthstone data that is
+copyright © Blizzard Entertainment.
 
 ### Community
 
