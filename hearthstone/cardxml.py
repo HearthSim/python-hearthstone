@@ -232,7 +232,11 @@ class CardXML(object):
 		return self.tags.get(GameTag.HEALTH, 0)
 
 
-def load(path, locale="enUS"):
+def load(path=None, locale="enUS"):
+	if path is None:
+		from pkg_resources import resource_filename
+		path = resource_filename("hearthstone", "CardDefs.xml")
+
 	db = {}
 	with open(path, "r", encoding="utf8") as f:
 		xml = ElementTree.parse(f)
