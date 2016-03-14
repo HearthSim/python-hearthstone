@@ -10,8 +10,8 @@ and Hearthstone enums.
 
 ### Installation
 
-* To install from source: `./setup.py install`
-* To install from pip: `pip install -e git+https://github.com/HearthSim/python-hearthstone.git#egg=hearthstone_dev`
+* To install from source: `./bootstrap && ./setup.py install`
+* To install from pip: `pip install hearthstone`
 
 ### License
 
