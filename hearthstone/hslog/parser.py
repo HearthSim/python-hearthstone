@@ -171,6 +171,9 @@ class PowerHandler:
 			raise NotImplementedError(data)
 
 		sre = regex.match(data)
+		if not sre:
+			logging.warning("Could not correctly parse %r", data)
+			return
 		callback(ts, *sre.groups())
 
 	# Messages
