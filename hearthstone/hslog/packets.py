@@ -3,11 +3,13 @@ class Packet:
 
 
 class Action(Packet):
-	def __init__(self, ts, entity, type, index, target):
+	def __init__(self, ts, entity, type, index, effectid, effectindex, target):
 		self.ts = ts
 		self.entity = entity
 		self.type = type
 		self.index = index
+		self.effectid = effectid
+		self.effectindex = effectindex
 		self.target = target
 		self.ended = False
 		self.packets = []

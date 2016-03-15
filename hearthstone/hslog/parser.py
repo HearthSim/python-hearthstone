@@ -38,7 +38,8 @@ PLAYER_ENTITY_RE = re.compile(r"Player EntityID=(\d+) PlayerID=(\d+) GameAccount
 
 # Messages
 CREATE_GAME_RE = re.compile(r"^CREATE_GAME$")
-ACTION_START_RE = re.compile(r"ACTION_START Entity=%s (?:SubType|BlockType)=(\w+) Index=(-1|\d+) Target=%s$" % (_E, _E))
+ACTION_START_OLD_RE = re.compile(r"ACTION_START Entity=%s (?:SubType|BlockType)=(\w+) Index=(-1|\d+) Target=%s$" % (_E, _E))
+ACTION_START_RE = re.compile(r"ACTION_START (?:SubType|BlockType)=(\w+) Entity=%s EffectCardId=(.*) EffectIndex=(-1|\d+) Target=%s$" % (_E, _E))  # Changed in 12051
 ACTION_END_RE = re.compile(r"^ACTION_END$")
 FULL_ENTITY_CREATE_RE = re.compile(r"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+)?$")
 FULL_ENTITY_UPDATE_RE = re.compile(r"FULL_ENTITY - Updating %s CardID=(\w+)?$" % _E)
@@ -151,7 +152,16 @@ class PowerHandler:
 		if opcode == "CREATE_GAME":
 			regex, callback = CREATE_GAME_RE, self.create_game
 		elif opcode == "ACTION_START":
-			regex, callback = ACTION_START_RE, self.action_start
+			sre = ACTION_START_RE.match(data)
+			if sre is None:
+				sre = ACTION_START_OLD_RE.match(data)
+				entity, type, index, target = sre.groups()
+				effectid, effectindex = None, None
+			else:
+				type, entity, effectid, effectindex, target = sre.groups()
+				index = None
+			self.action_start(ts, entity, type, index, effectid, effectindex, target)
+			return
 		elif opcode == "ACTION_END":
 			regex, callback = ACTION_END_RE, self.action_end
 		elif opcode == "FULL_ENTITY":
@@ -187,12 +197,13 @@ class PowerHandler:
 		self._game_packet = self._entity_packet
 		self.current_game.spectator_mode = self.spectator_mode
 
-	def action_start(self, ts, entity, type, index, target):
+	def action_start(self, ts, entity, type, index, effectid, effectindex, target):
 		entity = self.parse_entity(entity)
 		type = parse_enum(enums.PowSubType, type)
-		index = int(index)
+		if index is not None:
+			index = int(index)
 		target = self.parse_entity(target)
-		action = packets.Action(ts, entity, type, index, target)
+		action = packets.Action(ts, entity, type, index, effectid, effectindex, target)
 		action.parent = self.current_action
 		self.current_node.packets.append(action)
 		self.current_action = action
