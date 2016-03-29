@@ -823,7 +823,7 @@ class Locale(IntEnum):
 
 	@property
 	def unused(self):
-		return self in (self.UNKNOWN, self.enGB, self.ptPT)
+		return self.name in ("UNKNOWN", "enGB", "ptPT")
 
 
 if __name__ == "__main__":
