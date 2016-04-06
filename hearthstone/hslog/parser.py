@@ -53,7 +53,8 @@ TAG_VALUE_RE = re.compile(r"tag=(\w+) value=(\w+)")
 METADATA_INFO_RE = re.compile(r"Info\[(\d+)\] = %s" % _E)
 
 # Choices
-CHOICES_CHOICE_OLD_RE = re.compile(r"id=(\d+) PlayerId=(\d+) ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$")
+CHOICES_CHOICE_OLD_1_RE = re.compile(r"id=(\d+) ChoiceType=(\w+)$")
+CHOICES_CHOICE_OLD_2_RE = re.compile(r"id=(\d+) PlayerId=(\d+) ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$")
 CHOICES_CHOICE_RE = re.compile(r"id=(\d+) Player=%s TaskList=(\d+)? ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$" % _E)
 CHOICES_SOURCE_RE = re.compile(r"Source=%s$" % _E)
 CHOICES_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=(\[.+\])$")
@@ -338,8 +339,12 @@ class ChoicesHandler:
 
 	def handle_entity_choices_old(self, ts, data):
 		if data.startswith("id="):
-			sre = CHOICES_CHOICE_OLD_RE.match(data)
-			self.register_choices_old(ts, *sre.groups())
+			sre = CHOICES_CHOICE_OLD_1_RE.match(data)
+			if sre:
+				self.register_choices_old_1(ts, *sre.groups())
+			else:
+				sre = CHOICES_CHOICE_OLD_2_RE.match(data)
+				self.register_choices_old_2(ts, *sre.groups())
 		else:
 			return self.handle_entity_choices(ts, data)
 
@@ -372,7 +377,15 @@ class ChoicesHandler:
 			self.current_game.mulligan[player] = self._choice_packet
 		return self._choice_packet
 
-	def register_choices_old(self, ts, id, playerid, type, min, max):
+	def register_choices_old_1(self, ts, id, type):
+		player = None
+		# XXX: We don't have a player here for old games.
+		# Is it safe to assume CURRENT_PLAYER?
+		tasklist = None
+		min, max = 0, 0
+		return self._register_choices(ts, id, player, tasklist, type, min, max)
+
+	def register_choices_old_2(self, ts, id, playerid, type, min, max):
 		playerid = int(playerid)
 		player = self.current_game.get_player(playerid)
 		tasklist = None
