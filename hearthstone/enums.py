@@ -377,7 +377,7 @@ class CardSet(IntEnum):
 
 	# Renamed
 	FP2 = BRM
-	PE2 = TGT
+	PE2 = TEMP1 = TGT
 
 	@property
 	def craftable(self):
