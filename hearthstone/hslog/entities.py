@@ -83,9 +83,15 @@ class Player(Entity):
 		self.account_lo = lo
 		self.name = None
 
-	def in_zone(self, zone):
+	@property
+	def entities(self):
 		for entity in self.game.entities:
-			if entity.zone == zone and entity.controller == self:
+			if entity.controller == self:
+				yield entity
+
+	def in_zone(self, zone):
+		for entity in self.entities:
+			if entity.zone == zone:
 				yield entity
 
 
