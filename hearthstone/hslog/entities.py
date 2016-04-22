@@ -84,6 +84,15 @@ class Player(Entity):
 		self.name = None
 
 	@property
+	def initial_deck(self):
+		for entity in self.entities:
+			if 3 < entity.id < 68:
+				if entity.tags.get(GameTag.CARDTYPE) not in (
+					CardType.HERO, CardType.HERO_POWER
+				):
+					yield entity
+
+	@property
 	def entities(self):
 		for entity in self.game.entities:
 			if entity.controller == self:
