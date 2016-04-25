@@ -39,8 +39,8 @@ PLAYER_ENTITY_RE = re.compile(r"Player EntityID=(\d+) PlayerID=(\d+) GameAccount
 # Messages
 CREATE_GAME_RE = re.compile(r"^CREATE_GAME$")
 ACTION_START_OLD_RE = re.compile(r"ACTION_START Entity=%s (?:SubType|BlockType)=(\w+) Index=(-1|\d+) Target=%s$" % (_E, _E))
-ACTION_START_RE = re.compile(r"ACTION_START (?:SubType|BlockType)=(\w+) Entity=%s EffectCardId=(.*) EffectIndex=(-1|\d+) Target=%s$" % (_E, _E))  # Changed in 12051
-ACTION_END_RE = re.compile(r"^ACTION_END$")
+ACTION_START_RE = re.compile(r"(?:ACTION|BLOCK)_START (?:SubType|BlockType)=(\w+) Entity=%s EffectCardId=(.*) EffectIndex=(-1|\d+) Target=%s$" % (_E, _E))  # Changed in 12051
+ACTION_END_RE = re.compile(r"^(?:ACTION|BLOCK)_END$")
 FULL_ENTITY_CREATE_RE = re.compile(r"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+)?$")
 FULL_ENTITY_UPDATE_RE = re.compile(r"FULL_ENTITY - Updating %s CardID=(\w+)?$" % _E)
 SHOW_ENTITY_RE = re.compile(r"SHOW_ENTITY - Updating Entity=%s CardID=(\w+)$" % _E)
@@ -80,8 +80,8 @@ SPECTATOR_MODE_END_GAME = "End Spectator Game"
 
 MESSAGE_OPCODES = (
 	"CREATE_GAME",
-	"ACTION_START",
-	"ACTION_END",
+	"ACTION_START", "BLOCK_START",
+	"ACTION_END", "BLOCK_END",
 	"FULL_ENTITY",
 	"SHOW_ENTITY",
 	"HIDE_ENTITY",
@@ -152,7 +152,7 @@ class PowerHandler(object):
 
 		if opcode == "CREATE_GAME":
 			regex, callback = CREATE_GAME_RE, self.create_game
-		elif opcode == "ACTION_START":
+		elif opcode in ("ACTION_START", "BLOCK_START"):
 			sre = ACTION_START_RE.match(data)
 			if sre is None:
 				sre = ACTION_START_OLD_RE.match(data)
@@ -163,7 +163,7 @@ class PowerHandler(object):
 				index = None
 			self.action_start(ts, entity, type, index, effectid, effectindex, target)
 			return
-		elif opcode == "ACTION_END":
+		elif opcode in ("ACTION_END", "BLOCK_END"):
 			regex, callback = ACTION_END_RE, self.action_end
 		elif opcode == "FULL_ENTITY":
 			if data.startswith("FULL_ENTITY - Updating"):
