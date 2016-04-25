@@ -421,7 +421,7 @@ class CardType(IntEnum):
 	ABILITY = SPELL
 
 	@property
-	def collectible(self):
+	def craftable(self):
 		return self in (
 			CardType.MINION,
 			CardType.SPELL,
