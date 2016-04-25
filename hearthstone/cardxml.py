@@ -150,6 +150,10 @@ class CardXML(object):
 	def artist(self):
 		return self.tags.get(GameTag.ARTISTNAME, "")
 
+	@property
+	def localization_notes(self):
+		return self.tags.get(GameTag.LocalizationNotes, "")
+
 	##
 	# Enums
 
@@ -189,12 +193,24 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.DEATHRATTLE, False))
 
 	@property
+	def double_spelldamage_bonus(self):
+		return bool(self.tags.get(GameTag.RECEIVES_DOUBLE_SPELLDAMAGE_BONUS, False))
+
+	@property
 	def elite(self):
 		return bool(self.tags.get(GameTag.ELITE, False))
 
 	@property
+	def evil_glow(self):
+		return bool(self.tags.get(GameTag.EVIL_GLOW, False))
+
+	@property
 	def forgetful(self):
 		return bool(self.tags.get(GameTag.FORGETFUL, False))
+
+	@property
+	def inspire(self):
+		return bool(self.tags.get(GameTag.INSPIRE, False))
 
 	@property
 	def one_turn_effect(self):
@@ -205,12 +221,20 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.POISONOUS, False))
 
 	@property
+	def ritual(self):
+		return bool(self.tags.get(GameTag.RITUAL, False))
+
+	@property
 	def secret(self):
 		return bool(self.tags.get(GameTag.SECRET, False))
 
 	@property
 	def spare_part(self):
 		return bool(self.tags.get(GameTag.SPARE_PART, False))
+
+	@property
+	def topdeck(self):
+		return bool(self.tags.get(GameTag.TOPDECK, False))
 
 	##
 	# Tags
@@ -237,6 +261,10 @@ class CardXML(object):
 	@property
 	def overload(self):
 		return self.tags.get(GameTag.OVERLOAD, 0)
+
+	@property
+	def heropower_damage(self):
+		return self.tags.get(GameTag.HEROPOWER_DAMAGE, 0)
 
 	@property
 	def spell_damage(self):
