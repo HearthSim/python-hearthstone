@@ -797,7 +797,7 @@ TAG_TYPES = {
 	GameTag.ARTISTNAME: Type.LOCSTRING,
 	GameTag.ImmuneToSpellpower: Type.BOOL,
 	GameTag.ADJACENT_BUFF: Type.BOOL,
-	GameTag.FLAVORTEXT: Type.BOOL,
+	GameTag.FLAVORTEXT: Type.LOCSTRING,
 	GameTag.HealTarget: Type.BOOL,
 	GameTag.AURA: Type.BOOL,
 	GameTag.POISONOUS: Type.BOOL,
