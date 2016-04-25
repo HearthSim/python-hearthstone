@@ -90,9 +90,9 @@ MESSAGE_OPCODES = (
 )
 
 
-class PowerHandler:
+class PowerHandler(object):
 	def __init__(self):
-		super().__init__()
+		super(PowerHandler, self).__init__()
 		self.current_action = None
 		self._entity_node = None
 		self._metadata_node = None
@@ -278,7 +278,7 @@ class PowerHandler:
 		return entity
 
 
-class OptionsHandler:
+class OptionsHandler(object):
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("SendOption"):
 			return self.handle_send_option(ts, msg)
@@ -433,9 +433,9 @@ class ChoicesHandler:
 		raise NotImplementedError("Unhandled entities chosen: %r" % (data))
 
 
-class SpectatorModeHandler:
+class SpectatorModeHandler(object):
 	def __init__(self):
-		super().__init__()
+		super(SpectatorModeHandler, self).__init__()
 		self.spectating_first_player = False
 		self.spectating_second_player = False
 
@@ -465,7 +465,7 @@ class SpectatorModeHandler:
 
 class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandler):
 	def __init__(self):
-		super().__init__()
+		super(LogParser, self).__init__()
 		self.games = []
 		self.line_regex = POWERLOG_LINE_RE
 		self._game_state_processor = "GameState"

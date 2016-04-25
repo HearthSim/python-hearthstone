@@ -1,7 +1,7 @@
 from hearthstone.enums import CardType, GameTag, Step, Zone
 
 
-class Entity:
+class Entity(object):
 	_args = ()
 
 	def __init__(self, id):
@@ -35,7 +35,7 @@ class Game(Entity):
 	_args = ("players", )
 
 	def __init__(self, id, ts):
-		super().__init__(id)
+		super(Game, self).__init__(id)
 		self.players = []
 		self.entities = {}
 		self.packets = []
@@ -77,7 +77,7 @@ class Player(Entity):
 	_args = ("name", )
 
 	def __init__(self, id, player_id, hi, lo):
-		super().__init__(id)
+		super(Player, self).__init__(id)
 		self.player_id = player_id
 		self.account_hi = hi
 		self.account_lo = lo
@@ -108,7 +108,7 @@ class Card(Entity):
 	_args = ("card_id", )
 
 	def __init__(self, id, card_id):
-		super().__init__(id)
+		super(Card, self).__init__(id)
 		self.card_id = card_id
 		self.revealed = False
 
