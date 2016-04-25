@@ -231,6 +231,17 @@ class CardXML(object):
 	def health(self):
 		return self.tags.get(GameTag.HEALTH, 0)
 
+	##
+	# Auto-guessed extras
+
+	@property
+	def overload(self):
+		return self.tags.get(GameTag.OVERLOAD, 0)
+
+	@property
+	def spell_damage(self):
+		return self.tags.get(GameTag.SPELLPOWER, 0)
+
 
 def load(path=None, locale="enUS"):
 	if path is None:
