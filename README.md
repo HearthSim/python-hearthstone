@@ -21,5 +21,5 @@ copyright © Blizzard Entertainment.
 
 ### Community
 
-This is a [HearthSim](http://hearthsim.info) project. All development
+This is a [HearthSim](https://hearthsim.info) project. All development
 happens on our IRC channel `#hearthsim` on [Freenode](https://freenode.net).
