@@ -337,6 +337,7 @@ TAG_NAMES = {
 	GameTag.AI_MUST_PLAY: "AIMustPlay",
 	GameTag.AFFECTED_BY_SPELL_POWER: "AffectedBySpellPower",
 	GameTag.SPARE_PART: "SparePart",
+	GameTag.TREASURE: "Treasure",
 }
 
 
