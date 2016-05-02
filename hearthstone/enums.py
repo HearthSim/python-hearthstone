@@ -402,6 +402,7 @@ class CardSet(IntEnum):
 			CardSet.EXPERT1,
 			CardSet.GVG,
 			CardSet.TGT,
+			CardSet.OG,
 		)
 
 
