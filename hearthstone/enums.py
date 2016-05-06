@@ -752,6 +752,12 @@ class DeckType(IntEnum):
 	TAVERN_BRAWL_DECK = 6
 
 
+class FormatType(IntEnum):
+	FT_UNKNOWN = 0
+	FT_WILD = 1
+	FT_STANDARD = 2
+
+
 class Type(IntEnum):
 	UNKNOWN = 0
 	BOOL = 1
