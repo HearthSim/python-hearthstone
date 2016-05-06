@@ -494,7 +494,8 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 				ret = ret.replace(
 					year=self._current_date.year,
 					month=self._current_date.month,
-					day=self._current_date.day
+					day=self._current_date.day,
+					tzinfo=self._current_date.tzinfo,
 				)
 				if ret < self._current_date:
 					# If the new date falls before the last saved date, that
