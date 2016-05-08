@@ -45,6 +45,7 @@ FULL_ENTITY_CREATE_RE = re.compile(r"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+
 FULL_ENTITY_UPDATE_RE = re.compile(r"FULL_ENTITY - Updating %s CardID=(\w+)?$" % _E)
 SHOW_ENTITY_RE = re.compile(r"SHOW_ENTITY - Updating Entity=%s CardID=(\w+)$" % _E)
 HIDE_ENTITY_RE = re.compile(r"HIDE_ENTITY - Entity=%s tag=(\w+) value=(\w+)$" % _E)
+CHANGE_ENTITY_RE = re.compile(r"CHANGE_ENTITY - Updating Entity=%s CardID=(\w+)$" % _E)
 TAG_CHANGE_RE = re.compile(r"TAG_CHANGE Entity=%s tag=(\w+) value=(\w+)" % _E)
 META_DATA_RE = re.compile(r"META_DATA - Meta=(\w+) Data=%s Info=(\d+)" % _E)
 
@@ -85,6 +86,7 @@ MESSAGE_OPCODES = (
 	"FULL_ENTITY",
 	"SHOW_ENTITY",
 	"HIDE_ENTITY",
+	"CHANGE_ENTITY",
 	"TAG_CHANGE",
 	"META_DATA",
 )
@@ -174,6 +176,8 @@ class PowerHandler(object):
 			regex, callback = SHOW_ENTITY_RE, self.show_entity
 		elif opcode == "HIDE_ENTITY":
 			regex, callback = HIDE_ENTITY_RE, self.hide_entity
+		elif opcode == "CHANGE_ENTITY":
+			regex, callback = CHANGE_ENTITY_RE, self.change_entity
 		elif opcode == "TAG_CHANGE":
 			regex, callback = TAG_CHANGE_RE, self.tag_change
 		elif opcode == "META_DATA":
@@ -241,6 +245,13 @@ class PowerHandler(object):
 		assert tag == GameTag.ZONE
 		packet = packets.HideEntity(ts, entity, value)
 		self.current_node.packets.append(packet)
+
+	def change_entity(self, ts, entity, cardid):
+		entity = self.parse_entity(entity)
+		entity.change(cardid)
+		self._entity_node = entity
+		self._entity_packet = packets.ChangeEntity(ts, entity, cardid)
+		self.current_node.packets.append(self._entity_packet)
 
 	def meta_data(self, ts, meta, data, info):
 		type = parse_enum(enums.MetaDataType, meta)

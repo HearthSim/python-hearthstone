@@ -80,6 +80,14 @@ class ShowEntity(Packet):
 		self.tags = []
 
 
+class ChangeEntity(Packet):
+	def __init__(self, ts, entity, cardid):
+		self.ts = ts
+		self.entity = entity
+		self.cardid = cardid
+		self.tags = []
+
+
 class TagChange(Packet):
 	def __init__(self, ts, entity, tag, value):
 		self.ts = ts

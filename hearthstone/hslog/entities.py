@@ -124,3 +124,7 @@ class Card(Entity):
 
 	def hide(self):
 		self.revealed = False
+
+	def change(self, id):
+		self.card_id = id
+		self.tags = {}
