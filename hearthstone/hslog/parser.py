@@ -550,7 +550,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		id = self.parse_entity_id(entity)
 		if not id:
 			return self.current_game.get_player(entity) or entity
-		return self.current_game.entities[id]
+		return self.current_game.find_entity_by_id(id)
 
 	def buffer_packet_entity_update(self, packet, name):
 		"""
@@ -594,7 +594,8 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		This is needed before a player name can be parsed as an
 		entity id from the log.
 		"""
-		game.entities[id].name = name
+		entity = game.find_entity_by_id(id)
+		entity.name = name
 
 		# Flush the player's buffer by name
 		if name in self._player_buffer:

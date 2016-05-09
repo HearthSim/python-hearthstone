@@ -37,7 +37,7 @@ class Game(Entity):
 	def __init__(self, id, ts):
 		super(Game, self).__init__(id)
 		self.players = []
-		self.entities = {}
+		self.entities = []
 		self.packets = []
 		self.ts = ts
 		self.mulligan = {}
@@ -68,9 +68,17 @@ class Game(Entity):
 
 	def register_entity(self, entity):
 		entity.game = self
-		self.entities[entity.id] = entity
+		self.entities.append(entity)
 		if isinstance(entity, Player):
 			self.players.append(entity)
+
+	def find_entity_by_id(self, id):
+		for entity in self.entities:
+			if entity.id == id:
+				return entity
+			elif entity.id > id:
+				# It's just not there...
+				return
 
 
 class Player(Entity):
