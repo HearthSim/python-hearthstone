@@ -20,9 +20,9 @@ class Dbf:
 	@property
 	def records(self):
 		for e in self.xml.findall("Record"):
-			yield self._serialize_record(e)
+			yield self._deserialize_record(e)
 
-	def _serialize_record(self, element):
+	def _deserialize_record(self, element):
 		ret = {}
 		for field in element.findall("Field"):
 			colname = field.attrib["column"]
@@ -31,7 +31,7 @@ class Dbf:
 
 		return ret
 
-	def _serialize_value(self, element, coltype):
+	def _deserialize_value(self, element, coltype):
 		if coltype in ("Int", "Long", "ULong"):
 			return int(element.text)
 		elif coltype == "Bool":
