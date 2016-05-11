@@ -105,6 +105,15 @@ class CardXML(object):
 			return 0, 0
 		return self.rarity.disenchant_costs
 
+	@property
+	def max_count_in_deck(self):
+		"""
+		The maximum amount of times the card can be present in a deck.
+		"""
+		if self.rarity == Rarity.LEGENDARY:
+			return 1
+		return 2
+
 	##
 	# Localized values
 
