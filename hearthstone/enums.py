@@ -362,6 +362,23 @@ class CardClass(IntEnum):
 	# alias
 	NEUTRAL = INVALID
 
+	@property
+	def default_hero(self):
+		return CARDCLASS_HERO_MAP.get(self, "")
+
+
+CARDCLASS_HERO_MAP = {
+	CardClass.DRUID: "HERO_06",
+	CardClass.HUNTER: "HERO_05",
+	CardClass.MAGE: "HERO_08",
+	CardClass.PALADIN: "HERO_04",
+	CardClass.PRIEST: "HERO_09",
+	CardClass.ROGUE: "HERO_03",
+	CardClass.SHAMAN: "HERO_02",
+	CardClass.WARLOCK: "HERO_07",
+	CardClass.WARRIOR: "HERO_01",
+}
+
 
 class CardSet(IntEnum):
 	INVALID = 0
