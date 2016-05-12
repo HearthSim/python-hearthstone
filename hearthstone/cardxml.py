@@ -198,8 +198,16 @@ class CardXML(object):
 		return bool(self.tags.get(GameTag.Collectible, False))
 
 	@property
+	def battlecry(self):
+		return bool(self.tags.get(GameTag.BATTLECRY, False))
+
+	@property
 	def deathrattle(self):
 		return bool(self.tags.get(GameTag.DEATHRATTLE, False))
+
+	@property
+	def divine_shield(self):
+		return bool(self.tags.get(GameTag.DIVINE_SHIELD, False))
 
 	@property
 	def double_spelldamage_bonus(self):
@@ -236,6 +244,10 @@ class CardXML(object):
 	@property
 	def secret(self):
 		return bool(self.tags.get(GameTag.SECRET, False))
+
+	@property
+	def taunt(self):
+		return bool(self.tags.get(GameTag.TAUNT, False))
 
 	@property
 	def spare_part(self):
