@@ -4,6 +4,12 @@ from .enums import (
 )
 
 
+def prop(tag, cast=int):
+	def _func(self):
+		return cast(self.tags.get(tag, 0))
+	return property(_func)
+
+
 class CardXML(object):
 	def __init__(self, locale="enUS"):
 		self.locale = locale
@@ -166,130 +172,48 @@ class CardXML(object):
 	##
 	# Enums
 
-	@property
-	def card_class(self):
-		return CardClass(self.tags.get(GameTag.CLASS, 0))
-
-	@property
-	def card_set(self):
-		return CardSet(self.tags.get(GameTag.CARD_SET, 0))
-
-	@property
-	def faction(self):
-		return Faction(self.tags.get(GameTag.FACTION, 0))
-
-	@property
-	def race(self):
-		return Race(self.tags.get(GameTag.CARDRACE, 0))
-
-	@property
-	def rarity(self):
-		return Rarity(self.tags.get(GameTag.RARITY, 0))
-
-	@property
-	def type(self):
-		return CardType(self.tags.get(GameTag.CARDTYPE, 0))
+	card_class = prop(GameTag.CLASS, CardClass)
+	card_set = prop(GameTag.CARD_SET, CardSet)
+	faction = prop(GameTag.FACTION, Faction)
+	race = prop(GameTag.CARDRACE, Race)
+	rarity = prop(GameTag.RARITY, Rarity)
+	type = prop(GameTag.CARDTYPE, CardType)
 
 	##
 	# Bools
 
-	@property
-	def collectible(self):
-		return bool(self.tags.get(GameTag.Collectible, False))
-
-	@property
-	def battlecry(self):
-		return bool(self.tags.get(GameTag.BATTLECRY, False))
-
-	@property
-	def deathrattle(self):
-		return bool(self.tags.get(GameTag.DEATHRATTLE, False))
-
-	@property
-	def divine_shield(self):
-		return bool(self.tags.get(GameTag.DIVINE_SHIELD, False))
-
-	@property
-	def double_spelldamage_bonus(self):
-		return bool(self.tags.get(GameTag.RECEIVES_DOUBLE_SPELLDAMAGE_BONUS, False))
-
-	@property
-	def elite(self):
-		return bool(self.tags.get(GameTag.ELITE, False))
-
-	@property
-	def evil_glow(self):
-		return bool(self.tags.get(GameTag.EVIL_GLOW, False))
-
-	@property
-	def forgetful(self):
-		return bool(self.tags.get(GameTag.FORGETFUL, False))
-
-	@property
-	def inspire(self):
-		return bool(self.tags.get(GameTag.INSPIRE, False))
-
-	@property
-	def one_turn_effect(self):
-		return bool(self.tags.get(GameTag.TAG_ONE_TURN_EFFECT, False))
-
-	@property
-	def poisonous(self):
-		return bool(self.tags.get(GameTag.POISONOUS, False))
-
-	@property
-	def ritual(self):
-		return bool(self.tags.get(GameTag.RITUAL, False))
-
-	@property
-	def secret(self):
-		return bool(self.tags.get(GameTag.SECRET, False))
-
-	@property
-	def taunt(self):
-		return bool(self.tags.get(GameTag.TAUNT, False))
-
-	@property
-	def spare_part(self):
-		return bool(self.tags.get(GameTag.SPARE_PART, False))
-
-	@property
-	def topdeck(self):
-		return bool(self.tags.get(GameTag.TOPDECK, False))
+	collectible = prop(GameTag.Collectible, bool)
+	battlecry = prop(GameTag.BATTLECRY, bool)
+	deathrattle = prop(GameTag.DEATHRATTLE, bool)
+	divine_shield = prop(GameTag.DIVINE_SHIELD, bool)
+	double_spelldamage_bonus = prop(GameTag.RECEIVES_DOUBLE_SPELLDAMAGE_BONUS, bool)
+	elite = prop(GameTag.ELITE, bool)
+	evil_glow = prop(GameTag.EVIL_GLOW, bool)
+	forgetful = prop(GameTag.FORGETFUL, bool)
+	inspire = prop(GameTag.INSPIRE, bool)
+	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
+	poisonous = prop(GameTag.POISONOUS, bool)
+	ritual = prop(GameTag.RITUAL, bool)
+	secret = prop(GameTag.SECRET, bool)
+	taunt = prop(GameTag.TAUNT, bool)
+	spare_part = prop(GameTag.SPARE_PART, bool)
+	topdeck = prop(GameTag.TOPDECK, bool)
 
 	##
 	# Tags
 
-	@property
-	def atk(self):
-		return self.tags.get(GameTag.ATK, 0)
-
-	@property
-	def durability(self):
-		return self.tags.get(GameTag.DURABILITY, 0)
-
-	@property
-	def cost(self):
-		return self.tags.get(GameTag.COST, 0)
-
-	@property
-	def health(self):
-		return self.tags.get(GameTag.HEALTH, 0)
+	atk = prop(GameTag.ATK)
+	durability = prop(GameTag.DURABILITY)
+	cost = prop(GameTag.COST)
+	health = prop(GameTag.HEALTH)
+	windfury = prop(GameTag.WINDFURY)
 
 	##
 	# Auto-guessed extras
 
-	@property
-	def overload(self):
-		return self.tags.get(GameTag.OVERLOAD, 0)
-
-	@property
-	def heropower_damage(self):
-		return self.tags.get(GameTag.HEROPOWER_DAMAGE, 0)
-
-	@property
-	def spell_damage(self):
-		return self.tags.get(GameTag.SPELLPOWER, 0)
+	overload = prop(GameTag.OVERLOAD)
+	heropower_damage = prop(GameTag.HEROPOWER_DAMAGE)
+	spell_damage = GameTag.SPELLPOWER
 
 
 def load(path=None, locale="enUS"):
