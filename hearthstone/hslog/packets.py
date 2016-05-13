@@ -28,7 +28,7 @@ class Action(Packet):
 		self.ended = True
 
 
-class ActionMetaData(Packet):
+class MetaData(Packet):
 	def __init__(self, ts, entity, type, count):
 		self.ts = ts
 		self.entity = entity
