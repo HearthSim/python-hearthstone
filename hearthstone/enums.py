@@ -695,7 +695,7 @@ class PlayState(IntEnum):
 	QUIT = CONCEDED
 
 
-class PowType(IntEnum):
+class PowerType(IntEnum):
 	FULL_ENTITY = 1
 	SHOW_ENTITY = 2
 	HIDE_ENTITY = 3
