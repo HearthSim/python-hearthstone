@@ -659,6 +659,7 @@ class MetaDataType(IntEnum):
 	DAMAGE = 1
 	HEALING = 2
 	JOUST = 3
+	CLIENT_HISTORY = 4
 
 	# Renamed in 9786 from PowerHistoryMetaData.Type
 	META_TARGET = TARGET
@@ -704,6 +705,7 @@ class PowerType(IntEnum):
 	ACTION_END = 6
 	CREATE_GAME = 7
 	META_DATA = 8
+	CHANGE_ENTITY = 9
 
 
 class BlockType(IntEnum):
@@ -714,6 +716,7 @@ class BlockType(IntEnum):
 	DEATHS = 6
 	PLAY = 7
 	FATIGUE = 8
+	RITUAL = 9
 
 	# Removed
 	SCRIPT = 4
@@ -759,6 +762,7 @@ class Booster(IntEnum):
 	CLASSIC = 1
 	GOBLINS_VS_GNOMES = 9
 	THE_GRAND_TOURNAMENT = 10
+	OLD_GODS = 11
 
 
 class DeckType(IntEnum):
@@ -767,6 +771,7 @@ class DeckType(IntEnum):
 	DRAFT_DECK = 4
 	PRECON_DECK = 5
 	TAVERN_BRAWL_DECK = 6
+	HIDDEN_DECK = 1000
 
 
 class FormatType(IntEnum):
