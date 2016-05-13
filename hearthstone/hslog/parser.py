@@ -204,7 +204,7 @@ class PowerHandler(object):
 
 	def action_start(self, ts, entity, type, index, effectid, effectindex, target):
 		entity = self.parse_entity(entity)
-		type = parse_enum(enums.PowSubType, type)
+		type = parse_enum(enums.BlockType, type)
 		if index is not None:
 			index = int(index)
 		target = self.parse_entity(target)

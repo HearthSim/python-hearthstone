@@ -706,7 +706,7 @@ class PowerType(IntEnum):
 	META_DATA = 8
 
 
-class PowSubType(IntEnum):
+class BlockType(IntEnum):
 	ATTACK = 1
 	JOUST = 2
 	POWER = 3
