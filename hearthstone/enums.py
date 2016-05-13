@@ -2,6 +2,8 @@ from enum import IntEnum
 
 
 class GameTag(IntEnum):
+	"GAME_TAG"
+
 	TAG_SCRIPT_DATA_NUM_1 = 2
 	TAG_SCRIPT_DATA_NUM_2 = 3
 	TAG_SCRIPT_DATA_ENT_1 = 4
@@ -345,6 +347,8 @@ TAG_NAMES = {
 # Card enums
 
 class CardClass(IntEnum):
+	"TAG_CLASS"
+
 	INVALID = 0
 	DEATHKNIGHT = 1
 	DRUID = 2
@@ -381,6 +385,8 @@ CARDCLASS_HERO_MAP = {
 
 
 class CardSet(IntEnum):
+	"TAG_CARD_SET"
+
 	INVALID = 0
 	TEST_TEMPORARY = 1
 	CORE = 2
@@ -424,6 +430,8 @@ class CardSet(IntEnum):
 
 
 class CardType(IntEnum):
+	"TAG_CARDTYPE"
+
 	INVALID = 0
 	GAME = 1
 	PLAYER = 2
@@ -449,6 +457,8 @@ class CardType(IntEnum):
 
 
 class EnchantmentVisual(IntEnum):
+	"TAG_ENCHANTMENT_VISUAL"
+
 	INVALID = 0
 	POSITIVE = 1
 	NEGATIVE = 2
@@ -456,6 +466,8 @@ class EnchantmentVisual(IntEnum):
 
 
 class Faction(IntEnum):
+	"TAG_FACTION"
+
 	INVALID = 0
 	HORDE = 1
 	ALLIANCE = 2
@@ -463,6 +475,8 @@ class Faction(IntEnum):
 
 
 class PlayReq(IntEnum):
+	"PlayErrors.ErrorType"
+
 	REQ_MINION_TARGET = 1
 	REQ_FRIENDLY_TARGET = 2
 	REQ_ENEMY_TARGET = 3
@@ -525,6 +539,8 @@ class PlayReq(IntEnum):
 
 
 class Race(IntEnum):
+	"TAG_RACE"
+
 	INVALID = 0
 	BLOODELF = 1
 	DRAENEI = 2
@@ -556,6 +572,8 @@ class Race(IntEnum):
 
 
 class Rarity(IntEnum):
+	"TAG_RARITY"
+
 	INVALID = 0
 	COMMON = 1
 	FREE = 2
@@ -600,6 +618,8 @@ DISENCHANT_COSTS = {
 
 
 class Zone(IntEnum):
+	"TAG_ZONE"
+
 	INVALID = 0
 	PLAY = 1
 	DECK = 2
@@ -617,12 +637,15 @@ class Zone(IntEnum):
 # Game enums
 
 class ChoiceType(IntEnum):
+	"CHOICE_TYPE"
+
 	INVALID = 0
 	MULLIGAN = 1
 	GENERAL = 2
 
 
 class BnetGameType(IntEnum):
+	"PegasusShared.BnetGameType"
 	BGT_UNKNOWN = 0
 	BGT_FRIENDS = 1
 	BGT_RANKED_STANDARD = 2
@@ -644,6 +667,8 @@ class BnetGameType(IntEnum):
 
 
 class GoldRewardState(IntEnum):
+	"TAG_GOLD_REWARD_STATE"
+
 	INVALID = 0
 	ELIGIBLE = 1
 	WRONG_GAME_TYPE = 2
@@ -654,7 +679,8 @@ class GoldRewardState(IntEnum):
 
 
 class MetaDataType(IntEnum):
-	# From HistoryMeta.Type
+	"PegasusGame.HistoryMeta.Type"
+
 	TARGET = 0
 	DAMAGE = 1
 	HEALING = 2
@@ -668,6 +694,8 @@ class MetaDataType(IntEnum):
 
 
 class Mulligan(IntEnum):
+	"TAG_MULLIGAN"
+
 	INVALID = 0
 	INPUT = 1
 	DEALING = 2
@@ -676,12 +704,16 @@ class Mulligan(IntEnum):
 
 
 class OptionType(IntEnum):
+	"PegasusGame.Option.Type"
+
 	PASS = 1
 	END_TURN = 2
 	POWER = 3
 
 
 class PlayState(IntEnum):
+	"TAG_PLAYSTATE"
+
 	INVALID = 0
 	PLAYING = 1
 	WINNING = 2
@@ -697,6 +729,8 @@ class PlayState(IntEnum):
 
 
 class PowerType(IntEnum):
+	"Network.PowerType"
+
 	FULL_ENTITY = 1
 	SHOW_ENTITY = 2
 	HIDE_ENTITY = 3
@@ -709,6 +743,8 @@ class PowerType(IntEnum):
 
 
 class BlockType(IntEnum):
+	"PegasusGame.HistoryBlock.Type"
+
 	ATTACK = 1
 	JOUST = 2
 	POWER = 3
@@ -727,6 +763,8 @@ class BlockType(IntEnum):
 
 
 class State(IntEnum):
+	"TAG_STATE"
+
 	INVALID = 0
 	LOADING = 1
 	RUNNING = 2
@@ -734,6 +772,8 @@ class State(IntEnum):
 
 
 class Step(IntEnum):
+	"TAG_STEP"
+
 	INVALID = 0
 	BEGIN_FIRST = 1
 	BEGIN_SHUFFLE = 2
@@ -758,6 +798,8 @@ class Step(IntEnum):
 # Misc
 
 class Booster(IntEnum):
+	"BoosterDbId"
+
 	INVALID = 0
 	CLASSIC = 1
 	GOBLINS_VS_GNOMES = 9
@@ -766,6 +808,8 @@ class Booster(IntEnum):
 
 
 class DeckType(IntEnum):
+	"PegasusShared.DeckType"
+
 	NORMAL_DECK = 1
 	AI_DECK = 2
 	DRAFT_DECK = 4
@@ -775,12 +819,16 @@ class DeckType(IntEnum):
 
 
 class FormatType(IntEnum):
+	"PegasusShared.FormatType"
+
 	FT_UNKNOWN = 0
 	FT_WILD = 1
 	FT_STANDARD = 2
 
 
 class Type(IntEnum):
+	"TAG_TYPE"
+
 	UNKNOWN = 0
 	BOOL = 1
 	NUMBER = 2
@@ -856,6 +904,8 @@ LOCALIZED_TAGS = [k for k, v in TAG_TYPES.items() if v == Type.LOCSTRING]
 
 
 class Locale(IntEnum):
+	"Locale"
+
 	UNKNOWN = -1
 	enUS = 0
 	enGB = 1
