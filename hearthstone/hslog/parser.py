@@ -39,8 +39,8 @@ PLAYER_ENTITY_RE = re.compile(r"Player EntityID=(\d+) PlayerID=(\d+) GameAccount
 # Messages
 CREATE_GAME_RE = re.compile(r"^CREATE_GAME$")
 ACTION_START_OLD_RE = re.compile(r"ACTION_START Entity=%s (?:SubType|BlockType)=(\w+) Index=(-1|\d+) Target=%s$" % (_E, _E))
-ACTION_START_RE = re.compile(r"(?:ACTION|BLOCK)_START (?:SubType|BlockType)=(\w+) Entity=%s EffectCardId=(.*) EffectIndex=(-1|\d+) Target=%s$" % (_E, _E))  # Changed in 12051
-ACTION_END_RE = re.compile(r"^(?:ACTION|BLOCK)_END$")
+BLOCK_START_RE = re.compile(r"(?:ACTION|BLOCK)_START (?:SubType|BlockType)=(\w+) Entity=%s EffectCardId=(.*) EffectIndex=(-1|\d+) Target=%s$" % (_E, _E))  # Changed in 12051
+BLOCK_END_RE = re.compile(r"^(?:ACTION|BLOCK)_END$")
 FULL_ENTITY_CREATE_RE = re.compile(r"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+)?$")
 FULL_ENTITY_UPDATE_RE = re.compile(r"FULL_ENTITY - Updating %s CardID=(\w+)?$" % _E)
 SHOW_ENTITY_RE = re.compile(r"SHOW_ENTITY - Updating Entity=%s CardID=(\w+)$" % _E)
@@ -95,7 +95,7 @@ MESSAGE_OPCODES = (
 class PowerHandler(object):
 	def __init__(self):
 		super(PowerHandler, self).__init__()
-		self.current_action = None
+		self.current_block = None
 		self._entity_node = None
 		self._metadata_node = None
 
@@ -104,9 +104,9 @@ class PowerHandler(object):
 		# If we're missing an ACTION_END packet after the mulligan SendChoices,
 		# we just close it out manually.
 		if tag == enums.GameTag.MULLIGAN_STATE and value == enums.Mulligan.DEALING:
-			if self.current_action:
+			if self.current_block:
 				logging.warning("WARNING: Broken mulligan nesting. Working around...")
-				self.action_end(ts)
+				self.block_end(ts)
 
 	def add_data(self, ts, callback, msg):
 		if callback == self.parse_method("DebugPrintPower"):
@@ -117,7 +117,7 @@ class PowerHandler(object):
 		opcode = data.split()[0]
 
 		if opcode in MESSAGE_OPCODES:
-			return self.handle_action(ts, opcode, data)
+			return self.handle_power(ts, opcode, data)
 
 		if opcode == "GameEntity":
 			self.close_nodes()
@@ -149,13 +149,13 @@ class PowerHandler(object):
 		if self._metadata_node:
 			self._metadata_node = None
 
-	def handle_action(self, ts, opcode, data):
+	def handle_power(self, ts, opcode, data):
 		self.close_nodes()
 
 		if opcode == "CREATE_GAME":
 			regex, callback = CREATE_GAME_RE, self.create_game
 		elif opcode in ("ACTION_START", "BLOCK_START"):
-			sre = ACTION_START_RE.match(data)
+			sre = BLOCK_START_RE.match(data)
 			if sre is None:
 				sre = ACTION_START_OLD_RE.match(data)
 				entity, type, index, target = sre.groups()
@@ -163,10 +163,10 @@ class PowerHandler(object):
 			else:
 				type, entity, effectid, effectindex, target = sre.groups()
 				index = None
-			self.action_start(ts, entity, type, index, effectid, effectindex, target)
+			self.block_start(ts, entity, type, index, effectid, effectindex, target)
 			return
 		elif opcode in ("ACTION_END", "BLOCK_END"):
-			regex, callback = ACTION_END_RE, self.action_end
+			regex, callback = BLOCK_END_RE, self.block_end
 		elif opcode == "FULL_ENTITY":
 			if data.startswith("FULL_ENTITY - Updating"):
 				regex, callback = FULL_ENTITY_UPDATE_RE, self.full_entity_update
@@ -193,7 +193,7 @@ class PowerHandler(object):
 
 	# Messages
 	def create_game(self, ts):
-		self.current_action = None
+		self.current_block = None
 		self.current_game = Game(0, ts)
 		self.games.append(self.current_game)
 		self.current_game._broadcasted = False
@@ -202,22 +202,22 @@ class PowerHandler(object):
 		self._game_packet = self._entity_packet
 		self.current_game.spectator_mode = self.spectator_mode
 
-	def action_start(self, ts, entity, type, index, effectid, effectindex, target):
+	def block_start(self, ts, entity, type, index, effectid, effectindex, target):
 		entity = self.parse_entity(entity)
 		type = parse_enum(enums.BlockType, type)
 		if index is not None:
 			index = int(index)
 		target = self.parse_entity(target)
-		action = packets.Action(ts, entity, type, index, effectid, effectindex, target)
-		action.parent = self.current_action
-		self.current_node.packets.append(action)
-		self.current_action = action
+		block = packets.Block(ts, entity, type, index, effectid, effectindex, target)
+		block.parent = self.current_block
+		self.current_node.packets.append(block)
+		self.current_block = block
 
-	def action_end(self, ts):
-		self.current_action.end()
-		action = self.current_action
-		self.current_action = self.current_action.parent
-		return action
+	def block_end(self, ts):
+		self.current_block.end()
+		block = self.current_block
+		self.current_block = self.current_block.parent
+		return block
 
 	def full_entity(self, ts, id, cardid):
 		id = int(id)
@@ -486,7 +486,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 
 	@property
 	def current_node(self):
-		return self.current_action or self.current_game
+		return self.current_block or self.current_game
 
 	def add_data(self, ts, callback, msg):
 		msg = msg.strip()

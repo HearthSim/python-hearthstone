@@ -3,7 +3,7 @@ class Packet:
 		return "<%s>" % (self.__class__.__name__)
 
 
-class Action(Packet):
+class Block(Packet):
 	def __init__(self, ts, entity, type, index, effectid, effectindex, target):
 		self.ts = ts
 		self.entity = entity
