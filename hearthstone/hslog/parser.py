@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 from hearthstone import enums
-from ..enums import GameTag
+from ..enums import GameTag, PowerType
 from . import packets
 from .utils import parse_enum, parse_tag
 from .entities import Game, Player, Card
@@ -79,19 +79,6 @@ SPECTATOR_MODE_END_MODE = "End Spectator Mode"
 SPECTATOR_MODE_END_GAME = "End Spectator Game"
 
 
-MESSAGE_OPCODES = (
-	"CREATE_GAME",
-	"ACTION_START", "BLOCK_START",
-	"ACTION_END", "BLOCK_END",
-	"FULL_ENTITY",
-	"SHOW_ENTITY",
-	"HIDE_ENTITY",
-	"CHANGE_ENTITY",
-	"TAG_CHANGE",
-	"META_DATA",
-)
-
-
 class PowerHandler(object):
 	def __init__(self):
 		super(PowerHandler, self).__init__()
@@ -116,7 +103,7 @@ class PowerHandler(object):
 	def handle_data(self, ts, data):
 		opcode = data.split()[0]
 
-		if opcode in MESSAGE_OPCODES:
+		if opcode in PowerType.__members__:
 			return self.handle_power(ts, opcode, data)
 
 		if opcode == "GameEntity":
