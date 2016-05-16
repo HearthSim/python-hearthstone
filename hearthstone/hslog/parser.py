@@ -5,7 +5,7 @@ from hearthstone import enums
 from ..enums import GameTag, PowerType
 from . import packets
 from .utils import parse_enum, parse_tag
-from .entities import Game, Player, Card
+from .entities import Entity, Card, Game, Player
 
 
 # Timestamp parsing
@@ -252,7 +252,7 @@ class PowerHandler(object):
 		tag, value = parse_tag(tag, value)
 		self._check_for_mulligan_hack(ts, entity, tag, value)
 
-		if isinstance(entity, str):
+		if not isinstance(entity, Entity):
 			# Hack to register player names...
 			if tag == enums.GameTag.ENTITY_ID:
 				self.register_player_name(self.current_game, e, value)
@@ -266,7 +266,7 @@ class PowerHandler(object):
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_node.packets.append(packet)
 
-		if not entity or isinstance(entity, str):
+		if not entity or not isinstance(entity, Entity):
 			if tag == enums.GameTag.ENTITY_ID:
 				self.register_player_name(self.current_game, e, value)
 			else:
