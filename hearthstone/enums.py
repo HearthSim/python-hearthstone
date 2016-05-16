@@ -641,6 +641,24 @@ class BnetGameType(IntEnum):
 	BGT_LAST = 32
 
 
+class BnetRegion(IntEnum):
+	"bgs.constants.BnetRegion"
+
+	REGION_UNINITIALIZED = -1,
+	REGION_UNKNOWN = 0
+	REGION_US = 1
+	REGION_EU = 2
+	REGION_KR = 3
+	REGION_TW = 4
+	REGION_CN = 5
+	REGION_LIVE_VERIFICATION = 40
+	REGION_PTR_LOC = 41
+	REGION_MSCHWEITZER_BN11 = 52
+	REGION_MSCHWEITZER_BN12 = 53
+	REGION_DEV = 60
+	REGION_PTR = 98
+
+
 class GoldRewardState(IntEnum):
 	"TAG_GOLD_REWARD_STATE"
 
