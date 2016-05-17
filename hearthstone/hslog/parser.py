@@ -72,7 +72,7 @@ SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) se
 
 # Spectator mode
 SPECTATOR_MODE_TOKEN = "=================="
-SPECTATOR_MODE_BEGIN_GAME = "Begin Spectator Game"
+SPECTATOR_MODE_BEGIN_GAME = "Start Spectator Game"
 SPECTATOR_MODE_BEGIN_FIRST = "Begin Spectating 1st player"
 SPECTATOR_MODE_BEGIN_SECOND = "Begin Spectating 2nd player"
 SPECTATOR_MODE_END_MODE = "End Spectator Mode"
