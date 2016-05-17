@@ -560,10 +560,9 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			# First, this. We register the name to the current player.
 			assert current_player
 			self.register_player_name(game, e, current_player.id)
-		else:
+		elif not current_player:
 			# And now, this. The name is registered to the non-current player
 			# (meaning the one left without a name)
-			assert not current_player
 			for player in game.players:
 				if not player.name:
 					self.register_player_name(game, e, player.id)
@@ -574,6 +573,11 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 				for player in game.players:
 					if player.name == "UNKNOWN HUMAN PLAYER":
 						self.register_player_name(game, e, player.id)
+		else:
+			# EDGE CASE! Seen in Decks Assemble.
+			# If this happens, CURRENT_PLAYER is set to what it was already set to.
+			# So the one being set is the current player already.
+			self.register_player_name(game, e, current_player.id)
 
 	def register_player_name(self, game, name, id):
 		"""
