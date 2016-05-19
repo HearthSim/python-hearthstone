@@ -47,6 +47,18 @@ class Game(Entity):
 			yield packet
 
 	@property
+	def start_time(self):
+		for packet in self.packets:
+			if packet.ts:
+				return packet.ts
+
+	@property
+	def end_time(self):
+		for packet in self.packets[::-1]:
+			if packet.ts:
+				return packet.ts
+
+	@property
 	def current_player(self):
 		for player in self.players:
 			if player.tags.get(GameTag.CURRENT_PLAYER):
