@@ -470,6 +470,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		self.current_game = None
 		self._player_buffer = {}
 		self._current_date = None
+		self._synced_timestamp = False
 
 	@property
 	def current_node(self):
@@ -484,6 +485,20 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 
 	def parse_timestamp(self, ts):
 		ret = parse_timestamp(ts)
+
+		if not self._synced_timestamp:
+			# The first timestamp we parse requires syncing the time
+			# (in case _current_date is greater than the start date)
+			if self._current_date is not None:
+				self._current_date = self._current_date.replace(
+					hour=ret.hour,
+					minute=ret.minute,
+					second=ret.second,
+					microsecond=ret.microsecond,
+				)
+			# Only do it once per parse tree
+			self._synced_timestamp = True
+
 		if ret.year == 1900:
 			# Logs without date :(
 			if self._current_date is None:
