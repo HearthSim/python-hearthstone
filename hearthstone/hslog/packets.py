@@ -1,9 +1,16 @@
+from ..enums import PowerType
+
+
 class Packet:
+	type = 0
+
 	def __repr__(self):
 		return "<%s>" % (self.__class__.__name__)
 
 
 class Block(Packet):
+	type = PowerType.BLOCK_START
+
 	def __init__(self, ts, entity, type, index, effectid, effectindex, target):
 		self.ts = ts
 		self.entity = entity
@@ -29,6 +36,8 @@ class Block(Packet):
 
 
 class MetaData(Packet):
+	type = PowerType.META_DATA
+
 	def __init__(self, ts, entity, type, count):
 		self.ts = ts
 		self.entity = entity
@@ -41,6 +50,8 @@ class MetaData(Packet):
 
 
 class CreateGame(Packet):
+	type = PowerType.CREATE_GAME
+
 	class Player:
 		def __init__(self, ts, entity, playerid, hi, lo):
 			self.ts = ts
@@ -59,6 +70,8 @@ class CreateGame(Packet):
 
 
 class HideEntity(Packet):
+	type = PowerType.HIDE_ENTITY
+
 	def __init__(self, ts, entity, zone):
 		self.ts = ts
 		self.entity = entity
@@ -66,6 +79,8 @@ class HideEntity(Packet):
 
 
 class FullEntity(Packet):
+	type = PowerType.FULL_ENTITY
+
 	def __init__(self, ts, entity, cardid):
 		self.ts = ts
 		self.entity = entity
@@ -74,6 +89,8 @@ class FullEntity(Packet):
 
 
 class ShowEntity(Packet):
+	type = PowerType.SHOW_ENTITY
+
 	def __init__(self, ts, entity, cardid):
 		self.ts = ts
 		self.entity = entity
@@ -82,6 +99,8 @@ class ShowEntity(Packet):
 
 
 class ChangeEntity(Packet):
+	type = PowerType.CHANGE_ENTITY
+
 	def __init__(self, ts, entity, cardid):
 		self.ts = ts
 		self.entity = entity
@@ -90,6 +109,8 @@ class ChangeEntity(Packet):
 
 
 class TagChange(Packet):
+	type = PowerType.TAG_CHANGE
+
 	def __init__(self, ts, entity, tag, value):
 		self.ts = ts
 		self.entity = entity
