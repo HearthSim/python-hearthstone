@@ -213,7 +213,7 @@ class CardXML(object):
 
 	overload = prop(GameTag.OVERLOAD)
 	heropower_damage = prop(GameTag.HEROPOWER_DAMAGE)
-	spell_damage = GameTag.SPELLPOWER
+	spell_damage = prop(GameTag.SPELLPOWER)
 
 
 def load(path=None, locale="enUS"):
