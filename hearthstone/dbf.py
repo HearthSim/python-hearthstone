@@ -27,7 +27,7 @@ class Dbf:
 		for field in element.findall("Field"):
 			colname = field.attrib["column"]
 			coltype = self.columns[colname]
-			ret[colname] = self._serialize_value(field, coltype)
+			ret[colname] = self._deserialize_value(field, coltype)
 
 		return ret
 
