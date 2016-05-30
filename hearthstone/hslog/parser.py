@@ -253,15 +253,7 @@ class PowerHandler(object):
 		self._check_for_mulligan_hack(ts, entity, tag, value)
 
 		if not isinstance(entity, Entity):
-			# Hack to register player names...
-			if tag == enums.GameTag.ENTITY_ID:
-				self.register_player_name(self.current_game, e, value)
-				entity = self.parse_entity(e)
-
-			# Fallback hack (eg. in case of reconnected games)
-			if tag == enums.GameTag.CURRENT_PLAYER and self.current_game.setup_done:
-				self.register_current_player_name(self.current_game, e, value)
-				entity = self.parse_entity(e)
+			entity = self.check_for_player_registration(tag, value, e)
 
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_node.packets.append(packet)
@@ -563,6 +555,18 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		if name not in self._player_buffer:
 			self._player_buffer[name] = []
 		self._player_buffer[name].append(packet)
+
+	def check_for_player_registration(self, tag, value, e):
+		"""
+		Trigger on a tag change if we did not find a corresponding entity.
+		"""
+		if tag == GameTag.ENTITY_ID:
+			self.register_player_name(self.current_game, e, value	)
+		elif tag == GameTag.CURRENT_PLAYER and self.current_game.setup_done:
+			# Fallback hack (eg. in case of reconnected games)
+			self.register_current_player_name(self.current_game, e, value)
+
+		return self.parse_entity(e)
 
 	def register_current_player_name(self, game, e, value):
 		"""
