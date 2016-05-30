@@ -124,6 +124,10 @@ class Player(Entity):
 			if entity.type == CardType.HERO:
 				yield entity
 
+	@property
+	def is_ai(self):
+		return self.account_lo == 0
+
 	def in_zone(self, zone):
 		for entity in self.entities:
 			if entity.zone == zone:
