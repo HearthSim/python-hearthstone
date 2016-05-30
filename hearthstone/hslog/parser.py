@@ -560,6 +560,20 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		"""
 		Trigger on a tag change if we did not find a corresponding entity.
 		"""
+		# Double check whether both player names are already set
+		if all(player.name for player in self.current_game.players):
+			# If both players are already registered, there is a possibility
+			# that "The Innkeeper" has been renamed.
+			for player in self.current_game.players:
+				if player.is_ai:
+					# Transform the name to the new one.
+					logging.warning("Re-registering %r as %r", player, e)
+					self.register_player_name(self.current_game, e, player.id)
+					return
+			else:
+				logging.warning("Unexpected player name: %r", e)
+				assert False
+
 		if tag == GameTag.ENTITY_ID:
 			self.register_player_name(self.current_game, e, value	)
 		elif tag == GameTag.CURRENT_PLAYER and self.current_game.setup_done:
