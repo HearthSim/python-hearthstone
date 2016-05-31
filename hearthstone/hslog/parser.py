@@ -511,7 +511,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			raise ValueError("Invalid line format: %r" % (line))
 
 		ts, line = sre.groups()
-		ts = self.parse_timestamp(ts)
 		if line.startswith(SPECTATOR_MODE_TOKEN):
 			line = line.replace(SPECTATOR_MODE_TOKEN, "").strip()
 			return self.process_spectator_mode(line)
@@ -523,6 +522,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			for handler in PowerHandler, ChoicesHandler, OptionsHandler:
 				callback = handler.find_callback(self, method)
 				if callback:
+					ts = self.parse_timestamp(ts)
 					return callback(ts, msg)
 
 	def parse_entity_id(self, entity):
