@@ -467,7 +467,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 	def current_node(self):
 		return self.current_block or self.current_game
 
-	def parse_timestamp(self, ts):
+	def parse_timestamp(self, ts, method):
 		ret = parse_timestamp(ts)
 
 		if not self._synced_timestamp:
@@ -522,7 +522,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			for handler in PowerHandler, ChoicesHandler, OptionsHandler:
 				callback = handler.find_callback(self, method)
 				if callback:
-					ts = self.parse_timestamp(ts)
+					ts = self.parse_timestamp(ts, method)
 					return callback(ts, msg)
 
 	def parse_entity_id(self, entity):
