@@ -95,10 +95,9 @@ class PowerHandler(object):
 				logging.warning("WARNING: Broken mulligan nesting. Working around...")
 				self.block_end(ts)
 
-	def add_data(self, ts, callback, msg):
-		if callback == self.parse_method("DebugPrintPower"):
-			self.handle_data(ts, msg)
-			return True
+	def find_callback(self, method):
+		if method == self.parse_method("DebugPrintPower"):
+			return self.handle_data
 
 	def handle_data(self, ts, data):
 		opcode = data.split()[0]
@@ -269,11 +268,11 @@ class PowerHandler(object):
 
 
 class OptionsHandler(object):
-	def add_data(self, ts, callback, msg):
-		if callback == self.parse_method("SendOption"):
-			return self.handle_send_option(ts, msg)
-		elif callback == self.parse_method("DebugPrintOptions"):
-			return self.handle_options(ts, msg)
+	def find_callback(self, method):
+		if method == self.parse_method("SendOption"):
+			return self.handle_send_option
+		elif method == self.parse_method("DebugPrintOptions"):
+			return self.handle_options
 
 	def handle_options(self, ts, data):
 		if data.startswith("id="):
@@ -317,15 +316,15 @@ class OptionsHandler(object):
 
 
 class ChoicesHandler:
-	def add_data(self, ts, callback, msg):
-		if callback == self.parse_method("DebugPrintEntityChoices"):
-			return self.handle_entity_choices(ts, msg)
-		elif callback == self.parse_method("DebugPrintChoices"):
-			return self.handle_entity_choices_old(ts, msg)
-		elif callback == self.parse_method("SendChoices"):
-			return self.handle_send_choices(ts, msg)
-		elif callback == self.parse_method("DebugPrintEntitiesChosen"):
-			return self.handle_entities_chosen(ts, msg)
+	def find_callback(self, method):
+		if method == self.parse_method("DebugPrintEntityChoices"):
+			return self.handle_entity_choices
+		elif method== self.parse_method("DebugPrintChoices"):
+			return self.handle_entity_choices_old
+		elif method == self.parse_method("SendChoices"):
+			return self.handle_send_choices
+		elif method == self.parse_method("DebugPrintEntitiesChosen"):
+			return self.handle_entities_chosen
 
 	def handle_entity_choices_old(self, ts, data):
 		if data.startswith("id="):
@@ -468,13 +467,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 	def current_node(self):
 		return self.current_block or self.current_game
 
-	def add_data(self, ts, callback, msg):
-		msg = msg.strip()
-		for handler in PowerHandler, ChoicesHandler, OptionsHandler:
-			ret = handler.add_data(self, ts, callback, msg)
-			if ret:
-				break
-
 	def parse_timestamp(self, ts):
 		ret = parse_timestamp(ts)
 
@@ -526,7 +518,12 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 
 		sre = self.line_regex.match(line)
 		if sre:
-			self.add_data(ts, *sre.groups())
+			method, msg = sre.groups()
+			msg = msg.strip()
+			for handler in PowerHandler, ChoicesHandler, OptionsHandler:
+				callback = handler.find_callback(self, method)
+				if callback:
+					return callback(ts, msg)
 
 	def parse_entity_id(self, entity):
 		if entity.isdigit():
