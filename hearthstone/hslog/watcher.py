@@ -6,7 +6,7 @@ class LogWatcher(LogParser):
 	def on_entity_update(self, entity):
 		pass
 
-	def on_action(self, action):
+	def on_block(self, action):
 		pass
 
 	def on_metadata(self, metadata):
@@ -28,9 +28,9 @@ class LogWatcher(LogParser):
 			self.on_metadata(self._metadata_node)
 		super().close_nodes()
 
-	def action_end(self, ts):
-		action = super().action_end(ts)
-		self.on_action(action)
+	def block_end(self, ts):
+		action = super().block_end(ts)
+		self.on_block(action)
 
 	def full_entity(self, ts, id, cardid):
 		super().full_entity(ts, id, cardid)
