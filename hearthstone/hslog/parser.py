@@ -244,9 +244,10 @@ class PowerHandler(object):
 
 	def meta_data(self, ts, meta, data, info):
 		type = parse_enum(enums.MetaDataType, meta)
-		entity = self.parse_entity(data)
+		if type == enums.MetaDataType.JOUST:
+			data = self.parse_entity(data)
 		count = int(info)
-		self._metadata_node = packets.MetaData(ts, entity, type, count)
+		self._metadata_node = packets.MetaData(ts, data, type, count)
 		self.current_node.packets.append(self._metadata_node)
 
 	def tag_change(self, ts, e, tag, value):
