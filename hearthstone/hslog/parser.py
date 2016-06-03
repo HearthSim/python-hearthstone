@@ -648,6 +648,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		player = Player(id, playerid, hi, lo)
 		self.current_game.register_entity(player)
 		self._entity_node = player
-		self._entity_packet = packets.CreateGame.Player(ts, id, playerid, hi, lo)
+		self._entity_packet = packets.CreateGame.Player(ts, player, playerid, hi, lo)
 		self._game_packet.players.append(self._entity_packet)
 		self.buffer_packet_entity_update(self._entity_packet, id)
