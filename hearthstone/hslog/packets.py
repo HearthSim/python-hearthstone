@@ -38,15 +38,15 @@ class Block(Packet):
 class MetaData(Packet):
 	type = PowerType.META_DATA
 
-	def __init__(self, ts, entity, type, count):
+	def __init__(self, ts, meta, data, count):
 		self.ts = ts
-		self.entity = entity
-		self.type = type
+		self.meta = meta
+		self.data = data
 		self.count = count
 		self.info = []
 
 	def __repr__(self):
-		return "%s(type=%r, entity=%r)" % (self.__class__.__name__, self.type, self.entity)
+		return "%s(meta=%r, data=%r)" % (self.__class__.__name__, self.meta, self.data)
 
 
 class CreateGame(Packet):
