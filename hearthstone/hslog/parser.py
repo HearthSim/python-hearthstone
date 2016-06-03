@@ -99,6 +99,11 @@ class PowerHandler(object):
 		if method == self.parse_method("DebugPrintPower"):
 			return self.handle_data
 
+	def parse_initial_tag(self, data):
+		sre = TAG_VALUE_RE.match(data)
+		tag, value = sre.groups()
+		return parse_tag(tag, value)
+
 	def handle_data(self, ts, data):
 		opcode = data.split()[0]
 
@@ -114,9 +119,7 @@ class PowerHandler(object):
 			sre = PLAYER_ENTITY_RE.match(data)
 			self.register_player(ts, *sre.groups())
 		elif opcode.startswith("tag="):
-			sre = TAG_VALUE_RE.match(data)
-			tag, value = sre.groups()
-			tag, value = parse_tag(tag, value)
+			tag, value = self.parse_initial_tag(data)
 			self._entity_packet.tags.append((tag, value))
 		elif opcode.startswith("Info["):
 			sre = METADATA_INFO_RE.match(data)
