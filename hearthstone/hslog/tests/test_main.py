@@ -1,6 +1,6 @@
 import pytest
 from io import StringIO
-from hearthstone.enums import PowerType
+from hearthstone.enums import CardType, GameTag, PowerType, Zone
 from hearthstone.hslog import LogParser
 
 
@@ -60,3 +60,23 @@ def test_create_empty_game():
 	# Check some basic logic
 	assert game.get_player(1) is game.players[0]
 	assert game.get_player(2) is game.players[1]
+
+
+def test_tag_value_parsing():
+	parser = LogParser()
+
+	tag, value = parser.parse_initial_tag("tag=ZONE value=PLAY")
+	assert tag == GameTag.ZONE
+	assert value == Zone.PLAY
+
+	tag, value = parser.parse_initial_tag("tag=CARDTYPE value=PLAYER")
+	assert tag == GameTag.CARDTYPE
+	assert value == CardType.PLAYER
+
+	tag, value = parser.parse_initial_tag("tag=1 value=2")
+	assert tag == 1
+	assert value == 2
+
+	tag, value = parser.parse_initial_tag("tag=9999998 value=123")
+	assert tag == 9999998
+	assert value == 123
