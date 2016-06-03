@@ -111,11 +111,11 @@ class PowerHandler(object):
 			return self.handle_power(ts, opcode, data)
 
 		if opcode == "GameEntity":
-			self.close_nodes()
+			self.flush()
 			sre = GAME_ENTITY_RE.match(data)
 			self.register_game(ts, *sre.groups())
 		elif opcode == "Player":
-			self.close_nodes()
+			self.flush()
 			sre = PLAYER_ENTITY_RE.match(data)
 			self.register_player(ts, *sre.groups())
 		elif opcode.startswith("tag="):
@@ -129,7 +129,7 @@ class PowerHandler(object):
 		else:
 			raise NotImplementedError(data)
 
-	def close_nodes(self):
+	def flush(self):
 		if self._entity_node:
 			for k, v in self._entity_packet.tags:
 				self._entity_node.tags[k] = v
@@ -139,7 +139,7 @@ class PowerHandler(object):
 			self._metadata_node = None
 
 	def handle_power(self, ts, opcode, data):
-		self.close_nodes()
+		self.flush()
 
 		if opcode == "CREATE_GAME":
 			regex, callback = CREATE_GAME_RE, self.create_game
