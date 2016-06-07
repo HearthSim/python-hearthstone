@@ -1,4 +1,4 @@
-from hearthstone.enums import CardType, GameTag, Step, Zone
+from hearthstone.enums import CardType, GameTag, PowerType, Step, Zone
 
 
 class Entity(object):
@@ -91,6 +91,20 @@ class Game(Entity):
 			elif entity.id > id:
 				# It's just not there...
 				return
+
+	def guess_friendly_player(self):
+		"""
+		Attempt to guess the friendly player in the game by
+		looking for initial revealed cards in the hand.
+		Will not work very early in game initialization and
+		produce incorrect results if both hands are revealed.
+		"""
+		for packet in self.packets[1:]:
+			if packet.type != PowerType.FULL_ENTITY:
+				break
+			tags = dict(packet.tags)
+			if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
+				return tags[GameTag.CONTROLLER] % 2 + 1
 
 
 class Player(Entity):

@@ -153,3 +153,5 @@ def test_game_initialization():
 		GameTag.ENTITY_ID: 3,
 		GameTag.CARDTYPE: CardType.PLAYER,
 	}
+
+	assert not game.guess_friendly_player()
