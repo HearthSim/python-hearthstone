@@ -1,7 +1,8 @@
 import pytest
+from datetime import datetime
 from io import StringIO
 from hearthstone.enums import (
-	CardType, GameTag, PlayState, PowerType, State, Step, Zone
+	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
 )
 from hearthstone.hslog import LogParser
 
@@ -155,3 +156,25 @@ def test_game_initialization():
 	}
 
 	assert not game.guess_friendly_player()
+
+
+def test_empty_tasklist():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.flush()
+
+	ts = datetime.now()
+	msg = "id=4 Player=The Innkeeper TaskList=1 ChoiceType=GENERAL CountMin=1 CountMax=1"
+	choices = parser.handle_entity_choices(ts, msg)
+	assert choices
+	assert choices.id == 4
+	assert choices.player == "The Innkeeper"
+	assert choices.tasklist == 1
+	assert choices.type == ChoiceType.GENERAL
+	assert choices.min == 1
+	assert choices.max == 1
+
+	# Test empty tasklist
+	msg = "id=4 Player=The Innkeeper TaskList= ChoiceType=GENERAL CountMin=1 CountMax=1"
+	choices = parser.handle_entity_choices(ts, msg)
+	assert choices.tasklist is None

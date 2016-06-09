@@ -386,7 +386,9 @@ class ChoicesHandler:
 
 	def register_choices(self, ts, id, player, tasklist, type, min, max):
 		player = self.parse_entity(player)
-		tasklist = int(tasklist)
+		if tasklist is not None:
+			# Sometimes tasklist is empty
+			tasklist = int(tasklist)
 		return self._register_choices(ts, id, player, tasklist, type, min, max)
 
 	def handle_send_choices(self, ts, data):
