@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime
+from datetime import datetime, time
 from io import StringIO
 from hearthstone.enums import (
 	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
@@ -156,6 +156,22 @@ def test_game_initialization():
 	}
 
 	assert not game.guess_friendly_player()
+
+
+def test_timestamp_parsing():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.flush()
+
+	assert parser.games[0].packets[0].ts == time(2, 59, 14, 608862)
+
+	# Test with an initial datetime
+	parser2 = LogParser()
+	parser2._current_date = datetime(2015, 1, 1)
+	parser2.read(StringIO(INITIAL_GAME))
+	parser2.flush()
+
+	assert parser2.games[0].packets[0].ts == datetime(2015, 1, 1, 2, 59, 14, 608862)
 
 
 def test_empty_tasklist():
