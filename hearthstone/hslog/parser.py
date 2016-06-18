@@ -184,7 +184,6 @@ class PowerHandler(object):
 	# Messages
 	def create_game(self, ts):
 		self.current_game = Game(0)
-		self.current_game._broadcasted = False
 		packet_tree = packets.PacketTree(ts)
 		packet_tree.spectator_mode = self.spectator_mode
 		packet_tree.game = self.current_game

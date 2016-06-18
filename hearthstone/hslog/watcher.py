@@ -21,6 +21,10 @@ class LogWatcher(LogParser):
 	def on_game_ready(self, game, *players):
 		pass
 
+	def create_game(self, ts):
+		super().create_game(ts)
+		self.current_game._broadcasted = False
+
 	def close_nodes(self):
 		if self._entity_node:
 			self.on_entity_update(self._entity_node)
