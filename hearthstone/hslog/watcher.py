@@ -9,6 +9,9 @@ class LogWatcher(LogParser):
 	def on_block(self, action):
 		pass
 
+	def on_mulligan(self, player, choices):
+		pass
+
 	def on_metadata(self, metadata):
 		pass
 
@@ -20,6 +23,11 @@ class LogWatcher(LogParser):
 
 	def on_game_ready(self, game, *players):
 		pass
+
+	def _register_choices(self, *args):
+		packet = super()._register_choices(*args)
+		if packet.type == ChoiceType.MULLIGAN:
+			self.on_mulligan(packet.player, packet)
 
 	def create_game(self, ts):
 		super().create_game(ts)

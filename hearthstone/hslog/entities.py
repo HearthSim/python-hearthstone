@@ -38,7 +38,6 @@ class Game(Entity):
 		super(Game, self).__init__(id)
 		self.players = []
 		self.entities = []
-		self.mulligan = {}
 
 	@property
 	def current_player(self):
