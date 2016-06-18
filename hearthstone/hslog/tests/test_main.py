@@ -50,7 +50,8 @@ def test_create_empty_game():
 
 	# Test resulting game/entities
 	assert len(parser.games) == 1
-	game = parser.games[0]
+	game_tree = parser.games[0]
+	game = game_tree.game
 	assert len(game.entities) == 3
 	assert len(game.players) == 2
 	assert game.entities[0] is game
@@ -73,8 +74,8 @@ def test_create_empty_game():
 	assert not game.players[1].name
 
 	# Test packet structure
-	assert len(game.packets) == 1
-	packet = game.packets[0]
+	assert len(game_tree.packets) == 1
+	packet = game_tree.packets[0]
 	assert packet.type == PowerType.CREATE_GAME
 	assert packet.entity is game
 
@@ -120,7 +121,8 @@ def test_game_initialization():
 	parser.flush()
 
 	assert len(parser.games) == 1
-	game = parser.games[0]
+	game_tree = parser.games[0]
+	game = game_tree.game
 	assert len(game.entities) == 3
 	assert len(game.players) == 2
 
@@ -155,7 +157,7 @@ def test_game_initialization():
 		GameTag.CARDTYPE: CardType.PLAYER,
 	}
 
-	assert not game.guess_friendly_player()
+	assert not game_tree.guess_friendly_player()
 
 
 def test_timestamp_parsing():

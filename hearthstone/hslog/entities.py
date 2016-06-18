@@ -34,29 +34,11 @@ class Entity(object):
 class Game(Entity):
 	_args = ("players", )
 
-	def __init__(self, id, ts):
+	def __init__(self, id):
 		super(Game, self).__init__(id)
 		self.players = []
 		self.entities = []
-		self.packets = []
-		self.ts = ts
 		self.mulligan = {}
-
-	def __iter__(self):
-		for packet in self.packets:
-			yield packet
-
-	@property
-	def start_time(self):
-		for packet in self.packets:
-			if packet.ts:
-				return packet.ts
-
-	@property
-	def end_time(self):
-		for packet in self.packets[::-1]:
-			if packet.ts:
-				return packet.ts
 
 	@property
 	def current_player(self):
@@ -91,20 +73,6 @@ class Game(Entity):
 			elif entity.id > id:
 				# It's just not there...
 				return
-
-	def guess_friendly_player(self):
-		"""
-		Attempt to guess the friendly player in the game by
-		looking for initial revealed cards in the hand.
-		Will not work very early in game initialization and
-		produce incorrect results if both hands are revealed.
-		"""
-		for packet in self.packets[1:]:
-			if packet.type != PowerType.FULL_ENTITY:
-				break
-			tags = dict(packet.tags)
-			if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
-				return tags[GameTag.CONTROLLER] % 2 + 1
 
 
 class Player(Entity):

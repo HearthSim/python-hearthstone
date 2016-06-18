@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from hearthstone import enums
 from ..enums import GameTag, PowerType
 from . import packets
-from .utils import parse_enum, parse_tag
 from .entities import Entity, Card, Game, Player
+from .utils import parse_enum, parse_tag
 
 
 # Timestamp parsing
@@ -183,13 +183,15 @@ class PowerHandler(object):
 	# Messages
 	def create_game(self, ts):
 		self.current_block = None
-		self.current_game = Game(0, ts)
-		self.games.append(self.current_game)
+		self.packet_tree = packets.PacketTree(ts)
+		self.packet_tree.spectator_mode = self.spectator_mode
+		self.current_game = Game(0)
 		self.current_game._broadcasted = False
+		self.packet_tree.game = self.current_game
+		self.games.append(self.packet_tree)
 		self._entity_packet = packets.CreateGame(ts, self.current_game)
 		self.current_node.packets.append(self._entity_packet)
 		self._game_packet = self._entity_packet
-		self.current_game.spectator_mode = self.spectator_mode
 
 	def block_start(self, ts, entity, type, index, effectid, effectindex, target):
 		entity = self.parse_entity(entity)
@@ -471,7 +473,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 
 	@property
 	def current_node(self):
-		return self.current_block or self.current_game
+		return self.current_block or self.packet_tree
 
 	def parse_timestamp(self, ts, method):
 		ret = parse_timestamp(ts)
