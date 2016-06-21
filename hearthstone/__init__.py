@@ -1,3 +1,3 @@
 __author__ = "Jerome Leclanche"
 __email__ = "jerome@leclan.ch"
-__version__ = "1.10.13030"
+__version__ = "1.11.13030"
