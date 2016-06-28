@@ -1,4 +1,4 @@
-from ..enums import GameTag
+from ..enums import ChoiceType, GameTag
 from .parser import LogParser
 
 
