@@ -2,9 +2,9 @@ import logging
 import re
 from datetime import datetime, timedelta
 from hearthstone import enums
+from hearthstone.entities import Entity, Card, Game, Player
 from ..enums import GameTag, PowerType
 from . import packets
-from .entities import Entity, Card, Game, Player
 from .utils import parse_enum, parse_tag
 
 
