@@ -30,7 +30,7 @@ class PacketTree:
 		produce incorrect results if both hands are revealed.
 		"""
 		for packet in self.packets[1:]:
-			if packet.type != PowerType.FULL_ENTITY:
+			if packet.power_type != PowerType.FULL_ENTITY:
 				break
 			tags = dict(packet.tags)
 			if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
@@ -38,14 +38,14 @@ class PacketTree:
 
 
 class Packet:
-	type = 0
+	power_type = 0
 
 	def __repr__(self):
 		return "<%s>" % (self.__class__.__name__)
 
 
 class Block(Packet):
-	type = PowerType.BLOCK_START
+	power_type = PowerType.BLOCK_START
 
 	def __init__(self, ts, entity, type, index, effectid, effectindex, target):
 		self.ts = ts
@@ -72,7 +72,7 @@ class Block(Packet):
 
 
 class MetaData(Packet):
-	type = PowerType.META_DATA
+	power_type = PowerType.META_DATA
 
 	def __init__(self, ts, meta, data, count):
 		self.ts = ts
@@ -86,7 +86,7 @@ class MetaData(Packet):
 
 
 class CreateGame(Packet):
-	type = PowerType.CREATE_GAME
+	power_type = PowerType.CREATE_GAME
 
 	class Player:
 		def __init__(self, ts, entity, playerid, hi, lo):
@@ -106,7 +106,7 @@ class CreateGame(Packet):
 
 
 class HideEntity(Packet):
-	type = PowerType.HIDE_ENTITY
+	power_type = PowerType.HIDE_ENTITY
 
 	def __init__(self, ts, entity, zone):
 		self.ts = ts
@@ -115,7 +115,7 @@ class HideEntity(Packet):
 
 
 class FullEntity(Packet):
-	type = PowerType.FULL_ENTITY
+	power_type = PowerType.FULL_ENTITY
 
 	def __init__(self, ts, entity, cardid):
 		self.ts = ts
@@ -125,7 +125,7 @@ class FullEntity(Packet):
 
 
 class ShowEntity(Packet):
-	type = PowerType.SHOW_ENTITY
+	power_type = PowerType.SHOW_ENTITY
 
 	def __init__(self, ts, entity, cardid):
 		self.ts = ts
@@ -135,7 +135,7 @@ class ShowEntity(Packet):
 
 
 class ChangeEntity(Packet):
-	type = PowerType.CHANGE_ENTITY
+	power_type = PowerType.CHANGE_ENTITY
 
 	def __init__(self, ts, entity, cardid):
 		self.ts = ts
@@ -145,7 +145,7 @@ class ChangeEntity(Packet):
 
 
 class TagChange(Packet):
-	type = PowerType.TAG_CHANGE
+	power_type = PowerType.TAG_CHANGE
 
 	def __init__(self, ts, entity, tag, value):
 		self.ts = ts
