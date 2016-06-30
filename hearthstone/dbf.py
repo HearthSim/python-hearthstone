@@ -10,17 +10,23 @@ class Dbf:
 			ret.populate(f)
 		return ret
 
+	def __init__(self):
+		self.name = None
+
+	def __repr__(self):
+		return "<%s: %s>" % (self.__class__.__name__, self.name)
+
+	@property
+	def records(self):
+		for e in self.xml.findall("Record"):
+			yield self._deserialize_record(e)
+
 	def populate(self, file):
 		self.xml = ElementTree.parse(file)
 		self.name = self.xml.getroot().attrib.get("name", "")
 		self.columns = OrderedDict()
 		for column in self.xml.findall("Column"):
 			self.columns[column.attrib["name"]] = column.attrib["type"]
-
-	@property
-	def records(self):
-		for e in self.xml.findall("Record"):
-			yield self._deserialize_record(e)
 
 	def _deserialize_record(self, element):
 		ret = {}
