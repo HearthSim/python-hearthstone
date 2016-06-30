@@ -38,6 +38,8 @@ class Dbf:
 		return ret
 
 	def _deserialize_value(self, element, coltype):
+		if element.text is None:
+			return
 		if coltype in ("Int", "Long", "ULong"):
 			return int(element.text)
 		elif coltype == "Bool":
