@@ -520,6 +520,9 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		if sre:
 			method, msg = sre.groups()
 			msg = msg.strip()
+			if not self.current_block and "CREATE_GAME" not in msg:
+				logging.warning("No game available - ignoring %r", line)
+				return
 			for handler in PowerHandler, ChoicesHandler, OptionsHandler:
 				callback = handler.find_callback(self, method)
 				if callback:
