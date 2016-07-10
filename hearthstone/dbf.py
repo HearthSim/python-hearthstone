@@ -36,6 +36,8 @@ class Dbf:
 			return
 		if coltype in ("Int", "Long", "ULong"):
 			return int(element.text)
+		elif coltype == "Float":
+			return float(element.text)
 		elif coltype == "Bool":
 			return element.text == "True"
 		elif coltype in ("String", "AssetPath"):
