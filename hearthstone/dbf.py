@@ -1,5 +1,8 @@
 from collections import OrderedDict
-from xml.etree import ElementTree
+try:
+	from lxml import etree as ElementTree
+except ImportError:
+	from xml.etree import ElementTree
 
 
 class Dbf:
@@ -51,3 +54,45 @@ class Dbf:
 			self.columns[column.attrib["name"]] = column.attrib["type"]
 
 		self.records = (self._deserialize_record(e) for e in self._xml.findall("Record"))
+
+	def _to_xml(self):
+		root = ElementTree.Element("Dbf")
+
+		if self.name is not None:
+			root.attrib["name"] = self.name
+
+		if self.source_fingerprint is not None:
+			e = ElementTree.Element("SourceFingerprint")
+			root.append(e)
+			e.text = self.source_fingerprint
+
+		for column, type in self.columns.items():
+			e = ElementTree.Element("Column")
+			root.append(e)
+			e.attrib["name"] = column
+			e.attrib["type"] = type
+
+		for record in self.records:
+			e = ElementTree.Element("Record")
+			root.append(e)
+			for column, type in self.columns.items():
+				field = ElementTree.Element("Field")
+				e.append(field)
+				field.attrib["column"] = column
+				value = record[column]
+				if value is None:
+					continue
+
+				if type == "LocString":
+					for locale, locvalue in value.items():
+						eloc = ElementTree.Element(locale)
+						field.append(eloc)
+						eloc.text = locvalue
+				else:
+					field.text = str(record[column])
+
+		return root
+
+	def to_xml(self, encoding="utf-8"):
+		root = self._to_xml()
+		return ElementTree.tostring(root, encoding=encoding)
