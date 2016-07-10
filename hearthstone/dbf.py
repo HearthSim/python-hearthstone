@@ -12,25 +12,12 @@ class Dbf:
 
 	def __init__(self):
 		self.name = None
+		self.records = []
 		self.columns = OrderedDict()
 		self.source_fingerprint = None
 
 	def __repr__(self):
 		return "<%s: %s>" % (self.__class__.__name__, self.name)
-
-	@property
-	def records(self):
-		for e in self.xml.findall("Record"):
-			yield self._deserialize_record(e)
-
-	def populate(self, file):
-		self.xml = ElementTree.parse(file)
-		self.name = self.xml.getroot().attrib.get("name", "")
-		for column in self.xml.findall("Column"):
-			self.columns[column.attrib["name"]] = column.attrib["type"]
-
-		for fingerprint in self.xml.findall("SourceFingerprint"):
-			self.source_fingerprint = fingerprint.text
 
 	def _deserialize_record(self, element):
 		ret = {}
@@ -53,3 +40,14 @@ class Dbf:
 		elif coltype == "LocString":
 			return {e.tag: e.text for e in element}
 		raise NotImplementedError("Unknown DBF Data Type: %r" % (coltype))
+
+	def populate(self, file):
+		self._xml = ElementTree.parse(file)
+		self.name = self._xml.getroot().attrib.get("name", "")
+		for fingerprint in self._xml.findall("SourceFingerprint"):
+			self.source_fingerprint = fingerprint.text
+
+		for column in self._xml.findall("Column"):
+			self.columns[column.attrib["name"]] = column.attrib["type"]
+
+		self.records = (self._deserialize_record(e) for e in self._xml.findall("Record"))
