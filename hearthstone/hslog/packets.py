@@ -36,6 +36,15 @@ class PacketTree:
 			if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
 				return tags[GameTag.CONTROLLER] % 2 + 1
 
+		# If we got this far, this is likely a reconnect.
+		# Look for unrevealed cards in hand.
+		for player in self.game.players:
+			print("player=%r" % (player))
+			for card in player.in_zone(Zone.HAND):
+				print("player=%r, card=%r" % (player, card))
+				if not card.card_id:
+					return player.player_id
+
 
 class Packet:
 	power_type = 0

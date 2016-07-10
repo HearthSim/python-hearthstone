@@ -12,6 +12,7 @@ class Dbf:
 
 	def __init__(self):
 		self.name = None
+		self.source_fingerprint = None
 
 	def __repr__(self):
 		return "<%s: %s>" % (self.__class__.__name__, self.name)
@@ -27,6 +28,9 @@ class Dbf:
 		self.columns = OrderedDict()
 		for column in self.xml.findall("Column"):
 			self.columns[column.attrib["name"]] = column.attrib["type"]
+
+		for fingerprint in self.xml.findall("SourceFingerprint"):
+			self.source_fingerprint = fingerprint.text
 
 	def _deserialize_record(self, element):
 		ret = {}
