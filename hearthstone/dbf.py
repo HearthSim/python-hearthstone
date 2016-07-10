@@ -12,6 +12,7 @@ class Dbf:
 
 	def __init__(self):
 		self.name = None
+		self.columns = OrderedDict()
 		self.source_fingerprint = None
 
 	def __repr__(self):
@@ -25,7 +26,6 @@ class Dbf:
 	def populate(self, file):
 		self.xml = ElementTree.parse(file)
 		self.name = self.xml.getroot().attrib.get("name", "")
-		self.columns = OrderedDict()
 		for column in self.xml.findall("Column"):
 			self.columns[column.attrib["name"]] = column.attrib["type"]
 
