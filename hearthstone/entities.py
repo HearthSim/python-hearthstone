@@ -1,4 +1,4 @@
-from .enums import CardType, GameTag, PowerType, Step, Zone
+from .enums import CardType, GameTag, Step, Zone
 
 
 class Entity(object):

@@ -17,6 +17,7 @@ except ImportError:
 	logging.warning(
 		"python-dateutil is not installed. Timestamp parsing may not work properly."
 	)
+
 	def parse_timestamp(ts):
 		# Unity logs have one character precision too much...
 		return datetime.strptime(ts[:-1], TIMESTAMP_POWERLOG_FORMAT)
@@ -325,7 +326,7 @@ class ChoicesHandler:
 	def find_callback(self, method):
 		if method == self.parse_method("DebugPrintEntityChoices"):
 			return self.handle_entity_choices
-		elif method== self.parse_method("DebugPrintChoices"):
+		elif method == self.parse_method("DebugPrintChoices"):
 			return self.handle_entity_choices_old
 		elif method == self.parse_method("SendChoices"):
 			return self.handle_send_choices
