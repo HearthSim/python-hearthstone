@@ -69,9 +69,9 @@ class Game(Entity):
 		for entity in self.entities:
 			if entity.id == id:
 				return entity
-			elif entity.id > id:
-				# It's just not there...
-				return
+			# Entities are ordered by ID... usually. It is NOT safe to assume
+			# that the entity is missing if we went past the ID.
+			# Yep.
 
 
 class Player(Entity):
