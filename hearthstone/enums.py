@@ -944,4 +944,4 @@ if __name__ == "__main__":
 		k: dict(v.__members__) for k, v in globals().items() if (
 			isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
 		)
-	}))
+	}, sort_keys=True))
