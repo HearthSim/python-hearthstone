@@ -29,21 +29,29 @@ class PacketTree:
 		Will not work very early in game initialization and
 		produce incorrect results if both hands are revealed.
 		"""
-		for packet in self.packets[1:]:
+		# Pre-13619: The first FULL_ENTITY packet which is in Zone.HAND and
+		# does *not* have an ID is owned by the friendly player's opponent.
+		packets = self.packets[1:]
+		for packet in packets:
 			if packet.power_type != PowerType.FULL_ENTITY:
 				break
 			tags = dict(packet.tags)
 			if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
 				return tags[GameTag.CONTROLLER] % 2 + 1
 
-		# If we got this far, this is likely a reconnect.
-		# Look for unrevealed cards in hand.
-		for player in self.game.players:
-			print("player=%r" % (player))
-			for card in player.in_zone(Zone.HAND):
-				print("player=%r, card=%r" % (player, card))
-				if not card.card_id:
-					return player.player_id
+		# Post-13619: The FULL_ENTITY packets no longer contain initial
+		# card data, a SHOW_ENTITY always has to happen.
+		# The first SHOW_ENTITY packet *will* be the friendly player's.
+		def find_show_entity(packets):
+			for packet in packets:
+				if packet.power_type == PowerType.SHOW_ENTITY:
+					return packet.entity.tags[GameTag.CONTROLLER]
+				elif packet.power_type == PowerType.BLOCK_START:
+					ret = find_show_entity(packet.packets)
+					if ret:
+						return ret
+
+		return find_show_entity(packets)
 
 
 class Packet:
