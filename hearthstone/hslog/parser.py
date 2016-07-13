@@ -544,7 +544,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 
 	def parse_entity(self, entity):
 		id = self.parse_entity_id(entity)
-		if not id:
+		if id is None:
 			return self.current_game.get_player(entity) or entity
 		return self.current_game.find_entity_by_id(id)
 
