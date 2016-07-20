@@ -86,10 +86,14 @@ class Dbf:
 					continue
 
 				if type == "LocString":
-					for locale, locvalue in value.items():
+					locales = sorted(value.keys())
+					# Always have enUS as first item
+					if "enUS" in locales:
+						locales.insert(0, locales.pop(locales.index("enUS")))
+					for locale in locales:
 						eloc = ElementTree.Element(locale)
 						field.append(eloc)
-						eloc.text = locvalue
+						eloc.text = value[locale]
 				else:
 					field.text = str(record[column])
 
