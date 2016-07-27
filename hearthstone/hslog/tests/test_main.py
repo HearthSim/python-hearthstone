@@ -76,7 +76,7 @@ def test_create_empty_game():
 	# Test packet structure
 	assert len(game_tree.packets) == 1
 	packet = game_tree.packets[0]
-	assert packet.type == PowerType.CREATE_GAME
+	assert packet.power_type == PowerType.CREATE_GAME
 	assert packet.entity is game
 
 	# Player packet objects are not the same as players
