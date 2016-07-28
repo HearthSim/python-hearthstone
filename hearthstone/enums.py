@@ -938,10 +938,20 @@ class Locale(IntEnum):
 
 
 if __name__ == "__main__":
+	import sys
 	import json
 
-	print(json.dumps({
+	enums = {
 		k: dict(v.__members__) for k, v in globals().items() if (
 			isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
 		)
-	}, sort_keys=True))
+	}
+
+	if len(sys.argv) == 2 and sys.argv[1] == "--ts":
+		for enum in sorted(enums):
+			print("export const enum %s {" % (enum))
+			for name, value in sorted(enums[enum].items(), key=lambda k: k[1]):
+				print("\t%s = %i," % (name, value))
+			print("}\n")
+	else:
+		print(json.dumps(enums, sort_keys=True))
