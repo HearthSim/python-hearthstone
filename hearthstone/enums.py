@@ -947,11 +947,23 @@ if __name__ == "__main__":
 		)
 	}
 
-	if len(sys.argv) == 2 and sys.argv[1] == "--ts":
+	def _print_enums(enums, format):
+		ret = []
+		linefmt = "\t%s = %i,"
 		for enum in sorted(enums):
-			print("export const enum %s {" % (enum))
-			for name, value in sorted(enums[enum].items(), key=lambda k: k[1]):
-				print("\t%s = %i," % (name, value))
-			print("}\n")
+			sorted_pairs = sorted(enums[enum].items(), key=lambda k: k[1])
+			lines = "\n".join(linefmt % (name, value) for name, value in sorted_pairs)
+			ret.append(format % (enum, lines))
+		print("\n\n".join(ret))
+
+	if len(sys.argv) >= 2:
+		format = sys.argv[1]
+	else:
+		format = "--json"
+
+	if format == "--ts":
+		_print_enums(enums, "export const enum %s {\n%s\n}")
+	elif format == "--cs":
+		_print_enums(enums, "public enum %s {\n%s\n}")
 	else:
 		print(json.dumps(enums, sort_keys=True))
