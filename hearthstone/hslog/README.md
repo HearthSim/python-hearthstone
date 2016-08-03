@@ -12,11 +12,11 @@ watcher = LogWatcher()
 with open("Power.log", "r") as f:
 	watcher.read(f)
 
-for game in watcher.games:
-	print(game, game.players)
+for packet_tree in watcher.games:
+	print(packet_tree.game, packet_tree.game.players)
 
-	for action in game.actions:
-		print(action)
+	for packet in packet_tree.packets:
+		print(packet)
 ```
 
 You can subclass the `LogWatcher` class to register callbacks.
