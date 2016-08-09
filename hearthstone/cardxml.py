@@ -6,7 +6,12 @@ from .enums import (
 
 def prop(tag, cast=int):
 	def _func(self):
-		return cast(self.tags.get(tag, 0))
+		value = self.tags.get(tag, 0)
+		try:
+			return cast(value)
+		except ValueError:
+			# The enum value is most likely just missing
+			return value
 	return property(_func)
 
 
@@ -41,9 +46,14 @@ class CardXML(object):
 		self.texture = e and e[0].text or ""
 
 		e = self.xml.findall("Power[PlayRequirement]/PlayRequirement")
-		self.requirements = {
-			PlayReq(int(t.attrib["reqID"])): int(t.attrib["param"] or 0) for t in e
-		}
+		self.requirements = {}
+		for t in e:
+			reqid = int(t.attrib["reqID"])
+			try:
+				req = PlayReq(reqid)
+			except ValueError:
+				req = reqid
+			self.requirements[req] = int(t.attrib["param"] or 0)
 
 		self.entourage = [t.attrib["cardID"] for t in xml.findall("EntourageCard")]
 
@@ -91,7 +101,7 @@ class CardXML(object):
 
 	@property
 	def craftable(self):
-		if not self.card_set.craftable:
+		if isinstance(self.card_set, CardSet) and not self.card_set.craftable:
 			return False
 		if not self.type.craftable:
 			return False
