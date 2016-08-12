@@ -176,6 +176,16 @@ def test_timestamp_parsing():
 	assert parser2.games[0].packets[0].ts == datetime(2015, 1, 1, 2, 59, 14, 608862)
 
 
+def test_info_outside_of_metadata():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.flush()
+
+	info = "D 02:59:14.6500380 GameState.DebugPrintPower() -             Info[0] = 99"
+	parser.read(StringIO(info))
+	parser.flush()
+
+
 def test_empty_tasklist():
 	parser = LogParser()
 	parser.read(StringIO(INITIAL_GAME))

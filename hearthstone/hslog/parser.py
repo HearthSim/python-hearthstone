@@ -124,6 +124,9 @@ class PowerHandler(object):
 			tag, value = self.parse_initial_tag(data)
 			self._entity_packet.tags.append((tag, value))
 		elif opcode.startswith("Info["):
+			if not self._metadata_node:
+				logging.warning("Metadata Info outside of META_DATA: %r", data)
+				return
 			sre = METADATA_INFO_RE.match(data)
 			idx, entity = sre.groups()
 			entity = self.parse_entity(entity)
