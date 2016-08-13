@@ -355,7 +355,9 @@ TAG_NAMES = {
 	GameTag.AI_MUST_PLAY: "AIMustPlay",
 	GameTag.AFFECTED_BY_SPELL_POWER: "AffectedBySpellPower",
 	GameTag.SPARE_PART: "SparePart",
+	GameTag.HIDE_STATS: "HideStats",
 	GameTag.DISCOVER: "Treasure",
+	GameTag.AUTOATTACK: "AutoAttack",
 }
 
 
@@ -936,6 +938,7 @@ TAG_TYPES = {
 	GameTag.NEXT_STEP: Step,
 	GameTag.STATE: State,
 	GameTag.MULLIGAN_STATE: Mulligan,
+	GameTag.AUTOATTACK: Type.BOOL,
 }
 
 
