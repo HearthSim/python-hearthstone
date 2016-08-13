@@ -192,6 +192,8 @@ class CardXML(object):
 	##
 	# Bools
 
+	appear_functionally_dead = prop(GameTag.APPEAR_FUNCTIONALLY_DEAD, bool)
+	cant_be_fatigued = prop(GameTag.CANT_BE_FATIGUED, bool)
 	collectible = prop(GameTag.Collectible, bool)
 	battlecry = prop(GameTag.BATTLECRY, bool)
 	deathrattle = prop(GameTag.DEATHRATTLE, bool)
@@ -205,9 +207,10 @@ class CardXML(object):
 	poisonous = prop(GameTag.POISONOUS, bool)
 	ritual = prop(GameTag.RITUAL, bool)
 	secret = prop(GameTag.SECRET, bool)
-	taunt = prop(GameTag.TAUNT, bool)
 	spare_part = prop(GameTag.SPARE_PART, bool)
+	taunt = prop(GameTag.TAUNT, bool)
 	topdeck = prop(GameTag.TOPDECK, bool)
+	untouchable = prop(GameTag.UNTOUCHABLE, bool)
 
 	##
 	# Tags
