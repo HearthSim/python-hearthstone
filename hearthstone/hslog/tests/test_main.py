@@ -186,6 +186,16 @@ def test_info_outside_of_metadata():
 	parser.flush()
 
 
+def test_warn_level():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.flush()
+
+	line = "W 09:09:23.1428700 GameState.ReportStuck() - Stuck for 10s 89ms. {...}"
+	parser.read(StringIO(line))
+	parser.flush()
+
+
 def test_empty_tasklist():
 	parser = LogParser()
 	parser.read(StringIO(INITIAL_GAME))

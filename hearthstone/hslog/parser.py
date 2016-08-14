@@ -29,7 +29,7 @@ ENTITY_RE = re.compile("\[.*\s*id=(\d+)\s*.*\]")
 
 # Line format
 TIMESTAMP_POWERLOG_FORMAT = r"%H:%M:%S.%f"
-TIMESTAMP_RE = re.compile(r"^D ([\d:.]+) (.+)$")
+TIMESTAMP_RE = re.compile(r"^(D|W) ([\d:.]+) (.+)$")
 POWERLOG_LINE_RE = re.compile(r"([^(]+)\(\) - (.+)$")
 OUTPUTLOG_LINE_RE = re.compile(r"\[Power\] ()([^(]+)\(\) - (.+)$")
 
@@ -518,7 +518,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		if not sre:
 			raise ValueError("Invalid line format: %r" % (line))
 
-		ts, line = sre.groups()
+		level, ts, line = sre.groups()
 		if line.startswith(SPECTATOR_MODE_TOKEN):
 			line = line.replace(SPECTATOR_MODE_TOKEN, "").strip()
 			return self.process_spectator_mode(line)
