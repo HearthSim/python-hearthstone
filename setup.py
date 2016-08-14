@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-import os.path
 import hearthstone
 from setuptools import setup, find_packages
 
-
-README = open(os.path.join(os.path.dirname(__file__), "README.md")).read()
 
 CLASSIFIERS = [
 	"Development Status :: 5 - Production/Stable",
@@ -29,7 +26,6 @@ setup(
 	description="CardDefs.xml parser and Hearthstone enums for Python applications",
 	classifiers=CLASSIFIERS,
 	download_url="https://github.com/HearthSim/python-hearthstone/tarball/master",
-	long_description=README,
 	license="MIT",
 	url="https://github.com/HearthSim/python-hearthstone",
 	zip_safe=True,
