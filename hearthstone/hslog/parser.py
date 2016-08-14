@@ -510,7 +510,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		return ret
 
 	def read(self, fp):
-		for line in fp.readlines():
+		for line in fp:
 			self.read_line(line)
 
 	def read_line(self, line):
