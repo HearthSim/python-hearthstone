@@ -362,8 +362,9 @@ class ChoicesHandler:
 			return entity
 		elif data.startswith("Entities["):
 			sre = CHOICES_ENTITIES_RE.match(data)
-			idx, entity = sre.groups()
-			entity = self.parse_entity(entity)
+			idx, e = sre.groups()
+			entity = self.parse_entity(e)
+			assert entity, e
 			self._choice_packet.choices.append(entity)
 			return entity
 		raise NotImplementedError("Unhandled entity choice: %r" % (data))
@@ -408,8 +409,9 @@ class ChoicesHandler:
 			return self._send_choice_packet
 		elif data.startswith("m_chosenEntities"):
 			sre = SEND_CHOICES_ENTITIES_RE.match(data)
-			idx, entity = sre.groups()
-			entity = self.parse_entity(entity)
+			idx, e = sre.groups()
+			entity = self.parse_entity(e)
+			assert entity, e
 			self._send_choice_packet.choices.append(entity)
 			return entity
 		raise NotImplementedError("Unhandled send choice: %r" % (data))
@@ -426,8 +428,9 @@ class ChoicesHandler:
 			return self._chosen_packet
 		elif data.startswith("Entities["):
 			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
-			idx, entity = sre.groups()
-			entity = self.parse_entity(entity)
+			idx, e = sre.groups()
+			entity = self.parse_entity(e)
+			assert entity, e
 			self._chosen_packet.choices.append(entity)
 			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
 			return entity
