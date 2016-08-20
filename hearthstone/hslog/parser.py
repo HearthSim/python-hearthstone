@@ -1,26 +1,12 @@
 import logging
 import re
 from datetime import datetime, timedelta
+from aniso8601 import parse_time
 from hearthstone import enums
 from hearthstone.entities import Entity, Card, Game, Player
 from ..enums import GameTag, PowerType
 from . import packets
 from .utils import parse_enum, parse_tag
-
-
-# Timestamp parsing
-try:
-	import dateutil.parser
-	_default_date = datetime(1900, 1, 1)
-	parse_timestamp = lambda ts: dateutil.parser.parse(ts, default=_default_date)
-except ImportError:
-	logging.warning(
-		"python-dateutil is not installed. Timestamp parsing may not work properly."
-	)
-
-	def parse_timestamp(ts):
-		# Unity logs have one character precision too much...
-		return datetime.strptime(ts[:-1], TIMESTAMP_POWERLOG_FORMAT)
 
 
 # Entity format
@@ -479,7 +465,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		self._synced_timestamp = False
 
 	def parse_timestamp(self, ts, method):
-		ret = parse_timestamp(ts)
+		ret = parse_time(ts)
 
 		if not self._synced_timestamp:
 			# The first timestamp we parse requires syncing the time
@@ -494,22 +480,18 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			# Only do it once per parse tree
 			self._synced_timestamp = True
 
-		if ret.year == 1900:
-			# Logs without date :(
-			if self._current_date is None:
-				return ret.time()
-			else:
-				ret = ret.replace(
-					year=self._current_date.year,
-					month=self._current_date.month,
-					day=self._current_date.day,
-					tzinfo=self._current_date.tzinfo,
-				)
-				if ret < self._current_date:
-					# If the new date falls before the last saved date, that
-					# means we rolled over and need to increment the day by 1.
-					ret += timedelta(days=1)
-				self._current_date = ret
+		# Logs don't have dates :(
+		if self._current_date is None:
+			# No starting date is available. Return just the time.
+			return ret
+
+		ret = datetime.combine(self._current_date, ret)
+		ret = ret.replace(tzinfo=self._current_date.tzinfo)
+		if ret < self._current_date:
+			# If the new date falls before the last saved date, that
+			# means we rolled over and need to increment the day by 1.
+			ret += timedelta(days=1)
+		self._current_date = ret
 		return ret
 
 	def read(self, fp):
