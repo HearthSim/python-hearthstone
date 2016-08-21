@@ -1,6 +1,7 @@
 import pytest
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from io import StringIO
+from aniso8601 import parse_datetime
 from hearthstone.enums import (
 	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
 )
@@ -174,6 +175,19 @@ def test_timestamp_parsing():
 	parser2.flush()
 
 	assert parser2.games[0].packets[0].ts == datetime(2015, 1, 1, 2, 59, 14, 608862)
+
+	# Same test, with timezone
+	parser2 = LogParser()
+	parser2._current_date = parse_datetime("2015-01-01T02:58:00+0200")
+	parser2.read(StringIO(INITIAL_GAME))
+	parser2.flush()
+
+	ts = parser2.games[0].packets[0].ts
+	assert ts.year == 2015
+	assert ts.hour == 2
+	assert ts.second == 14
+	assert ts.tzinfo
+	assert ts.utcoffset() == timedelta(hours=2)
 
 
 def test_info_outside_of_metadata():
