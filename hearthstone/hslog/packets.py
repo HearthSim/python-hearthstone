@@ -46,6 +46,9 @@ class PacketTree:
 		def find_show_entity(packets):
 			for packet in packets:
 				if packet.power_type == PowerType.SHOW_ENTITY:
+					if packet.entity.tags.get(GameTag.ZONE) == Zone.PLAY:
+						# Ignore cards already in play (such as enchantments, common in TB)
+						continue
 					return packet.entity.tags[GameTag.CONTROLLER]
 				elif packet.power_type == PowerType.BLOCK_START:
 					ret = find_show_entity(packet.packets)
