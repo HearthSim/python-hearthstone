@@ -84,6 +84,9 @@ class Player(Entity):
 		self.account_lo = lo
 		self.name = None
 
+	def __str__(self):
+		return self.name or ""
+
 	@property
 	def initial_deck(self):
 		for entity in self.entities:
