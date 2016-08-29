@@ -46,6 +46,12 @@ class Game(Entity):
 				return player
 
 	@property
+	def first_player(self):
+		for player in self.players:
+			if player.tags.get(GameTag.FIRST_PLAYER):
+				return player
+
+	@property
 	def setup_done(self):
 		return self.tags.get(GameTag.NEXT_STEP, 0) > Step.BEGIN_MULLIGAN
 
