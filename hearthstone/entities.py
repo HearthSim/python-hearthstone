@@ -109,6 +109,12 @@ class Player(Entity):
 				yield entity
 
 	@property
+	def hero(self):
+		for entity in self.in_zone(Zone.PLAY):
+			if entity.type == CardType.HERO:
+				return entity
+
+	@property
 	def heroes(self):
 		for entity in self.entities:
 			if entity.type == CardType.HERO:
