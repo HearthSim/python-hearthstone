@@ -33,12 +33,12 @@ class LogWatcher(LogParser):
 		super().create_game(ts)
 		self.current_game._broadcasted = False
 
-	def close_nodes(self):
+	def flush(self):
 		if self._entity_node:
 			self.on_entity_update(self._entity_node)
 		if self._metadata_node:
 			self.on_metadata(self._metadata_node)
-		super().close_nodes()
+		super().flush()
 
 	def block_end(self, ts):
 		action = super().block_end(ts)
