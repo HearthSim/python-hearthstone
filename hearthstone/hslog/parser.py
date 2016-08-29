@@ -121,6 +121,7 @@ class PowerHandler(object):
 			raise NotImplementedError(data)
 
 	def flush(self):
+		super(PowerHandler, self).flush()
 		if self._entity_node:
 			for k, v in self._entity_packet.tags:
 				self._entity_node.tags[k] = v
@@ -315,6 +316,12 @@ class OptionsHandler(object):
 
 
 class ChoicesHandler:
+	def __init__(self):
+		super(ChoicesHandler, self).__init__()
+		self._choice_packet = None
+		self._chosen_packet = None
+		self._send_choice_packet = None
+
 	def find_callback(self, method):
 		if method == self.parse_method("DebugPrintEntityChoices"):
 			return self.handle_entity_choices
@@ -324,6 +331,14 @@ class ChoicesHandler:
 			return self.handle_send_choices
 		elif method == self.parse_method("DebugPrintEntitiesChosen"):
 			return self.handle_entities_chosen
+
+	def flush(self):
+		if self._choice_packet:
+			self._choice_packet = None
+		if self._chosen_packet:
+			self._chosen_packet = None
+		if self._send_choice_packet:
+			self._send_choice_packet = None
 
 	def handle_entity_choices_old(self, ts, data):
 		if data.startswith("id="):
