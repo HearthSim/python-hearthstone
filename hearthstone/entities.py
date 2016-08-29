@@ -121,6 +121,12 @@ class Player(Entity):
 				yield entity
 
 	@property
+	def starting_hero(self):
+		if not self.heroes:
+			return
+		return list(self.heroes)[0]
+
+	@property
 	def is_ai(self):
 		return self.account_lo == 0
 
