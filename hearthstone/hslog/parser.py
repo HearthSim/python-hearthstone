@@ -315,7 +315,7 @@ class OptionsHandler(object):
 		raise NotImplementedError("Unhandled send option: %r" % (data))
 
 
-class ChoicesHandler:
+class ChoicesHandler(object):
 	def __init__(self):
 		super(ChoicesHandler, self).__init__()
 		self._choice_packet = None
