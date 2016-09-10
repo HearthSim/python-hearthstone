@@ -334,6 +334,8 @@ class ChoicesHandler(object):
 
 	def flush(self):
 		if self._choice_packet:
+			if self._choice_packet.type == enums.ChoiceType.MULLIGAN:
+				self.register_player_name_mulligan(self.current_game, self._choice_packet)
 			self._choice_packet = None
 		if self._chosen_packet:
 			self._chosen_packet = None
@@ -642,6 +644,27 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			for packet in self._player_buffer[id]:
 				packet.name = name
 			del self._player_buffer[id]
+
+	def register_player_name_mulligan(self, game, packet):
+		"""
+		Attempt to register player names by looking at Mulligan choice packets.
+		In Hearthstone 6.0+, registering a player name using tag changes is not
+		available as early as before. That means games conceded at Mulligan no
+		longer have player names.
+		This technique uses the cards offered in Mulligan instead, registering
+		the name of the packet's entity with the card's controller as PlayerID.
+		"""
+		if isinstance(packet.entity, Entity):
+			# The player is already registered, ignore.
+			return
+		for choice in packet.choices:
+			controller = choice.tags.get(GameTag.CONTROLLER, 0)
+			name = packet.entity
+			if controller and name:
+				# We need ENTITY_ID for register_player_name()
+				# That's always PlayerID + 1
+				entity_id = controller + 1
+				return self.register_player_name(game, name, entity_id)
 
 	def parse_method(self, m):
 		return "%s.%s" % (self._game_state_processor, m)
