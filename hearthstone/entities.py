@@ -38,6 +38,7 @@ class Game(Entity):
 		super(Game, self).__init__(id)
 		self.players = []
 		self.entities = []
+		self.initial_entities = []
 
 	@property
 	def current_player(self):
@@ -70,6 +71,8 @@ class Game(Entity):
 		self.entities.append(entity)
 		if isinstance(entity, Player):
 			self.players.append(entity)
+		elif not self.setup_done:
+			self.initial_entities.append(entity)
 
 	def find_entity_by_id(self, id):
 		for entity in self.entities:
@@ -95,12 +98,18 @@ class Player(Entity):
 
 	@property
 	def initial_deck(self):
-		for entity in self.entities:
-			if 3 < entity.id < 68:
-				if entity.tags.get(GameTag.CARDTYPE) not in (
-					CardType.HERO, CardType.HERO_POWER
-				):
-					yield entity
+		for entity in self.game.initial_entities:
+			if entity.controller != self:
+				continue
+			# Exclude heroes and hero powers
+			if entity.tags.get(GameTag.CARDTYPE, 0) not in (
+				CardType.INVALID, CardType.MINION, CardType.SPELL, CardType.WEAPON
+			):
+				continue
+			# Exclude choice cards, The Coin, Malchezaar legendaries
+			if entity.tags.get(GameTag.CREATOR, 0):
+				continue
+			yield entity
 
 	@property
 	def entities(self):
