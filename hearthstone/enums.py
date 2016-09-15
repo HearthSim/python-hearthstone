@@ -846,6 +846,7 @@ class Booster(IntEnum):
 	GOBLINS_VS_GNOMES = 9
 	THE_GRAND_TOURNAMENT = 10
 	OLD_GODS = 11
+	FIRST_PURCHASE = 17
 
 
 class DeckType(IntEnum):
