@@ -695,6 +695,24 @@ class BnetRegion(IntEnum):
 	REGION_DEV = 60
 	REGION_PTR = 98
 
+	@classmethod
+	def from_account_hi(cls, hi):
+		if hi == 144115188075855872:
+			# AI (all regions)
+			return None
+
+		if hi == 144115193835963207:
+			return cls.REGION_US
+		if hi == 144115198130930503:
+			return cls.REGION_EU
+		if hi == 144115202425897799:
+			# TW/KR are both on KR
+			return cls.REGION_KR
+		if hi == 144115211015832391:
+			return cls.REGION_CN
+
+		return cls.REGION_UNKNOWN
+
 
 class GoldRewardState(IntEnum):
 	"TAG_GOLD_REWARD_STATE"
