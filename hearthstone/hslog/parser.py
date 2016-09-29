@@ -197,7 +197,7 @@ class PowerHandler(object):
 
 	def block_end(self, ts):
 		if not self.current_block.parent:
-			logging.warning("[%s] Orphaned BLOCK_END detected" % (ts))
+			logging.warning("[%s] Orphaned BLOCK_END detected", ts)
 			return self.current_block
 		self.current_block.end()
 		block = self.current_block
