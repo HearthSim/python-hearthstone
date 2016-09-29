@@ -183,6 +183,7 @@ class PowerHandler(object):
 		self._entity_packet = packets.CreateGame(ts, self.current_game)
 		self._game_packet = self._entity_packet
 		self.current_block.packets.append(self._entity_packet)
+		return self.current_game
 
 	def block_start(self, ts, entity, type, index, effectid, effectindex, target):
 		entity = self.parse_entity(entity)
@@ -194,6 +195,7 @@ class PowerHandler(object):
 		block.parent = self.current_block
 		self.current_block.packets.append(block)
 		self.current_block = block
+		return block
 
 	def block_end(self, ts):
 		if not self.current_block.parent:
@@ -211,6 +213,7 @@ class PowerHandler(object):
 		self._entity_node = entity
 		self._entity_packet = packets.FullEntity(ts, entity, cardid)
 		self.current_block.packets.append(self._entity_packet)
+		return entity
 
 	def full_entity_update(self, ts, entity, cardid):
 		id = self.parse_entity_id(entity)
@@ -222,6 +225,7 @@ class PowerHandler(object):
 		self._entity_node = entity
 		self._entity_packet = packets.ShowEntity(ts, entity, cardid)
 		self.current_block.packets.append(self._entity_packet)
+		return entity
 
 	def hide_entity(self, ts, entity, tag, value):
 		entity = self.parse_entity(entity)
@@ -230,6 +234,7 @@ class PowerHandler(object):
 		assert tag == GameTag.ZONE
 		packet = packets.HideEntity(ts, entity, value)
 		self.current_block.packets.append(packet)
+		return entity
 
 	def change_entity(self, ts, entity, cardid):
 		entity = self.parse_entity(entity)
@@ -237,6 +242,7 @@ class PowerHandler(object):
 		self._entity_node = entity
 		self._entity_packet = packets.ChangeEntity(ts, entity, cardid)
 		self.current_block.packets.append(self._entity_packet)
+		return entity
 
 	def meta_data(self, ts, meta, data, info):
 		meta = parse_enum(enums.MetaDataType, meta)
@@ -245,6 +251,7 @@ class PowerHandler(object):
 		count = int(info)
 		self._metadata_node = packets.MetaData(ts, meta, data, count)
 		self.current_block.packets.append(self._metadata_node)
+		return self._metadata_node
 
 	def tag_change(self, ts, e, tag, value):
 		entity = self.parse_entity(e)
