@@ -66,6 +66,16 @@ SPECTATOR_MODE_END_MODE = "End Spectator Mode"
 SPECTATOR_MODE_END_GAME = "End Spectator Game"
 
 
+def parse_initial_tag(data):
+	"""
+	Parse \a data, a line formatted as tag=FOO value=BAR
+	Returns the values as int.
+	"""
+	sre = TAG_VALUE_RE.match(data)
+	tag, value = sre.groups()
+	return parse_tag(tag, value)
+
+
 class PowerHandler(object):
 	def __init__(self):
 		super(PowerHandler, self).__init__()
@@ -87,11 +97,6 @@ class PowerHandler(object):
 		if method == self.parse_method("DebugPrintPower"):
 			return self.handle_data
 
-	def parse_initial_tag(self, data):
-		sre = TAG_VALUE_RE.match(data)
-		tag, value = sre.groups()
-		return parse_tag(tag, value)
-
 	def handle_data(self, ts, data):
 		opcode = data.split()[0]
 
@@ -107,7 +112,7 @@ class PowerHandler(object):
 			sre = PLAYER_ENTITY_RE.match(data)
 			self.register_player(ts, *sre.groups())
 		elif opcode.startswith("tag="):
-			tag, value = self.parse_initial_tag(data)
+			tag, value = parse_initial_tag(data)
 			self._entity_packet.tags.append((tag, value))
 		elif opcode.startswith("Info["):
 			if not self._metadata_node:

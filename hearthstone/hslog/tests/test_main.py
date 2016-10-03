@@ -6,6 +6,7 @@ from hearthstone.enums import (
 	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
 )
 from hearthstone.hslog import LogParser
+from hearthstone.hslog.parser import parse_initial_tag
 
 
 EMPTY_GAME = """
@@ -97,21 +98,19 @@ def test_create_empty_game():
 
 
 def test_tag_value_parsing():
-	parser = LogParser()
-
-	tag, value = parser.parse_initial_tag("tag=ZONE value=PLAY")
+	tag, value = parse_initial_tag("tag=ZONE value=PLAY")
 	assert tag == GameTag.ZONE
 	assert value == Zone.PLAY
 
-	tag, value = parser.parse_initial_tag("tag=CARDTYPE value=PLAYER")
+	tag, value = parse_initial_tag("tag=CARDTYPE value=PLAYER")
 	assert tag == GameTag.CARDTYPE
 	assert value == CardType.PLAYER
 
-	tag, value = parser.parse_initial_tag("tag=1 value=2")
+	tag, value = parse_initial_tag("tag=1 value=2")
 	assert tag == 1
 	assert value == 2
 
-	tag, value = parser.parse_initial_tag("tag=9999998 value=123")
+	tag, value = parse_initial_tag("tag=9999998 value=123")
 	assert tag == 9999998
 	assert value == 123
 
