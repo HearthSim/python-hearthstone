@@ -675,6 +675,25 @@ class GameType(IntEnum):
 	GT_TB_2P_COOP = 18
 	GT_LAST = 19
 
+	def as_bnet(self, wild=False):
+		if self == GameType.GT_RANKED:
+			return BnetGameType.BGT_RANKED_WILD if wild else BnetGameType.BGT_RANKED_STANDARD
+		if self == GameType.GT_CASUAL:
+			return BnetGameType.BGT_CASUAL_WILD if wild else BnetGameType.BGT_CASUAL_STANDARD
+
+		return {
+			GameType.GT_UNKNOWN: BnetGameType.BGT_UNKNOWN,
+			GameType.GT_VS_AI: BnetGameType.BGT_VS_AI,
+			GameType.GT_VS_FRIEND: BnetGameType.BGT_FRIENDS,
+			GameType.GT_TUTORIAL: BnetGameType.BGT_TUTORIAL,
+			GameType.GT_ARENA: BnetGameType.BGT_ARENA,
+			GameType.GT_TEST: BnetGameType.BGT_TEST1,
+			GameType.GT_TAVERNBRAWL: BnetGameType.BGT_TAVERNBRAWL_PVP,
+			GameType.GT_TB_1P_VS_AI: BnetGameType.BGT_TAVERNBRAWL_1P_VERSUS_AI,
+			GameType.GT_TB_2P_COOP: BnetGameType.BGT_TAVERNBRAWL_2P_COOP,
+			GameType.GT_LAST: BnetGameType.BGT_LAST,
+		}[self]
+
 
 class BnetRegion(IntEnum):
 	"bgs.constants.BnetRegion"
