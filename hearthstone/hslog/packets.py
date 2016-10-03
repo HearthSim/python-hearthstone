@@ -1,6 +1,21 @@
 from ..enums import GameTag, PowerType, Zone
 
 
+def find_unknown_full_entity_in_hand(packets):
+	"""
+	Finds the first unknown in-hand entity in \a packets list.
+	Returns its controller's ID.
+	This is the behaviour used before patch 13619 to guess the friendly player.
+	"""
+	for packet in packets:
+		if packet.power_type != PowerType.FULL_ENTITY:
+			# We are past the initial FULL_ENTITY block
+			return
+		tags = dict(packet.tags)
+		if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
+			return tags[GameTag.CONTROLLER]
+
+
 class PacketTree:
 	def __init__(self, ts):
 		self.ts = ts
@@ -30,15 +45,14 @@ class PacketTree:
 		Will not work very early in game initialization and
 		produce incorrect results if both hands are revealed.
 		"""
-		# Pre-13619: The first FULL_ENTITY packet which is in Zone.HAND and
-		# does *not* have an ID is owned by the friendly player's opponent.
 		packets = self.packets[1:]
-		for packet in packets:
-			if packet.power_type != PowerType.FULL_ENTITY:
-				break
-			tags = dict(packet.tags)
-			if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
-				return tags[GameTag.CONTROLLER] % 2 + 1
+
+		# Pre-13619: The first FULL_ENTITY packet which is in Zone.HAND and
+		# does *not* have an ID is owned by the friendly player's *opponent*.
+		controller = find_unknown_full_entity_in_hand(packets)
+		if controller:
+			# That controller is the enemy player - return its opponent.
+			return controller % 2 + 1
 
 		# Post-13619: The FULL_ENTITY packets no longer contain initial
 		# card data, a SHOW_ENTITY always has to happen.
