@@ -10,7 +10,8 @@ from .utils import parse_enum, parse_tag
 
 
 # Entity format
-_E = r"(GameEntity|UNKNOWN HUMAN PLAYER|\[.+\]|\d+|.+)"
+GAME_ENTITY_TOKEN = "GameEntity"
+_E = r"(%s|UNKNOWN HUMAN PLAYER|\[.+\]|\d+|.+)" % (GAME_ENTITY_TOKEN)
 ENTITY_RE = re.compile("\[.*\s*id=(\d+)\s*.*\]")
 
 # Line format
@@ -64,6 +65,20 @@ SPECTATOR_MODE_BEGIN_FIRST = "Begin Spectating 1st player"
 SPECTATOR_MODE_BEGIN_SECOND = "Begin Spectating 2nd player"
 SPECTATOR_MODE_END_MODE = "End Spectator Mode"
 SPECTATOR_MODE_END_GAME = "End Spectator Game"
+
+
+def parse_entity_id(entity):
+	if entity.isdigit():
+		return int(entity)
+
+	if entity == GAME_ENTITY_TOKEN:
+		# GameEntity is always 1
+		return 1
+
+	sre = ENTITY_RE.match(entity)
+	if sre:
+		id = sre.groups()[0]
+		return int(id)
 
 
 def parse_initial_tag(data):
@@ -298,7 +313,7 @@ class PowerHandler(object):
 
 	# Messages
 	def create_game(self, ts):
-		self.current_game = Game(0)
+		self.current_game = Game(1)
 		self.current_game.player_manager = PlayerManager(self.current_game)
 		packet_tree = packets.PacketTree(ts)
 		packet_tree.spectator_mode = self.spectator_mode
@@ -341,7 +356,7 @@ class PowerHandler(object):
 		return entity
 
 	def full_entity_update(self, ts, entity, cardid):
-		id = self.parse_entity_id(entity)
+		id = parse_entity_id(entity)
 		return self.full_entity(ts, id, cardid)
 
 	def show_entity(self, ts, entity, cardid):
@@ -671,20 +686,8 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 					ts = self.parse_timestamp(ts, method)
 					return callback(ts, msg)
 
-	def parse_entity_id(self, entity):
-		if entity.isdigit():
-			return int(entity)
-
-		if entity == "GameEntity":
-			return self.current_game.id
-
-		sre = ENTITY_RE.match(entity)
-		if sre:
-			id = sre.groups()[0]
-			return int(id)
-
 	def parse_entity(self, entity):
-		id = self.parse_entity_id(entity)
+		id = parse_entity_id(entity)
 		if id is None:
 			return self.current_game.get_player(entity) or entity
 		return self.current_game.find_entity_by_id(id)
@@ -694,7 +697,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 
 	def register_game(self, ts, id):
 		id = int(id)
-		self.current_game.id = id
+		assert id == 1, "GameEntity ID: Expected 1, got %r" % (id)
 		self.current_game.register_entity(self.current_game)
 		self._entity_node = self.current_game
 
