@@ -76,6 +76,125 @@ def parse_initial_tag(data):
 	return parse_tag(tag, value)
 
 
+class PlayerManager:
+	def __init__(self, game):
+		self._player_buffer = {}
+		self.game = game
+
+	def buffer_packet_entity_update(self, packet, name):
+		"""
+		Add a packet with a missing player entity to a buffer.
+		The buffer will be updated with the correct entity once
+		the player's name is registered.
+		"""
+		if name not in self._player_buffer:
+			self._player_buffer[name] = []
+		self._player_buffer[name].append(packet)
+
+	def check_for_player_registration(self, tag, value, e):
+		"""
+		Trigger on a tag change if we did not find a corresponding entity.
+		"""
+		# Double check whether both player names are already set
+		game = self.game
+		if all(player.name for player in game.players):
+			# If both players are already registered, there is a possibility
+			# that "The Innkeeper" has been renamed.
+			# It is also possible a previously-unknown entity is now known.
+			for player in game.players:
+				if player.is_ai or player.name == "UNKNOWN HUMAN PLAYER":
+					# Transform the name to the new one.
+					logging.warning("Re-registering %r as %r", player, e)
+					self.register_player_name(e, player.id)
+					return False
+			else:
+				logging.error("Unexpected player name: %r", e)
+				assert False
+
+		if tag == GameTag.ENTITY_ID:
+			self.register_player_name(e, value)
+		elif tag == GameTag.CURRENT_PLAYER and game.setup_done:
+			# Fallback hack (eg. in case of reconnected games)
+			self.register_current_player_name(e, value)
+
+		return False
+
+	def register_player_name(self, name, id):
+		"""
+		Register a player entity with a specific name.
+		This is needed before a player name can be parsed as an
+		entity id from the log.
+		"""
+		game = self.game
+		entity = game.find_entity_by_id(id)
+		entity.name = name
+
+		# Flush the player's buffer by name
+		if name in self._player_buffer:
+			entity = self.parse_entity(name)
+			for packet in self._player_buffer[name]:
+				packet.entity = entity
+			del self._player_buffer[name]
+
+		# Update the player's packet name
+		if id in self._player_buffer:
+			for packet in self._player_buffer[id]:
+				packet.name = name
+			del self._player_buffer[id]
+
+	def register_current_player_name(self, e, value):
+		"""
+		If we reconnect to a game, we watch for the CURRENT_PLAYER tag changes.
+		When the current player changes, CURRENT_PLAYER is first *unset* on the
+		current player and *then* set on the next player.
+		"""
+		game = self.game
+		current_player = game.current_player
+		if not value:
+			# First, this. We register the name to the current player.
+			assert current_player
+			self.register_player_name(e, current_player.id)
+		elif not current_player:
+			# And now, this. The name is registered to the non-current player
+			# (meaning the one left without a name)
+			for player in game.players:
+				if not player.name:
+					self.register_player_name(e, player.id)
+					break
+			else:
+				# There is one remaining case: When the name "changes". This can
+				# only happen if the name was unknown during setup.
+				for player in game.players:
+					if player.name == "UNKNOWN HUMAN PLAYER":
+						self.register_player_name(e, player.id)
+		else:
+			# EDGE CASE! Seen in Decks Assemble.
+			# If this happens, CURRENT_PLAYER is set to what it was already set to.
+			# So the one being set is the current player already.
+			self.register_player_name(e, current_player.id)
+
+	def register_player_name_mulligan(self, packet):
+		"""
+		Attempt to register player names by looking at Mulligan choice packets.
+		In Hearthstone 6.0+, registering a player name using tag changes is not
+		available as early as before. That means games conceded at Mulligan no
+		longer have player names.
+		This technique uses the cards offered in Mulligan instead, registering
+		the name of the packet's entity with the card's controller as PlayerID.
+		"""
+		if isinstance(packet.entity, Entity):
+			# The player is already registered, ignore.
+			return
+		for choice in packet.choices:
+			controller = choice.tags.get(GameTag.CONTROLLER, 0)
+			name = packet.entity
+			if controller and name:
+				# We need ENTITY_ID for register_player_name()
+				# That's always PlayerID + 1
+				entity_id = controller + 1
+				return self.register_player_name(name, entity_id)
+
+
 class PowerHandler(object):
 	def __init__(self):
 		super(PowerHandler, self).__init__()
@@ -180,6 +299,7 @@ class PowerHandler(object):
 	# Messages
 	def create_game(self, ts):
 		self.current_game = Game(0)
+		self.current_game.player_manager = PlayerManager(self.current_game)
 		packet_tree = packets.PacketTree(ts)
 		packet_tree.spectator_mode = self.spectator_mode
 		packet_tree.game = self.current_game
@@ -264,16 +384,18 @@ class PowerHandler(object):
 		self._check_for_mulligan_hack(ts, entity, tag, value)
 
 		if not isinstance(entity, Entity):
-			entity = self.check_for_player_registration(tag, value, e)
+			# Check the player name registration, then re-parse the entity
+			e2 = self.current_game.player_manager.check_for_player_registration(tag, value, e)
+			entity = self.parse_entity(e2)
 
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_block.packets.append(packet)
 
 		if not entity or not isinstance(entity, Entity):
 			if tag == enums.GameTag.ENTITY_ID:
-				self.register_player_name(self.current_game, e, value)
+				self.current_game.player_manager.register_player_name(self.current_game, e, value)
 			else:
-				self.buffer_packet_entity_update(packet, e)
+				self.current_game.player_manager.buffer_packet_entity_update(packet, e)
 		else:
 			entity.tag_change(tag, value)
 		return entity
@@ -347,7 +469,7 @@ class ChoicesHandler(object):
 	def flush(self):
 		if self._choice_packet:
 			if self._choice_packet.type == enums.ChoiceType.MULLIGAN:
-				self.register_player_name_mulligan(self.current_game, self._choice_packet)
+				self.current_game.player_manager.register_player_name_mulligan(self._choice_packet)
 			self._choice_packet = None
 		if self._chosen_packet:
 			self._chosen_packet = None
@@ -489,7 +611,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		self.line_regex = POWERLOG_LINE_RE
 		self._game_state_processor = "GameState"
 		self.current_game = None
-		self._player_buffer = {}
 		self._current_date = None
 		self._synced_timestamp = False
 
@@ -568,116 +689,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			return self.current_game.get_player(entity) or entity
 		return self.current_game.find_entity_by_id(id)
 
-	def buffer_packet_entity_update(self, packet, name):
-		"""
-		Add a packet with a missing player entity to a buffer.
-		The buffer will be updated with the correct entity once
-		the player's name is registered.
-		"""
-		if name not in self._player_buffer:
-			self._player_buffer[name] = []
-		self._player_buffer[name].append(packet)
-
-	def check_for_player_registration(self, tag, value, e):
-		"""
-		Trigger on a tag change if we did not find a corresponding entity.
-		"""
-		# Double check whether both player names are already set
-		if all(player.name for player in self.current_game.players):
-			# If both players are already registered, there is a possibility
-			# that "The Innkeeper" has been renamed.
-			# It is also possible a previously-unknown entity is now known.
-			for player in self.current_game.players:
-				if player.is_ai or player.name == "UNKNOWN HUMAN PLAYER":
-					# Transform the name to the new one.
-					logging.warning("Re-registering %r as %r", player, e)
-					self.register_player_name(self.current_game, e, player.id)
-					return
-			else:
-				logging.warning("Unexpected player name: %r", e)
-				assert False
-
-		if tag == GameTag.ENTITY_ID:
-			self.register_player_name(self.current_game, e, value	)
-		elif tag == GameTag.CURRENT_PLAYER and self.current_game.setup_done:
-			# Fallback hack (eg. in case of reconnected games)
-			self.register_current_player_name(self.current_game, e, value)
-
-		return self.parse_entity(e)
-
-	def register_current_player_name(self, game, e, value):
-		"""
-		If we reconnect to a game, we watch for the CURRENT_PLAYER tag changes.
-		When the current player changes, CURRENT_PLAYER is first *unset* on the
-		current player and *then* set on the next player.
-		"""
-		current_player = game.current_player
-		if not value:
-			# First, this. We register the name to the current player.
-			assert current_player
-			self.register_player_name(game, e, current_player.id)
-		elif not current_player:
-			# And now, this. The name is registered to the non-current player
-			# (meaning the one left without a name)
-			for player in game.players:
-				if not player.name:
-					self.register_player_name(game, e, player.id)
-					break
-			else:
-				# There is one remaining case: When the name "changes". This can
-				# only happen if the name was unknown during setup.
-				for player in game.players:
-					if player.name == "UNKNOWN HUMAN PLAYER":
-						self.register_player_name(game, e, player.id)
-		else:
-			# EDGE CASE! Seen in Decks Assemble.
-			# If this happens, CURRENT_PLAYER is set to what it was already set to.
-			# So the one being set is the current player already.
-			self.register_player_name(game, e, current_player.id)
-
-	def register_player_name(self, game, name, id):
-		"""
-		Register a player entity with a specific name.
-		This is needed before a player name can be parsed as an
-		entity id from the log.
-		"""
-		entity = game.find_entity_by_id(id)
-		entity.name = name
-
-		# Flush the player's buffer by name
-		if name in self._player_buffer:
-			entity = self.parse_entity(name)
-			for packet in self._player_buffer[name]:
-				packet.entity = entity
-			del self._player_buffer[name]
-
-		# Update the player's packet name
-		if id in self._player_buffer:
-			for packet in self._player_buffer[id]:
-				packet.name = name
-			del self._player_buffer[id]
-
-	def register_player_name_mulligan(self, game, packet):
-		"""
-		Attempt to register player names by looking at Mulligan choice packets.
-		In Hearthstone 6.0+, registering a player name using tag changes is not
-		available as early as before. That means games conceded at Mulligan no
-		longer have player names.
-		This technique uses the cards offered in Mulligan instead, registering
-		the name of the packet's entity with the card's controller as PlayerID.
-		"""
-		if isinstance(packet.entity, Entity):
-			# The player is already registered, ignore.
-			return
-		for choice in packet.choices:
-			controller = choice.tags.get(GameTag.CONTROLLER, 0)
-			name = packet.entity
-			if controller and name:
-				# We need ENTITY_ID for register_player_name()
-				# That's always PlayerID + 1
-				entity_id = controller + 1
-				return self.register_player_name(game, name, entity_id)
-
 	def parse_method(self, m):
 		return "%s.%s" % (self._game_state_processor, m)
 
@@ -697,4 +708,4 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		self._entity_node = player
 		self._entity_packet = packets.CreateGame.Player(ts, player, playerid, hi, lo)
 		self._game_packet.players.append(self._entity_packet)
-		self.buffer_packet_entity_update(self._entity_packet, id)
+		self.current_game.player_manager.buffer_packet_entity_update(self._entity_packet, id)
