@@ -132,13 +132,12 @@ class CreateGame(Packet):
 	power_type = PowerType.CREATE_GAME
 
 	class Player:
-		def __init__(self, ts, entity, playerid, hi, lo):
+		def __init__(self, ts, id, playerid, hi, lo):
 			self.ts = ts
-			self.entity = entity
+			self.entity = id
 			self.playerid = playerid
 			self.hi = hi
 			self.lo = lo
-			self.name = ""
 			self.tags = []
 
 	def __init__(self, ts, entity):

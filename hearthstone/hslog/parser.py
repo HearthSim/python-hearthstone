@@ -3,9 +3,10 @@ import re
 from datetime import datetime, timedelta
 from aniso8601 import parse_time
 from hearthstone import enums
-from hearthstone.entities import Entity, Card, Game, Player
+from hearthstone.entities import Card
 from ..enums import GameTag, PowerType
 from . import packets
+from .player import LazyPlayer, PlayerManager
 from .utils import parse_enum, parse_tag
 
 
@@ -91,131 +92,12 @@ def parse_initial_tag(data):
 	return parse_tag(tag, value)
 
 
-class PlayerManager:
-	def __init__(self, game):
-		self._player_buffer = {}
-		self.game = game
-
-	def buffer_packet_entity_update(self, packet, name):
-		"""
-		Add a packet with a missing player entity to a buffer.
-		The buffer will be updated with the correct entity once
-		the player's name is registered.
-		"""
-		if name not in self._player_buffer:
-			self._player_buffer[name] = []
-		self._player_buffer[name].append(packet)
-
-	def check_for_player_registration(self, tag, value, e):
-		"""
-		Trigger on a tag change if we did not find a corresponding entity.
-		"""
-		# Double check whether both player names are already set
-		game = self.game
-		if all(player.name for player in game.players):
-			# If both players are already registered, there is a possibility
-			# that "The Innkeeper" has been renamed.
-			# It is also possible a previously-unknown entity is now known.
-			for player in game.players:
-				if player.is_ai or player.name == "UNKNOWN HUMAN PLAYER":
-					# Transform the name to the new one.
-					logging.warning("Re-registering %r as %r", player, e)
-					self.register_player_name(e, player.id)
-					return False
-			else:
-				logging.error("Unexpected player name: %r", e)
-				assert False
-
-		if tag == GameTag.ENTITY_ID:
-			self.register_player_name(e, value)
-		elif tag == GameTag.CURRENT_PLAYER and game.setup_done:
-			# Fallback hack (eg. in case of reconnected games)
-			self.register_current_player_name(e, value)
-
-		return False
-
-	def register_player_name(self, name, id):
-		"""
-		Register a player entity with a specific name.
-		This is needed before a player name can be parsed as an
-		entity id from the log.
-		"""
-		game = self.game
-		entity = game.find_entity_by_id(id)
-		entity.name = name
-
-		# Flush the player's buffer by name
-		if name in self._player_buffer:
-			entity = self.parse_entity(name)
-			for packet in self._player_buffer[name]:
-				packet.entity = entity
-			del self._player_buffer[name]
-
-		# Update the player's packet name
-		if id in self._player_buffer:
-			for packet in self._player_buffer[id]:
-				packet.name = name
-			del self._player_buffer[id]
-
-	def register_current_player_name(self, e, value):
-		"""
-		If we reconnect to a game, we watch for the CURRENT_PLAYER tag changes.
-		When the current player changes, CURRENT_PLAYER is first *unset* on the
-		current player and *then* set on the next player.
-		"""
-		game = self.game
-		current_player = game.current_player
-		if not value:
-			# First, this. We register the name to the current player.
-			assert current_player
-			self.register_player_name(e, current_player.id)
-		elif not current_player:
-			# And now, this. The name is registered to the non-current player
-			# (meaning the one left without a name)
-			for player in game.players:
-				if not player.name:
-					self.register_player_name(e, player.id)
-					break
-			else:
-				# There is one remaining case: When the name "changes". This can
-				# only happen if the name was unknown during setup.
-				for player in game.players:
-					if player.name == "UNKNOWN HUMAN PLAYER":
-						self.register_player_name(e, player.id)
-		else:
-			# EDGE CASE! Seen in Decks Assemble.
-			# If this happens, CURRENT_PLAYER is set to what it was already set to.
-			# So the one being set is the current player already.
-			self.register_player_name(e, current_player.id)
-
-	def register_player_name_mulligan(self, packet):
-		"""
-		Attempt to register player names by looking at Mulligan choice packets.
-		In Hearthstone 6.0+, registering a player name using tag changes is not
-		available as early as before. That means games conceded at Mulligan no
-		longer have player names.
-		This technique uses the cards offered in Mulligan instead, registering
-		the name of the packet's entity with the card's controller as PlayerID.
-		"""
-		if isinstance(packet.entity, Entity):
-			# The player is already registered, ignore.
-			return
-		for choice in packet.choices:
-			controller = choice.tags.get(GameTag.CONTROLLER, 0)
-			name = packet.entity
-			if controller and name:
-				# We need ENTITY_ID for register_player_name()
-				# That's always PlayerID + 1
-				entity_id = controller + 1
-				return self.register_player_name(name, entity_id)
-
-
 class PowerHandler(object):
 	def __init__(self):
 		super(PowerHandler, self).__init__()
 		self.current_block = None
-		self._entity_node = None
 		self._metadata_node = None
+		self._packets = None
 
 	def _check_for_mulligan_hack(self, ts, entity, tag, value):
 		# Old game logs didn't handle asynchronous mulligans properly.
@@ -240,7 +122,8 @@ class PowerHandler(object):
 		if opcode == "GameEntity":
 			self.flush()
 			sre = GAME_ENTITY_RE.match(data)
-			self.register_game(ts, *sre.groups())
+			id, = sre.groups()
+			assert int(id) == 1, "GameEntity ID: Expected 1, got %r" % (id)
 		elif opcode == "Player":
 			self.flush()
 			sre = PLAYER_ENTITY_RE.match(data)
@@ -254,18 +137,13 @@ class PowerHandler(object):
 				return
 			sre = METADATA_INFO_RE.match(data)
 			idx, entity = sre.groups()
-			entity = self.parse_entity(entity)
+			entity = self.parse_entity_or_player(entity)
 			self._metadata_node.info.append(entity)
 		else:
 			raise NotImplementedError(data)
 
 	def flush(self):
 		super(PowerHandler, self).flush()
-		if self._entity_node:
-			for k, v in self._entity_packet.tags:
-				self._entity_node.tags[k] = v
-			self._entity_node = None
-
 		if self._metadata_node:
 			self._metadata_node = None
 
@@ -313,24 +191,23 @@ class PowerHandler(object):
 
 	# Messages
 	def create_game(self, ts):
-		self.current_game = Game(1)
-		self.current_game.player_manager = PlayerManager(self.current_game)
-		packet_tree = packets.PacketTree(ts)
-		packet_tree.spectator_mode = self.spectator_mode
-		packet_tree.game = self.current_game
-		self.games.append(packet_tree)
-		self.current_block = packet_tree
-		self._entity_packet = packets.CreateGame(ts, self.current_game)
+		entity_id = 1
+		self._packets = packets.PacketTree(ts)
+		self._packets.spectator_mode = self.spectator_mode
+		self._packets.manager = PlayerManager()
+		self._entity_packet = packets.CreateGame(ts, entity_id)
 		self._game_packet = self._entity_packet
+		self.current_block = self._packets
 		self.current_block.packets.append(self._entity_packet)
-		return self.current_game
+		self.games.append(self._packets)
+		return self._game_packet
 
 	def block_start(self, ts, entity, type, index, effectid, effectindex, target):
-		entity = self.parse_entity(entity)
+		entity = self.parse_entity_or_player(entity)
 		type = parse_enum(enums.BlockType, type)
 		if index is not None:
 			index = int(index)
-		target = self.parse_entity(target)
+		target = self.parse_entity_or_player(target)
 		block = packets.Block(ts, entity, type, index, effectid, effectindex, target)
 		block.parent = self.current_block
 		self.current_block.packets.append(block)
@@ -346,73 +223,57 @@ class PowerHandler(object):
 		self.current_block = self.current_block.parent
 		return block
 
-	def full_entity(self, ts, id, cardid):
+	def full_entity(self, ts, id, card_id):
 		id = int(id)
-		entity = Card(id, cardid)
-		self.current_game.register_entity(entity)
-		self._entity_node = entity
-		self._entity_packet = packets.FullEntity(ts, entity, cardid)
+		self._entity_packet = packets.FullEntity(ts, id, card_id)
 		self.current_block.packets.append(self._entity_packet)
-		return entity
+		return self._entity_packet
 
-	def full_entity_update(self, ts, entity, cardid):
+	def full_entity_update(self, ts, entity, card_id):
 		id = parse_entity_id(entity)
-		return self.full_entity(ts, id, cardid)
+		return self.full_entity(ts, id, card_id)
 
-	def show_entity(self, ts, entity, cardid):
-		entity = self.parse_entity(entity)
-		entity.reveal(cardid)
-		self._entity_node = entity
-		self._entity_packet = packets.ShowEntity(ts, entity, cardid)
+	def show_entity(self, ts, entity, card_id):
+		id = parse_entity_id(entity)
+		self._entity_packet = packets.ShowEntity(ts, id, card_id)
 		self.current_block.packets.append(self._entity_packet)
-		return entity
+		return self._entity_packet
 
 	def hide_entity(self, ts, entity, tag, value):
-		entity = self.parse_entity(entity)
-		entity.hide()
+		id = parse_entity_id(entity)
 		tag, value = parse_tag(tag, value)
 		assert tag == GameTag.ZONE
-		packet = packets.HideEntity(ts, entity, value)
+		packet = packets.HideEntity(ts, id, value)
 		self.current_block.packets.append(packet)
-		return entity
+		return packet
 
-	def change_entity(self, ts, entity, cardid):
-		entity = self.parse_entity(entity)
-		entity.change(cardid)
-		self._entity_node = entity
-		self._entity_packet = packets.ChangeEntity(ts, entity, cardid)
+	def change_entity(self, ts, entity, card_id):
+		id = self.parse_entity_or_player(entity)
+		self._entity_packet = packets.ChangeEntity(ts, id, card_id)
 		self.current_block.packets.append(self._entity_packet)
-		return entity
+		return self._entity_packet
 
 	def meta_data(self, ts, meta, data, info):
 		meta = parse_enum(enums.MetaDataType, meta)
 		if meta == enums.MetaDataType.JOUST:
-			data = self.parse_entity(data)
+			data = parse_entity_id(data)
 		count = int(info)
 		self._metadata_node = packets.MetaData(ts, meta, data, count)
 		self.current_block.packets.append(self._metadata_node)
 		return self._metadata_node
 
 	def tag_change(self, ts, e, tag, value):
-		entity = self.parse_entity(e)
+		entity = self.parse_entity_or_player(e)
 		tag, value = parse_tag(tag, value)
 		self._check_for_mulligan_hack(ts, entity, tag, value)
 
-		if not isinstance(entity, Entity):
-			# Check the player name registration, then re-parse the entity
-			e2 = self.current_game.player_manager.check_for_player_registration(tag, value, e)
-			entity = self.parse_entity(e2)
+		if isinstance(entity, LazyPlayer):
+			entity = self._packets.manager.check_player_registration(tag, value, e)
 
 		packet = packets.TagChange(ts, entity, tag, value)
 		self.current_block.packets.append(packet)
 
-		if not entity or not isinstance(entity, Entity):
-			if tag == enums.GameTag.ENTITY_ID:
-				self.current_game.player_manager.register_player_name(self.current_game, e, value)
-			else:
-				self.current_game.player_manager.buffer_packet_entity_update(packet, e)
-		else:
-			entity.tag_change(tag, value)
+		# entity.tag_change(tag, value)
 		return entity
 
 
@@ -435,7 +296,7 @@ class OptionsHandler(object):
 			id, type, entity = sre.groups()
 			id = int(id)
 			type = parse_enum(enums.OptionType, type)
-			entity = self.parse_entity(entity) if entity else None
+			entity = parse_entity_id(entity) if entity else None
 			self._option_packet = packets.Option(ts, entity, id, type, "option")
 			self._options_packet.options.append(self._option_packet)
 			self._suboption_packet = None
@@ -444,7 +305,7 @@ class OptionsHandler(object):
 			sre = OPTIONS_SUBOPTION_RE.match(data)
 			type, id, entity = sre.groups()
 			id = int(id)
-			entity = self.parse_entity(entity)
+			entity = parse_entity_id(entity)
 			packet = packets.Option(ts, entity, id, None, type)
 			if type == "subOption":
 				self._suboption_packet = packet
@@ -484,7 +345,7 @@ class ChoicesHandler(object):
 	def flush(self):
 		if self._choice_packet:
 			if self._choice_packet.type == enums.ChoiceType.MULLIGAN:
-				self.current_game.player_manager.register_player_name_mulligan(self._choice_packet)
+				self._packets.manager.register_player_name_mulligan(self._choice_packet)
 			self._choice_packet = None
 		if self._chosen_packet:
 			self._chosen_packet = None
@@ -509,13 +370,13 @@ class ChoicesHandler(object):
 		elif data.startswith("Source="):
 			sre = CHOICES_SOURCE_RE.match(data)
 			entity, = sre.groups()
-			entity = self.parse_entity(entity)
+			entity = self.parse_entity_or_player(entity)
 			self._choice_packet.source = entity
 			return entity
 		elif data.startswith("Entities["):
 			sre = CHOICES_ENTITIES_RE.match(data)
 			idx, e = sre.groups()
-			entity = self.parse_entity(e)
+			entity = self.parse_entity_or_player(e)
 			assert entity, e
 			self._choice_packet.choices.append(entity)
 			return entity
@@ -537,14 +398,14 @@ class ChoicesHandler(object):
 		min, max = 0, 0
 		return self._register_choices(ts, id, player, tasklist, type, min, max)
 
-	def register_choices_old_2(self, ts, id, playerid, type, min, max):
-		playerid = int(playerid)
-		player = self.current_game.get_player(playerid)
+	def register_choices_old_2(self, ts, id, player_id, type, min, max):
+		player_id = int(player_id)
+		player = self._packets.manager.get_player_by_player_id(player_id)
 		tasklist = None
 		return self._register_choices(ts, id, player, tasklist, type, min, max)
 
 	def register_choices(self, ts, id, player, tasklist, type, min, max):
-		player = self.parse_entity(player)
+		player = self.parse_entity_or_player(player)
 		if tasklist is not None:
 			# Sometimes tasklist is empty
 			tasklist = int(tasklist)
@@ -562,7 +423,7 @@ class ChoicesHandler(object):
 		elif data.startswith("m_chosenEntities"):
 			sre = SEND_CHOICES_ENTITIES_RE.match(data)
 			idx, e = sre.groups()
-			entity = self.parse_entity(e)
+			entity = self.parse_entity_or_player(e)
 			assert entity, e
 			self._send_choice_packet.choices.append(entity)
 			return entity
@@ -573,7 +434,7 @@ class ChoicesHandler(object):
 			sre = ENTITIES_CHOSEN_RE.match(data)
 			id, player, count = sre.groups()
 			id = int(id)
-			player = self.parse_entity(player)
+			player = self.parse_entity_or_player(player)
 			self._chosen_packet_count = int(count)
 			self._chosen_packet = packets.ChosenEntities(ts, player, id)
 			self.current_block.packets.append(self._chosen_packet)
@@ -581,7 +442,7 @@ class ChoicesHandler(object):
 		elif data.startswith("Entities["):
 			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
 			idx, e = sre.groups()
-			entity = self.parse_entity(e)
+			entity = self.parse_entity_or_player(e)
 			assert entity, e
 			self._chosen_packet.choices.append(entity)
 			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
@@ -625,7 +486,6 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		self.games = []
 		self.line_regex = POWERLOG_LINE_RE
 		self._game_state_processor = "GameState"
-		self.current_game = None
 		self._current_date = None
 		self._synced_timestamp = False
 
@@ -686,29 +546,22 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 					ts = self.parse_timestamp(ts, method)
 					return callback(ts, msg)
 
-	def parse_entity(self, entity):
+	def parse_entity_or_player(self, entity):
 		id = parse_entity_id(entity)
 		if id is None:
-			return self.current_game.get_player(entity) or entity
-		return self.current_game.find_entity_by_id(id)
+			# Only case where an id is None is if it's a Player name
+			id = self._packets.manager.get_player_by_name(entity)
+		return id
 
 	def parse_method(self, m):
 		return "%s.%s" % (self._game_state_processor, m)
 
-	def register_game(self, ts, id):
+	def register_player(self, ts, id, player_id, hi, lo):
 		id = int(id)
-		assert id == 1, "GameEntity ID: Expected 1, got %r" % (id)
-		self.current_game.register_entity(self.current_game)
-		self._entity_node = self.current_game
-
-	def register_player(self, ts, id, playerid, hi, lo):
-		id = int(id)
-		playerid = int(playerid)
+		player_id = int(player_id)
 		hi = int(hi)
 		lo = int(lo)
-		player = Player(id, playerid, hi, lo)
-		self.current_game.register_entity(player)
-		self._entity_node = player
-		self._entity_packet = packets.CreateGame.Player(ts, player, playerid, hi, lo)
+		lazy_player = self._packets.manager.new_player(id, player_id)
+		self._entity_packet = packets.CreateGame.Player(ts, lazy_player, player_id, hi, lo)
 		self._game_packet.players.append(self._entity_packet)
-		self.current_game.player_manager.buffer_packet_entity_update(self._entity_packet, id)
+		return lazy_player

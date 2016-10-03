@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime, time, timedelta
 from io import StringIO
 from aniso8601 import parse_datetime
@@ -57,6 +56,7 @@ def test_create_empty_game():
 	assert len(game.entities) == 3
 	assert len(game.players) == 2
 	assert game.entities[0] is game
+	assert game.entities[0].id == 1
 	assert game.entities[1] is game.players[0]
 	assert game.entities[2] is game.players[1]
 
@@ -219,7 +219,7 @@ def test_empty_tasklist():
 	choices = parser.handle_entity_choices(ts, msg)
 	assert choices
 	assert choices.id == 4
-	assert choices.player == "The Innkeeper"
+	assert choices.player.name == "The Innkeeper"
 	assert choices.tasklist == 1
 	assert choices.type == ChoiceType.GENERAL
 	assert choices.min == 1
