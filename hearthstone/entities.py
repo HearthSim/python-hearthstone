@@ -85,6 +85,7 @@ class Game(Entity):
 
 class Player(Entity):
 	_args = ("name", )
+	UNKNOWN_HUMAN_PLAYER = "UNKNOWN HUMAN PLAYER"
 
 	def __init__(self, id, player_id, hi, lo):
 		super(Player, self).__init__(id)
@@ -95,6 +96,21 @@ class Player(Entity):
 
 	def __str__(self):
 		return self.name or ""
+
+	@property
+	def names(self):
+		"""
+		Returns the player's name and real name.
+		Returns two empty strings if the player is unknown.
+		AI real name is always an empty string.
+		"""
+		if self.name == self.UNKNOWN_HUMAN_PLAYER:
+			return "", ""
+
+		if not self.is_ai and " " in self.name:
+			return "", self.name
+
+		return self.name, ""
 
 	@property
 	def initial_deck(self):
