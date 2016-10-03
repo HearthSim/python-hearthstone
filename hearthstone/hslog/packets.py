@@ -56,21 +56,23 @@ class PacketTree:
 			if packet.ts:
 				return packet.ts
 
-	def guess_friendly_player(self):
+	def guess_friendly_player(self, attempt_old=False):
 		"""
 		Attempt to guess the friendly player in the game by
-		looking for initial revealed cards in the hand.
+		looking for initial unrevealed cards.
 		Will not work very early in game initialization and
 		produce incorrect results if both hands are revealed.
+		\a attempt_old should be True for pre-13619 logs.
 		"""
 		packets = self.packets[1:]
 
-		# Pre-13619: The first FULL_ENTITY packet which is in Zone.HAND and
-		# does *not* have an ID is owned by the friendly player's *opponent*.
-		controller = find_unknown_full_entity_in_hand(packets)
-		if controller:
-			# That controller is the enemy player - return its opponent.
-			return controller % 2 + 1
+		if attempt_old:
+			# Pre-13619: The first FULL_ENTITY packet which is in Zone.HAND and
+			# does *not* have an ID is owned by the friendly player's *opponent*.
+			controller = find_unknown_full_entity_in_hand(packets)
+			if controller:
+				# That controller is the enemy player - return its opponent.
+				return controller % 2 + 1
 
 		# Post-13619: The FULL_ENTITY packets no longer contain initial
 		# card data, a SHOW_ENTITY always has to happen.
