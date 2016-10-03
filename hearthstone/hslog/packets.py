@@ -16,6 +16,24 @@ def find_unknown_full_entity_in_hand(packets):
 			return tags[GameTag.CONTROLLER]
 
 
+def find_show_entity(packets):
+	"""
+	Finds the first SHOW_ENTITY in \a packets list (not in PLAY zone).
+	Returns its controller's ID.
+	This is the behaviour used as of patch 13619 to guess the friendly player.
+	"""
+	for packet in packets:
+		if packet.power_type == PowerType.SHOW_ENTITY:
+			if packet.entity.tags.get(GameTag.ZONE) == Zone.PLAY:
+				# Ignore cards already in play (such as enchantments, common in TB)
+				continue
+			return packet.entity.tags[GameTag.CONTROLLER]
+		elif packet.power_type == PowerType.BLOCK_START:
+			ret = find_show_entity(packet.packets)
+			if ret:
+				return ret
+
+
 class PacketTree:
 	def __init__(self, ts):
 		self.ts = ts
@@ -57,18 +75,6 @@ class PacketTree:
 		# Post-13619: The FULL_ENTITY packets no longer contain initial
 		# card data, a SHOW_ENTITY always has to happen.
 		# The first SHOW_ENTITY packet *will* be the friendly player's.
-		def find_show_entity(packets):
-			for packet in packets:
-				if packet.power_type == PowerType.SHOW_ENTITY:
-					if packet.entity.tags.get(GameTag.ZONE) == Zone.PLAY:
-						# Ignore cards already in play (such as enchantments, common in TB)
-						continue
-					return packet.entity.tags[GameTag.CONTROLLER]
-				elif packet.power_type == PowerType.BLOCK_START:
-					ret = find_show_entity(packet.packets)
-					if ret:
-						return ret
-
 		return find_show_entity(packets)
 
 
