@@ -84,7 +84,7 @@ class PlayerManager:
 		the name of the packet's entity with the card's controller as PlayerID.
 		"""
 		lazy_player = packet.entity
-		if lazy_player.id:
+		if isinstance(lazy_player, int) or lazy_player.id:
 			# The player is already registered, ignore.
 			return
 		if not lazy_player.name:
