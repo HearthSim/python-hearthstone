@@ -99,7 +99,7 @@ class PowerHandler(object):
 		self._metadata_node = None
 		self._packets = None
 
-	def _check_for_mulligan_hack(self, ts, entity, tag, value):
+	def _check_for_mulligan_hack(self, ts, tag, value):
 		# Old game logs didn't handle asynchronous mulligans properly.
 		# If we're missing an ACTION_END packet after the mulligan SendChoices,
 		# we just close it out manually.
@@ -203,12 +203,12 @@ class PowerHandler(object):
 		return self._game_packet
 
 	def block_start(self, ts, entity, type, index, effectid, effectindex, target):
-		entity = self.parse_entity_or_player(entity)
+		id = self.parse_entity_or_player(entity)
 		type = parse_enum(enums.BlockType, type)
 		if index is not None:
 			index = int(index)
 		target = self.parse_entity_or_player(target)
-		block = packets.Block(ts, entity, type, index, effectid, effectindex, target)
+		block = packets.Block(ts, id, type, index, effectid, effectindex, target)
 		block.parent = self.current_block
 		self.current_block.packets.append(block)
 		self.current_block = block
@@ -263,18 +263,16 @@ class PowerHandler(object):
 		return self._metadata_node
 
 	def tag_change(self, ts, e, tag, value):
-		entity = self.parse_entity_or_player(e)
+		id = self.parse_entity_or_player(e)
 		tag, value = parse_tag(tag, value)
-		self._check_for_mulligan_hack(ts, entity, tag, value)
+		self._check_for_mulligan_hack(ts, tag, value)
 
-		if isinstance(entity, LazyPlayer):
-			entity = self._packets.manager.check_player_registration(tag, value, e)
+		if isinstance(id, LazyPlayer):
+			id = self._packets.manager.check_player_registration(tag, value, e)
 
-		packet = packets.TagChange(ts, entity, tag, value)
+		packet = packets.TagChange(ts, id, tag, value)
 		self.current_block.packets.append(packet)
-
-		# entity.tag_change(tag, value)
-		return entity
+		return packet
 
 
 class OptionsHandler(object):
@@ -296,8 +294,8 @@ class OptionsHandler(object):
 			id, type, entity = sre.groups()
 			id = int(id)
 			type = parse_enum(enums.OptionType, type)
-			entity = parse_entity_id(entity) if entity else None
-			self._option_packet = packets.Option(ts, entity, id, type, "option")
+			entity_id = parse_entity_id(entity) if entity else None
+			self._option_packet = packets.Option(ts, entity_id, id, type, "option")
 			self._options_packet.options.append(self._option_packet)
 			self._suboption_packet = None
 			return self._option_packet
@@ -305,8 +303,8 @@ class OptionsHandler(object):
 			sre = OPTIONS_SUBOPTION_RE.match(data)
 			type, id, entity = sre.groups()
 			id = int(id)
-			entity = parse_entity_id(entity)
-			packet = packets.Option(ts, entity, id, None, type)
+			entity_id = parse_entity_id(entity)
+			packet = packets.Option(ts, entity_id, id, None, type)
 			if type == "subOption":
 				self._suboption_packet = packet
 				node = self._option_packet
@@ -370,16 +368,16 @@ class ChoicesHandler(object):
 		elif data.startswith("Source="):
 			sre = CHOICES_SOURCE_RE.match(data)
 			entity, = sre.groups()
-			entity = self.parse_entity_or_player(entity)
-			self._choice_packet.source = entity
-			return entity
+			id = self.parse_entity_or_player(entity)
+			self._choice_packet.source = id
+			return id
 		elif data.startswith("Entities["):
 			sre = CHOICES_ENTITIES_RE.match(data)
-			idx, e = sre.groups()
-			entity = self.parse_entity_or_player(e)
-			assert entity, e
-			self._choice_packet.choices.append(entity)
-			return entity
+			idx, entity = sre.groups()
+			id = self.parse_entity_or_player(entity)
+			assert id, "Missing choice entity %r (%r)" % (id, entity)
+			self._choice_packet.choices.append(id)
+			return id
 		raise NotImplementedError("Unhandled entity choice: %r" % (data))
 
 	def _register_choices(self, ts, id, player, tasklist, type, min, max):
@@ -422,11 +420,11 @@ class ChoicesHandler(object):
 			return self._send_choice_packet
 		elif data.startswith("m_chosenEntities"):
 			sre = SEND_CHOICES_ENTITIES_RE.match(data)
-			idx, e = sre.groups()
-			entity = self.parse_entity_or_player(e)
-			assert entity, e
-			self._send_choice_packet.choices.append(entity)
-			return entity
+			idx, entity = sre.groups()
+			id = self.parse_entity_or_player(entity)
+			assert id, "Missing chosen entity %r (%r)" % (id, entity)
+			self._send_choice_packet.choices.append(id)
+			return id
 		raise NotImplementedError("Unhandled send choice: %r" % (data))
 
 	def handle_entities_chosen(self, ts, data):
@@ -441,12 +439,12 @@ class ChoicesHandler(object):
 			return self._chosen_packet
 		elif data.startswith("Entities["):
 			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
-			idx, e = sre.groups()
-			entity = self.parse_entity_or_player(e)
-			assert entity, e
-			self._chosen_packet.choices.append(entity)
+			idx, entity = sre.groups()
+			id = self.parse_entity_or_player(entity)
+			assert id, "Missing entity chosen %r (%r)" % (id, entity)
+			self._chosen_packet.choices.append(id)
 			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
-			return entity
+			return id
 		raise NotImplementedError("Unhandled entities chosen: %r" % (data))
 
 
