@@ -75,6 +75,8 @@ class Game(Entity):
 			self.initial_entities.append(entity)
 
 	def find_entity_by_id(self, id):
+		# int() for LazyPlayer mainly...
+		id = int(id)
 		for entity in self.entities:
 			if entity.id == id:
 				return entity
