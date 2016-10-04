@@ -12,7 +12,7 @@ def find_unknown_full_entity_in_hand(packets):
 			# We are past the initial FULL_ENTITY block
 			return
 		tags = dict(packet.tags)
-		if tags[GameTag.ZONE] == Zone.HAND and not packet.cardid:
+		if tags[GameTag.ZONE] == Zone.HAND and not packet.card_id:
 			return tags[GameTag.CONTROLLER]
 
 
@@ -159,30 +159,30 @@ class HideEntity(Packet):
 class FullEntity(Packet):
 	power_type = PowerType.FULL_ENTITY
 
-	def __init__(self, ts, entity, cardid):
+	def __init__(self, ts, entity, card_id):
 		self.ts = ts
 		self.entity = entity
-		self.cardid = cardid
+		self.card_id = card_id
 		self.tags = []
 
 
 class ShowEntity(Packet):
 	power_type = PowerType.SHOW_ENTITY
 
-	def __init__(self, ts, entity, cardid):
+	def __init__(self, ts, entity, card_id):
 		self.ts = ts
 		self.entity = entity
-		self.cardid = cardid
+		self.card_id = card_id
 		self.tags = []
 
 
 class ChangeEntity(Packet):
 	power_type = PowerType.CHANGE_ENTITY
 
-	def __init__(self, ts, entity, cardid):
+	def __init__(self, ts, entity, card_id):
 		self.ts = ts
 		self.entity = entity
-		self.cardid = cardid
+		self.card_id = card_id
 		self.tags = []
 
 
