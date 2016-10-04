@@ -10,6 +10,9 @@ class LazyPlayer:
 		self.id = None
 		self.name = None
 
+	def __repr__(self):
+		return "%s(id=%r, name=%r)" % (self.__class__.__name__, self.id, self.name)
+
 	def __int__(self):
 		if not self.id:
 			raise RuntimeError("Entity ID not available for player %r" % (self.name))
