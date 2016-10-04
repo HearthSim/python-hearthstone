@@ -171,9 +171,10 @@ class Card(Entity):
 		self.card_id = card_id
 		self.revealed = False
 
-	def reveal(self, id):
+	def reveal(self, id, tags):
 		self.revealed = True
 		self.card_id = id
+		self.tags.update(tags)
 
 	def hide(self):
 		self.revealed = False
