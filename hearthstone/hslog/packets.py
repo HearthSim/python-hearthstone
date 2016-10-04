@@ -1,3 +1,4 @@
+from .. import entities
 from ..enums import GameTag, PowerType, Zone
 
 
@@ -56,6 +57,14 @@ class PacketTree:
 			if packet.ts:
 				return packet.ts
 
+	def export(self):
+		create_game = self.packets[0]
+		game = create_game._export()
+		for packet in self.packets[1:]:
+			packet._export(game)
+
+		return game
+
 	def guess_friendly_player(self, attempt_old=False):
 		"""
 		Attempt to guess the friendly player in the game by
@@ -113,6 +122,10 @@ class Block(Packet):
 	def end(self):
 		self.ended = True
 
+	def _export(self, game):
+		for packet in self.packets:
+			packet._export(game)
+
 
 class MetaData(Packet):
 	power_type = PowerType.META_DATA
@@ -127,6 +140,9 @@ class MetaData(Packet):
 	def __repr__(self):
 		return "%s(meta=%r, data=%r)" % (self.__class__.__name__, self.meta, self.data)
 
+	def _export(self, game):
+		pass
+
 
 class CreateGame(Packet):
 	power_type = PowerType.CREATE_GAME
@@ -140,11 +156,24 @@ class CreateGame(Packet):
 			self.lo = lo
 			self.tags = []
 
+		def _export(self, game):
+			player = entities.Player(int(self.entity), self.player_id, self.hi, self.lo)
+			game.register_entity(player)
+			# TODO player.name
+			return player
+
 	def __init__(self, ts, entity):
 		self.ts = ts
 		self.entity = entity
 		self.tags = []
 		self.players = []
+
+	def _export(self):
+		game = entities.Game(self.entity)
+		game.register_entity(game)
+		for player in self.players:
+			player._export(game)
+		return game
 
 
 class HideEntity(Packet):
@@ -154,6 +183,11 @@ class HideEntity(Packet):
 		self.ts = ts
 		self.entity = entity
 		self.zone = zone
+
+	def _export(self, game):
+		entity = game.find_entity_by_id(self.entity)
+		entity.hide()
+		return entity
 
 
 class FullEntity(Packet):
@@ -165,6 +199,12 @@ class FullEntity(Packet):
 		self.card_id = card_id
 		self.tags = []
 
+	def _export(self, game):
+		entity = entities.Card(self.entity, self.card_id)
+		entity.tags = dict(self.tags)
+		game.register_entity(entity)
+		return entity
+
 
 class ShowEntity(Packet):
 	power_type = PowerType.SHOW_ENTITY
@@ -174,6 +214,11 @@ class ShowEntity(Packet):
 		self.entity = entity
 		self.card_id = card_id
 		self.tags = []
+
+	def _export(self, game):
+		entity = game.find_entity_by_id(self.entity)
+		entity.reveal(self.card_id, dict(self.tags))
+		return entity
 
 
 class ChangeEntity(Packet):
@@ -195,6 +240,12 @@ class TagChange(Packet):
 		self.tag = tag
 		self.value = value
 
+	def _export(self, game):
+		entity = game.find_entity_by_id(self.entity)
+		assert entity, "Attempting TAG_CHANGE on entity %r (not found)" % (self.entity)
+		entity.tag_change(self.tag, self.value)
+		return entity
+
 
 class Choices(Packet):
 	def __init__(self, ts, entity, id, tasklist, type, min, max):
@@ -212,6 +263,9 @@ class Choices(Packet):
 	def player(self):
 		return self.entity
 
+	def _export(self, game):
+		pass
+
 
 class SendChoices(Packet):
 	def __init__(self, ts, id, type):
@@ -221,6 +275,9 @@ class SendChoices(Packet):
 		self.type = type
 		self.choices = []
 
+	def _export(self, game):
+		pass
+
 
 class ChosenEntities(Packet):
 	def __init__(self, ts, entity, id):
@@ -229,6 +286,9 @@ class ChosenEntities(Packet):
 		self.id = id
 		self.choices = []
 
+	def _export(self, game):
+		pass
+
 
 class Options(Packet):
 	def __init__(self, ts, id):
@@ -236,6 +296,9 @@ class Options(Packet):
 		self.entity = None
 		self.id = id
 		self.options = []
+
+	def _export(self, game):
+		pass
 
 
 class Option(Packet):
@@ -256,3 +319,6 @@ class SendOption(Packet):
 		self.suboption = suboption
 		self.target = target
 		self.position = position
+
+	def _export(self, game):
+		pass
