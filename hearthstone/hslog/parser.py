@@ -400,7 +400,7 @@ class ChoicesHandler(object):
 
 	def register_choices_old_2(self, ts, id, player_id, type, min, max):
 		player_id = int(player_id)
-		player = self._packets.manager.get_player_by_player_id(player_id)
+		player = self._packets.manager._players_by_player_id[player_id]
 		tasklist = None
 		return self._register_choices(ts, id, player, tasklist, type, min, max)
 
