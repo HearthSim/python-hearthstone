@@ -24,8 +24,9 @@ class PlayerManager:
 		self._players_by_id = {}
 		self._players_by_name = {}
 		self._players_by_player_id = {}
-		self.registered_players = 0
 		self._entity_controller_map = {}
+		self._registered_names = []
+		self._unregistered_names = set()
 
 	def get_player_by_id(self, id):
 		assert id, "Expected an id for get_player_by_id (got %r)" % (id)
@@ -38,9 +39,16 @@ class PlayerManager:
 	def get_player_by_name(self, name):
 		assert name, "Expected a name for get_player_by_name (got %r)" % (name)
 		if name not in self._players_by_name:
-			lazy_player = LazyPlayer()
-			lazy_player.name = name
-			self._players_by_name[name] = lazy_player
+			if len(self._registered_names) == 1:
+				# Maybe we can figure the name out right there and then
+				other_player = self.get_player_by_name(self._registered_names[0])
+				id = 3 if other_player == 2 else 2
+				self.register_player_name(name, id)
+			else:
+				lazy_player = LazyPlayer()
+				lazy_player.name = name
+				self._players_by_name[name] = lazy_player
+				self._unregistered_names.add(name)
 		return self._players_by_name[name]
 
 	def new_player(self, id, player_id):
@@ -59,15 +67,24 @@ class PlayerManager:
 		"""
 		if name in self._players_by_name:
 			self._players_by_name[name].id = id
+			self._unregistered_names.remove(name)
 		self._players_by_name[name] = id
 		lazy_player_by_id = self._players_by_id[id]
 		lazy_player_by_id.name = name
-		self.registered_players += 1
+		self._registered_names.append(name)
 		# TODO: name alias re-registration (is_ai / UNKNOWN HUMAN PLAYER)
 
-		if self.registered_players >= 2:
+		if len(self._registered_names) >= 2:
 			# We no longer need the entity/controller map, wipe it to free memory
 			self._entity_controller_map = None
+
+		if len(self._unregistered_names) == 1:
+			self.attempt_aggressive_name_registration()
+			assert len(self._players_by_id) == 2
+			id1, id2 = self._players_by_id.keys()
+			other_id = id2 if id == id1 else id1
+			other_name = self._unregistered_names.values()[0]
+			self.register_player_name(other_name, other_id)
 
 		return lazy_player_by_id
 
