@@ -561,7 +561,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 		player_id = int(player_id)
 		hi = int(hi)
 		lo = int(lo)
-		lazy_player = self._packets.manager.new_player(id, player_id)
+		lazy_player = self._packets.manager.new_player(id, player_id, is_ai=lo == 0)
 		self._entity_packet = packets.CreateGame.Player(ts, lazy_player, player_id, hi, lo)
 		self._game_packet.players.append(self._entity_packet)
 		return lazy_player

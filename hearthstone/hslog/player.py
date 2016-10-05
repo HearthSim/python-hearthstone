@@ -27,6 +27,7 @@ class PlayerManager:
 		self._entity_controller_map = {}
 		self._registered_names = []
 		self._unregistered_names = set()
+		self.ai_player = None
 
 	def get_player_by_id(self, id):
 		assert id, "Expected an id for get_player_by_id (got %r)" % (id)
@@ -51,9 +52,11 @@ class PlayerManager:
 				self._unregistered_names.add(name)
 		return self._players_by_name[name]
 
-	def new_player(self, id, player_id):
+	def new_player(self, id, player_id, is_ai):
 		lazy_player = self.get_player_by_id(id)
 		self._players_by_player_id[player_id] = lazy_player
+		if is_ai:
+			self.ai_player = lazy_player
 		return lazy_player
 
 	def register_controller(self, entity, controller):
@@ -72,10 +75,10 @@ class PlayerManager:
 		lazy_player_by_id = self._players_by_id[id]
 		lazy_player_by_id.name = name
 		self._registered_names.append(name)
-		# TODO: name alias re-registration (is_ai / UNKNOWN HUMAN PLAYER)
 
-		if len(self._registered_names) >= 2:
+		if len(self._registered_names) >= 2 and not self.ai_player:
 			# We no longer need the entity/controller map, wipe it to free memory
+			# (we might still need it if there's an AI player, keep it to be safe)
 			self._entity_controller_map = None
 
 		if len(self._unregistered_names) == 1:
