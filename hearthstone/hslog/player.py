@@ -48,20 +48,6 @@ class PlayerManager:
 		self._players_by_player_id[player_id] = lazy_player
 		return lazy_player
 
-	def check_player_registration(self, tag, value, name):
-		"""
-		Trigger on a tag change if we did not find a corresponding entity.
-		"""
-		if tag == GameTag.ENTITY_ID:
-			# This is the simplest check. When a player entity is declared,
-			# its ENTITY_ID is not available immediately (in pre-6.0).
-			# If we get a matching ENTITY_ID, then we can use that to match it.
-			self.register_player_name(name, value)
-			return value
-
-		# If we still have nothing, return a LazyPlayer.
-		return self.get_player_by_name(name)
-
 	def register_controller(self, entity, controller):
 		if self._entity_controller_map is not None:
 			self._entity_controller_map[entity] = controller
@@ -108,3 +94,22 @@ class PlayerManager:
 			entity_id = int(self._players_by_player_id[player_id])
 			packet.entity = entity_id
 			return self.register_player_name(lazy_player.name, entity_id)
+
+	def register_player_name_on_tag_change(self, player, tag, value):
+		"""
+		Triggers on every TAG_CHANGE where the corresponding entity is a LazyPlayer.
+		Will attempt to return a new value instead
+		"""
+		if tag == GameTag.ENTITY_ID:
+			# This is the simplest check. When a player entity is declared,
+			# its ENTITY_ID is not available immediately (in pre-6.0).
+			# If we get a matching ENTITY_ID, then we can use that to match it.
+			return self.register_player_name(player.name, value)
+		elif tag == GameTag.LAST_CARD_PLAYED:
+			# This is a fallback to register_player_name_mulligan in case the mulligan
+			# phase is not available in this game (spectator mode, reconnects).
+			player_id = self._entity_controller_map[value]
+			entity_id = int(self._players_by_player_id[player_id])
+			return self.register_player_name(player.name, entity_id)
+
+		return player

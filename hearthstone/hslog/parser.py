@@ -270,7 +270,7 @@ class PowerHandler(object):
 		self._check_for_mulligan_hack(ts, tag, value)
 
 		if isinstance(id, LazyPlayer):
-			id = self._packets.manager.check_player_registration(tag, value, e)
+			id = self._packets.manager.register_player_name_on_tag_change(id, tag, value)
 
 		packet = packets.TagChange(ts, id, tag, value)
 		self.current_block.packets.append(packet)
