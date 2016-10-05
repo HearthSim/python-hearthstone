@@ -179,6 +179,6 @@ class Card(Entity):
 	def hide(self):
 		self.revealed = False
 
-	def change(self, id):
-		self.card_id = id
-		self.tags = {}
+	def change(self, card_id, tags):
+		self.card_id = card_id
+		self.tags = tags

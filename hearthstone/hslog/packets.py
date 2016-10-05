@@ -230,6 +230,12 @@ class ChangeEntity(Packet):
 		self.card_id = card_id
 		self.tags = []
 
+	def _export(self, game):
+		entity = game.find_entity_by_id(self.entity)
+		assert entity, "Attempting CHANGE_ENTITY on entity %r (not found)" % (self.entity)
+		entity.change(self.card_id, dict(self.tags))
+		return entity
+
 
 class TagChange(Packet):
 	power_type = PowerType.TAG_CHANGE
