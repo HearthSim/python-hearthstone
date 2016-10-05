@@ -71,8 +71,9 @@ class PlayerManager:
 		Registers a link between \a name and \a id.
 		Note that this does not support two different players with the same name.
 		"""
-		lazy_player_by_name = self.get_player_by_name(name)
-		lazy_player_by_name.id = id
+		if name in self._players_by_name:
+			self._players_by_name[name].id = id
+		self._players_by_name[name] = id
 		lazy_player_by_id = self._players_by_id[id]
 		lazy_player_by_id.name = name
 		self.registered_players += 1
@@ -82,7 +83,7 @@ class PlayerManager:
 			# We no longer need the entity/controller map, wipe it to free memory
 			self._entity_controller_map = None
 
-		return lazy_player_by_name
+		return lazy_player_by_id
 
 	def register_player_name_mulligan(self, packet):
 		"""
