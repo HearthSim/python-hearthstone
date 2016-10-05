@@ -3,7 +3,6 @@ import re
 from datetime import datetime, timedelta
 from aniso8601 import parse_time
 from hearthstone import enums
-from hearthstone.entities import Card
 from ..enums import GameTag, PowerType
 from . import packets
 from .player import LazyPlayer, PlayerManager
@@ -131,6 +130,9 @@ class PowerHandler(object):
 		elif opcode.startswith("tag="):
 			tag, value = parse_initial_tag(data)
 			self._entity_packet.tags.append((tag, value))
+			if tag == GameTag.CONTROLLER:
+				# We need to know entity controllers for player name registration
+				self._packets.manager.register_controller(self._entity_packet.entity, value)
 		elif opcode.startswith("Info["):
 			if not self._metadata_node:
 				logging.warning("Metadata Info outside of META_DATA: %r", data)

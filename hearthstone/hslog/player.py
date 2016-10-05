@@ -25,6 +25,7 @@ class PlayerManager:
 		self._players_by_name = {}
 		self._players_by_player_id = {}
 		self.registered_players = 0
+		self._entity_controller_map = {}
 
 	def get_player_by_id(self, id):
 		assert id, "Expected an id for get_player_by_id (got %r)" % (id)
@@ -61,6 +62,10 @@ class PlayerManager:
 		# If we still have nothing, return a LazyPlayer.
 		return self.get_player_by_name(name)
 
+	def register_controller(self, entity, controller):
+		if self._entity_controller_map is not None:
+			self._entity_controller_map[entity] = controller
+
 	def register_player_name(self, name, id):
 		"""
 		Registers a link between \a name and \a id.
@@ -72,6 +77,11 @@ class PlayerManager:
 		lazy_player_by_id.name = name
 		self.registered_players += 1
 		# TODO: name alias re-registration (is_ai / UNKNOWN HUMAN PLAYER)
+
+		if self.registered_players >= 2:
+			# We no longer need the entity/controller map, wipe it to free memory
+			self._entity_controller_map = None
+
 		return lazy_player_by_name
 
 	def register_player_name_mulligan(self, packet):
@@ -92,10 +102,8 @@ class PlayerManager:
 			return
 
 		for choice in packet.choices:
-			controller = choice.tags.get(GameTag.CONTROLLER, 0)
-			if controller:
-				# We need ENTITY_ID for register_player_name()
-				# That's always PlayerID + 1
-				entity_id = controller + 1
-				packet.entity = entity_id
-				return self.register_player_name(lazy_player.name, entity_id)
+			player_id = self._entity_controller_map[choice]
+			# We need ENTITY_ID for register_player_name()
+			entity_id = int(self._players_by_player_id[player_id])
+			packet.entity = entity_id
+			return self.register_player_name(lazy_player.name, entity_id)
