@@ -77,12 +77,17 @@ class Game(Entity):
 	def find_entity_by_id(self, id):
 		# int() for LazyPlayer mainly...
 		id = int(id)
+
+		if id <= len(self.entities):
+			entity = self.entities[id - 1]
+			if entity.id == id:
+				return entity
+
+		# Entities are ordered by ID... usually. It is NOT safe to assume
+		# that the entity is missing if we went past the ID. So this is the fallback.
 		for entity in self.entities:
 			if entity.id == id:
 				return entity
-			# Entities are ordered by ID... usually. It is NOT safe to assume
-			# that the entity is missing if we went past the ID.
-			# Yep.
 
 
 class Player(Entity):
