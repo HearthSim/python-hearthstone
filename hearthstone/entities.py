@@ -89,12 +89,12 @@ class Player(Entity):
 	_args = ("name", )
 	UNKNOWN_HUMAN_PLAYER = "UNKNOWN HUMAN PLAYER"
 
-	def __init__(self, id, player_id, hi, lo):
+	def __init__(self, id, player_id, hi, lo, name=None):
 		super(Player, self).__init__(id)
 		self.player_id = player_id
 		self.account_hi = hi
 		self.account_lo = lo
-		self.name = None
+		self.name = name
 
 	def __str__(self):
 		return self.name or ""
