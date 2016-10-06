@@ -48,6 +48,10 @@ class PlayerManager:
 				other_player = self.get_player_by_name(self._registered_names[0])
 				id = 3 if other_player == 2 else 2
 				self.register_player_name(name, id)
+			elif len(self._registered_names) > 1 and self.ai_player:
+				# If we are registering our 3rd (or more) name, and we are in an AI game...
+				# then it's probably the innkeeper with a new name.
+				self.register_player_name(name, int(self.ai_player))
 			else:
 				lazy_player = LazyPlayer()
 				lazy_player.name = name
