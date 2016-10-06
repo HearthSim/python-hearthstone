@@ -31,6 +31,7 @@ class BaseExporter:
 	def export(self):
 		for packet in self.packet_tree:
 			self.export_packet(packet)
+		return self
 
 	def export_packet(self, packet):
 		packet_type = packet.__class__
