@@ -33,7 +33,7 @@ class BaseExporter:
 			self.export_packet(packet)
 
 	def export_packet(self, packet):
-		packet_type = type(packet)
+		packet_type = packet.__class__
 		handler = self.dispatch.get(packet_type, None)
 		if not handler:
 			raise NotImplementedError("Don't know how to export %r" % (packet_type))
