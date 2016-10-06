@@ -46,6 +46,18 @@ class EntityTreeExporter(BaseExporter):
 	player_class = entities.Player
 	card_class = entities.Card
 
+	class EntityNotFound(Exception):
+		pass
+
+	def find_entity(self, id, opcode):
+		try:
+			entity = self.game.find_entity_by_id(id)
+		except RuntimeError as e:
+			raise self.EntityNotFound("Error getting entity %r for %s" % (id, opcode))
+		if not entity:
+			raise self.EntityNotFound("Attempting %s on entity %r (not found)" % (opcode, id))
+		return entity
+
 	def handle_create_game(self, packet):
 		self.game = self.game_class(packet.entity)
 		self.game.register_entity(self.game)
@@ -75,25 +87,22 @@ class EntityTreeExporter(BaseExporter):
 		return entity
 
 	def handle_hide_entity(self, packet):
-		entity = self.game.find_entity_by_id(packet.entity)
+		entity = self.find_entity(packet.entity, "HIDE_ENTITY")
 		entity.hide()
 		return entity
 
 	def handle_show_entity(self, packet):
-		entity = self.game.find_entity_by_id(packet.entity)
-		assert entity, "Attempting SHOW_ENTITY on entity %r (not found)" % (packet.entity)
+		entity = self.find_entity(packet.entity, "SHOW_ENTITY")
 		entity.reveal(packet.card_id, dict(packet.tags))
 		return entity
 
 	def handle_change_entity(self, packet):
-		entity = self.game.find_entity_by_id(packet.entity)
-		assert entity, "Attempting CHANGE_ENTITY on entity %r (not found)" % (packet.entity)
+		entity = self.find_entity(packet.entity, "CHANGE_ENTITY")
 		entity.change(packet.card_id, dict(packet.tags))
 		return entity
 
 	def handle_tag_change(self, packet):
-		entity = self.game.find_entity_by_id(packet.entity)
-		assert entity, "Attempting TAG_CHANGE on entity %r (not found)" % (packet.entity)
+		entity = self.find_entity(packet.entity, "TAG_CHANGE")
 		entity.tag_change(packet.tag, packet.value)
 		return entity
 
