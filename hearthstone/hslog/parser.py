@@ -54,7 +54,7 @@ ENTITIES_CHOSEN_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=%s$" % _E)
 
 # Options
 OPTIONS_ENTITY_RE = re.compile(r"id=(\d+)$")
-OPTIONS_OPTION_RE = re.compile(r"option (\d+) type=(\w+) mainEntity=%s?$" % _E)
+OPTIONS_OPTION_RE = re.compile(r"(option) (\d+) type=(\w+) mainEntity=%s?$" % _E)
 OPTIONS_SUBOPTION_RE = re.compile(r"(subOption|target) (\d+) entity=%s?$" % _E)
 SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) selectedTarget=(\d+) selectedPosition=(\d+)")
 
@@ -293,24 +293,24 @@ class OptionsHandler(object):
 			self.current_block.packets.append(self._options_packet)
 		elif data.startswith("option "):
 			sre = OPTIONS_OPTION_RE.match(data)
-			id, type, entity = sre.groups()
+			optype, id, type, entity = sre.groups()
 			id = int(id)
 			type = parse_enum(enums.OptionType, type)
 			entity_id = parse_entity_id(entity) if entity else None
-			self._option_packet = packets.Option(ts, entity_id, id, type, "option")
+			self._option_packet = packets.Option(ts, entity_id, id, type, optype)
 			self._options_packet.options.append(self._option_packet)
 			self._suboption_packet = None
 			return self._option_packet
 		elif data.startswith(("subOption ", "target ")):
 			sre = OPTIONS_SUBOPTION_RE.match(data)
-			type, id, entity = sre.groups()
+			optype, id, entity = sre.groups()
 			id = int(id)
 			entity_id = parse_entity_id(entity)
-			packet = packets.Option(ts, entity_id, id, None, type)
-			if type == "subOption":
+			packet = packets.Option(ts, entity_id, id, None, optype)
+			if optype == "subOption":
 				self._suboption_packet = packet
 				node = self._option_packet
-			elif type == "target":
+			elif optype == "target":
 				node = self._suboption_packet or self._option_packet
 			node.options.append(packet)
 			return packet
