@@ -82,11 +82,10 @@ class PlayerManager:
 			self._entity_controller_map = None
 
 		if len(self._unregistered_names) == 1:
-			self.attempt_aggressive_name_registration()
 			assert len(self._players_by_id) == 2
 			id1, id2 = self._players_by_id.keys()
 			other_id = id2 if id == id1 else id1
-			other_name = self._unregistered_names.values()[0]
+			other_name = list(self._unregistered_names)[0]
 			self.register_player_name(other_name, other_id)
 
 		return lazy_player_by_id
