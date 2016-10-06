@@ -60,6 +60,14 @@ class PacketTree:
 	def export(self):
 		create_game = self.packets[0]
 		game = create_game._export()
+
+		if hasattr(self, "manager"):
+			# If we have a PlayerManager, first we mutate the CreateGame.Player packet.
+			# This will have to change if we're ever able to immediately get the names.
+			for packet in create_game.players:
+				player = self.manager.get_player_by_id(packet.entity)
+				packet.name = player.name
+
 		for packet in self.packets[1:]:
 			packet._export(game)
 
@@ -155,11 +163,12 @@ class CreateGame(Packet):
 			self.hi = hi
 			self.lo = lo
 			self.tags = []
+			self.name = None
 
 		def _export(self, game):
-			player = entities.Player(int(self.entity), self.player_id, self.hi, self.lo)
+			id = int(self.entity)
+			player = entities.Player(id, self.player_id, self.hi, self.lo, self.name)
 			game.register_entity(player)
-			# TODO player.name
 			return player
 
 	def __init__(self, ts, entity):
