@@ -5,6 +5,9 @@ do not have to receive one immediately.
 from ..enums import GameTag
 
 
+UNKNOWN_HUMAN_PLAYER = "UNKNOWN HUMAN PLAYER"
+
+
 class LazyPlayer:
 	def __init__(self, *args, **kwargs):
 		self.id = None
@@ -40,7 +43,7 @@ class PlayerManager:
 	def get_player_by_name(self, name):
 		assert name, "Expected a name for get_player_by_name (got %r)" % (name)
 		if name not in self._players_by_name:
-			if len(self._registered_names) == 1:
+			if len(self._registered_names) == 1 and name != UNKNOWN_HUMAN_PLAYER:
 				# Maybe we can figure the name out right there and then
 				other_player = self.get_player_by_name(self._registered_names[0])
 				id = 3 if other_player == 2 else 2
@@ -76,10 +79,11 @@ class PlayerManager:
 		lazy_player_by_id.name = name
 		self._registered_names.append(name)
 
-		if len(self._registered_names) >= 2 and not self.ai_player:
-			# We no longer need the entity/controller map, wipe it to free memory
-			# (we might still need it if there's an AI player, keep it to be safe)
-			self._entity_controller_map = None
+		if len(self._registered_names) >= 2:
+			if not self.ai_player and UNKNOWN_HUMAN_PLAYER not in self._registered_names:
+				# We no longer need the entity/controller map, wipe it to free memory
+				# (we might still need it if there's an AI/UNKNOWN player, keep it to be safe)
+				self._entity_controller_map = None
 
 		if len(self._unregistered_names) == 1:
 			assert len(self._players_by_id) == 2
