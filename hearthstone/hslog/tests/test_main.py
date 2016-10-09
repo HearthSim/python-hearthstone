@@ -5,6 +5,7 @@ from hearthstone.enums import (
 	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
 )
 from hearthstone.hslog import LogParser
+from hearthstone.hslog.export import FriendlyPlayerExporter
 from hearthstone.hslog.parser import parse_initial_tag
 
 
@@ -48,11 +49,13 @@ D 02:59:14.6500380 GameState.DebugPrintPower() -         tag=CARDTYPE value=PLAY
 def test_create_empty_game():
 	parser = LogParser()
 	parser.read(StringIO(EMPTY_GAME))
+	parser.flush()
 
 	# Test resulting game/entities
 	assert len(parser.games) == 1
-	game_tree = parser.games[0]
-	game = game_tree.game
+
+	packet_tree = parser.games[0]
+	game = packet_tree.export().game
 	assert len(game.entities) == 3
 	assert len(game.players) == 2
 	assert game.entities[0] is game
@@ -76,16 +79,16 @@ def test_create_empty_game():
 	assert not game.players[1].name
 
 	# Test packet structure
-	assert len(game_tree.packets) == 1
-	packet = game_tree.packets[0]
+	assert len(packet_tree.packets) == 1
+	packet = packet_tree.packets[0]
 	assert packet.power_type == PowerType.CREATE_GAME
-	assert packet.entity is game
+	assert packet.entity == game.id == 1
 
 	# Player packet objects are not the same as players
-	assert packet.players[0].entity is game.players[0]
-	assert packet.players[0].playerid == game.players[0].player_id
-	assert packet.players[1].entity is game.players[1]
-	assert packet.players[1].playerid == game.players[1].player_id
+	assert int(packet.players[0].entity) == game.players[0].id
+	assert packet.players[0].player_id == game.players[0].player_id
+	assert int(packet.players[1].entity) == game.players[1].id
+	assert packet.players[1].player_id == game.players[1].player_id
 
 	# All tags should be empty (we didn't pass any)
 	assert not game.tags
@@ -121,8 +124,8 @@ def test_game_initialization():
 	parser.flush()
 
 	assert len(parser.games) == 1
-	game_tree = parser.games[0]
-	game = game_tree.game
+	packet_tree = parser.games[0]
+	game = packet_tree.export().game
 	assert len(game.entities) == 3
 	assert len(game.players) == 2
 
@@ -157,7 +160,10 @@ def test_game_initialization():
 		GameTag.CARDTYPE: CardType.PLAYER,
 	}
 
-	assert not game_tree.guess_friendly_player()
+	# Test that there should be no friendly player
+	fpe = FriendlyPlayerExporter(packet_tree)
+	friendly_player = fpe.export()
+	assert not friendly_player
 
 
 def test_timestamp_parsing():
