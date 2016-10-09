@@ -148,3 +148,52 @@ class EntityTreeExporter(BaseExporter):
 		entity = self.find_entity(packet.entity, "TAG_CHANGE")
 		entity.tag_change(packet.tag, packet.value)
 		return entity
+
+
+class FriendlyPlayerExporter(BaseExporter):
+	"""
+	An exporter that will attempt to guess the friendly player in the game by
+	looking for initial unrevealed cards.
+	May produce incorrect results in spectator mode if both hands are revealed.
+	"""
+	def __init__(self, packet_tree):
+		super(FriendlyPlayerExporter, self).__init__(packet_tree)
+		self._controller_map = {}
+		self.friendly_player = None
+
+	def export(self):
+		for packet in self.packet_tree:
+			self.export_packet(packet)
+			if self.friendly_player:
+				# Stop export once we have it
+				break
+		return self.friendly_player
+
+	def handle_tag_change(self, packet):
+		if packet.tag == GameTag.CONTROLLER:
+			self._controller_map[packet.entity] = packet.value
+
+	def handle_full_entity(self, packet):
+		tags = dict(packet.tags)
+		if GameTag.CONTROLLER in tags:
+			self._controller_map[packet.entity] = tags[GameTag.CONTROLLER]
+
+		# The following logic only works for pre-13619 logs
+		# The first FULL_ENTITY packet which is in Zone.HAND and does *not*
+		# have an ID is owned by the friendly player's *opponent*.
+		if tags[GameTag.ZONE] == Zone.HAND and not packet.card_id:
+			controller = self._controller_map
+			# That controller is the enemy player - return its opponent.
+			self.friendly_player = controller % 2 + 1
+
+	def handle_show_entity(self, packet):
+		tags = dict(packet.tags)
+		if GameTag.CONTROLLER in tags:
+			self._controller_map[packet.entity] = tags[GameTag.CONTROLLER]
+
+		if tags.get(GameTag.ZONE) == Zone.PLAY:
+			# Ignore cards already in play (such as enchantments, common in TB)
+			return
+
+		# The first SHOW_ENTITY packet will always be the friendly player's.
+		self.friendly_player = self._controller_map[packet.entity]

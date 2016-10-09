@@ -1,40 +1,6 @@
 from ..enums import GameTag, PowerType, Zone
 
 
-def find_unknown_full_entity_in_hand(packets):
-	"""
-	Finds the first unknown in-hand entity in \a packets list.
-	Returns its controller's ID.
-	This is the behaviour used before patch 13619 to guess the friendly player.
-	"""
-	for packet in packets:
-		if packet.power_type != PowerType.FULL_ENTITY:
-			# We are past the initial FULL_ENTITY block
-			return
-		tags = dict(packet.tags)
-		if tags[GameTag.ZONE] == Zone.HAND and not packet.card_id:
-			return tags[GameTag.CONTROLLER]
-
-
-def find_show_entity(packets):
-	"""
-	Finds the first SHOW_ENTITY in \a packets list (not in PLAY zone).
-	Returns its controller's ID.
-	This is the behaviour used as of patch 13619 to guess the friendly player.
-	"""
-	for packet in packets:
-		if packet.power_type == PowerType.SHOW_ENTITY:
-			tags = dict(packet.tags)
-			if tags.get(GameTag.ZONE) == Zone.PLAY:
-				# Ignore cards already in play (such as enchantments, common in TB)
-				continue
-			return tags[GameTag.CONTROLLER]
-		elif packet.power_type == PowerType.BLOCK_START:
-			ret = find_show_entity(packet.packets)
-			if ret:
-				return ret
-
-
 class PacketTree:
 	def __init__(self, ts):
 		self.ts = ts
@@ -62,29 +28,6 @@ class PacketTree:
 			from .export import EntityTreeExporter as cls
 		exporter = cls(self)
 		return exporter.export()
-
-	def guess_friendly_player(self, attempt_old=False):
-		"""
-		Attempt to guess the friendly player in the game by
-		looking for initial unrevealed cards.
-		Will not work very early in game initialization and
-		produce incorrect results if both hands are revealed.
-		\a attempt_old should be True for pre-13619 logs.
-		"""
-		packets = self.packets[1:]
-
-		if attempt_old:
-			# Pre-13619: The first FULL_ENTITY packet which is in Zone.HAND and
-			# does *not* have an ID is owned by the friendly player's *opponent*.
-			controller = find_unknown_full_entity_in_hand(packets)
-			if controller:
-				# That controller is the enemy player - return its opponent.
-				return controller % 2 + 1
-
-		# Post-13619: The FULL_ENTITY packets no longer contain initial
-		# card data, a SHOW_ENTITY always has to happen.
-		# The first SHOW_ENTITY packet *will* be the friendly player's.
-		return find_show_entity(packets)
 
 
 class Packet:
