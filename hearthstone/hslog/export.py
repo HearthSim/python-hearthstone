@@ -1,4 +1,5 @@
 from .. import entities
+from ..enums import GameTag, Zone
 from . import packets
 
 
@@ -104,6 +105,7 @@ class EntityTreeExporter(BaseExporter):
 
 	def handle_create_game(self, packet):
 		self.game = self.game_class(packet.entity)
+		self.game.tags = dict(packet.tags)
 		self.game.register_entity(self.game)
 		for player in packet.players:
 			self.export_packet(player)
@@ -117,6 +119,7 @@ class EntityTreeExporter(BaseExporter):
 			player = self.packet_tree.manager.get_player_by_id(id)
 			packet.name = player.name
 		entity = self.player_class(id, packet.player_id, packet.hi, packet.lo, packet.name)
+		entity.tags = dict(packet.tags)
 		self.game.register_entity(entity)
 		return entity
 
