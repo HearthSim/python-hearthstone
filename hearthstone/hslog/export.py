@@ -8,8 +8,6 @@ class BaseExporter:
 		self.dispatch = self.get_dispatch_dict()
 
 	def get_dispatch_dict(self):
-		# These methods all need to be implemented
-		# Or get_dispatch_dict() needs to be overridden
 		return {
 			packets.CreateGame: self.handle_create_game,
 			packets.CreateGame.Player: self.handle_player,
@@ -39,6 +37,52 @@ class BaseExporter:
 		if not handler:
 			raise NotImplementedError("Don't know how to export %r" % (packet_type))
 		handler(packet)
+
+	def handle_create_game(self, packet):
+		pass
+
+	def handle_player(self, packet):
+		pass
+
+	def handle_block(self, packet):
+		for p in packet.packets:
+			self.export_packet(p)
+
+	def handle_full_entity(self, packet):
+		pass
+
+	def handle_hide_entity(self, packet):
+		pass
+
+	def handle_show_entity(self, packet):
+		pass
+
+	def handle_change_entity(self, packet):
+		pass
+
+	def handle_tag_change(self, packet):
+		pass
+
+	def handle_metadata(self, packet):
+		pass
+
+	def handle_choices(self, packet):
+		pass
+
+	def handle_send_choices(self, packet):
+		pass
+
+	def handle_chosen_entities(self, packet):
+		pass
+
+	def handle_options(self, packet):
+		pass
+
+	def handle_option(self, packet):
+		pass
+
+	def handle_send_option(self, packet):
+		pass
 
 
 class EntityTreeExporter(BaseExporter):
@@ -76,10 +120,6 @@ class EntityTreeExporter(BaseExporter):
 		self.game.register_entity(entity)
 		return entity
 
-	def handle_block(self, packet):
-		for p in packet.packets:
-			self.export_packet(p)
-
 	def handle_full_entity(self, packet):
 		entity = self.card_class(packet.entity, packet.card_id)
 		entity.tags = dict(packet.tags)
@@ -105,24 +145,3 @@ class EntityTreeExporter(BaseExporter):
 		entity = self.find_entity(packet.entity, "TAG_CHANGE")
 		entity.tag_change(packet.tag, packet.value)
 		return entity
-
-	def handle_metadata(self, packet):
-		pass
-
-	def handle_choices(self, packet):
-		pass
-
-	def handle_send_choices(self, packet):
-		pass
-
-	def handle_chosen_entities(self, packet):
-		pass
-
-	def handle_options(self, packet):
-		pass
-
-	def handle_option(self, packet):
-		pass
-
-	def handle_send_option(self, packet):
-		pass
