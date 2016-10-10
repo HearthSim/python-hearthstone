@@ -67,6 +67,10 @@ SPECTATOR_MODE_END_MODE = "End Spectator Mode"
 SPECTATOR_MODE_END_GAME = "End Spectator Game"
 
 
+class ParsingError(Exception):
+	pass
+
+
 def parse_entity_id(entity):
 	if entity.isdigit():
 		return int(entity)
@@ -122,7 +126,8 @@ class PowerHandler(object):
 			self.flush()
 			sre = GAME_ENTITY_RE.match(data)
 			id, = sre.groups()
-			assert int(id) == 1, "GameEntity ID: Expected 1, got %r" % (id)
+			if int(id) != 1:
+				raise ParsingError("GameEntity ID: Expected 1, got %r" % (id))
 		elif opcode == "Player":
 			self.flush()
 			sre = PLAYER_ENTITY_RE.match(data)
@@ -244,7 +249,8 @@ class PowerHandler(object):
 	def hide_entity(self, ts, entity, tag, value):
 		id = parse_entity_id(entity)
 		tag, value = parse_tag(tag, value)
-		assert tag == GameTag.ZONE
+		if tag != GameTag.ZONE:
+			raise ParsingError("HIDE_ENTITY got non-zone tag (%r)" % (tag))
 		packet = packets.HideEntity(ts, id, value)
 		self.current_block.packets.append(packet)
 		return packet
@@ -377,7 +383,8 @@ class ChoicesHandler(object):
 			sre = CHOICES_ENTITIES_RE.match(data)
 			idx, entity = sre.groups()
 			id = self.parse_entity_or_player(entity)
-			assert id, "Missing choice entity %r (%r)" % (id, entity)
+			if not id:
+				raise ParsingError("Missing choice entity %r (%r)" % (id, entity))
 			self._choice_packet.choices.append(id)
 			return id
 		raise NotImplementedError("Unhandled entity choice: %r" % (data))
@@ -424,7 +431,8 @@ class ChoicesHandler(object):
 			sre = SEND_CHOICES_ENTITIES_RE.match(data)
 			idx, entity = sre.groups()
 			id = self.parse_entity_or_player(entity)
-			assert id, "Missing chosen entity %r (%r)" % (id, entity)
+			if not id:
+				raise ParsingError("Missing chosen entity %r (%r)" % (id, entity))
 			self._send_choice_packet.choices.append(id)
 			return id
 		raise NotImplementedError("Unhandled send choice: %r" % (data))
@@ -443,9 +451,11 @@ class ChoicesHandler(object):
 			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
 			idx, entity = sre.groups()
 			id = self.parse_entity_or_player(entity)
-			assert id, "Missing entity chosen %r (%r)" % (id, entity)
+			if not id:
+				raise ParsingError("Missing entity chosen %r (%r)" % (id, entity))
 			self._chosen_packet.choices.append(id)
-			assert len(self._chosen_packet.choices) <= self._chosen_packet_count
+			if len(self._chosen_packet.choices) > self._chosen_packet_count:
+				raise ParsingError("Too many choices (expected %r)" % (self._chosen_packet_count))
 			return id
 		raise NotImplementedError("Unhandled entities chosen: %r" % (data))
 
