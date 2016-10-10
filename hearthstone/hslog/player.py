@@ -67,8 +67,7 @@ class PlayerManager:
 		return lazy_player
 
 	def register_controller(self, entity, controller):
-		if self._entity_controller_map is not None:
-			self._entity_controller_map[entity] = controller
+		self._entity_controller_map[entity] = controller
 
 	def register_player_name(self, name, id):
 		"""
@@ -82,12 +81,6 @@ class PlayerManager:
 		lazy_player_by_id = self._players_by_id[id]
 		lazy_player_by_id.name = name
 		self._registered_names.append(name)
-
-		if len(self._registered_names) >= 2:
-			if not self.ai_player and UNKNOWN_HUMAN_PLAYER not in self._registered_names:
-				# We no longer need the entity/controller map, wipe it to free memory
-				# (we might still need it if there's an AI/UNKNOWN player, keep it to be safe)
-				self._entity_controller_map = None
 
 		if len(self._unregistered_names) == 1:
 			assert len(self._players_by_id) == 2
