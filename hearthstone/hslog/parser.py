@@ -377,6 +377,8 @@ class ChoicesHandler(object):
 			sre = CHOICES_SOURCE_RE.match(data)
 			entity, = sre.groups()
 			id = self.parse_entity_or_player(entity)
+			if not self._choice_packet:
+				raise ParsingError("Source Choice Entity outside of choie packet: %r" % (data))
 			self._choice_packet.source = id
 			return id
 		elif data.startswith("Entities["):
@@ -385,6 +387,8 @@ class ChoicesHandler(object):
 			id = self.parse_entity_or_player(entity)
 			if not id:
 				raise ParsingError("Missing choice entity %r (%r)" % (id, entity))
+			if not self._choice_packet:
+				raise ParsingError("Choice Entity outside of choice packet: %r" % (data))
 			self._choice_packet.choices.append(id)
 			return id
 		raise NotImplementedError("Unhandled entity choice: %r" % (data))
@@ -433,6 +437,8 @@ class ChoicesHandler(object):
 			id = self.parse_entity_or_player(entity)
 			if not id:
 				raise ParsingError("Missing chosen entity %r (%r)" % (id, entity))
+			if not self._send_choice_packet:
+				raise ParsingError("Chosen Entity outside of choice packet: %r" % (data))
 			self._send_choice_packet.choices.append(id)
 			return id
 		raise NotImplementedError("Unhandled send choice: %r" % (data))
@@ -453,6 +459,8 @@ class ChoicesHandler(object):
 			id = self.parse_entity_or_player(entity)
 			if not id:
 				raise ParsingError("Missing entity chosen %r (%r)" % (id, entity))
+			if not self._chosen_packet:
+				raise ParsingError("Entity Chosen outside of choice packet: %r" % (data))
 			self._chosen_packet.choices.append(id)
 			if len(self._chosen_packet.choices) > self._chosen_packet_count:
 				raise ParsingError("Too many choices (expected %r)" % (self._chosen_packet_count))
