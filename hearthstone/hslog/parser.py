@@ -544,7 +544,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 	def read_line(self, line):
 		sre = TIMESTAMP_RE.match(line)
 		if not sre:
-			raise ValueError("Invalid line format: %r" % (line))
+			raise ParsingError("Invalid line format: %r" % (line))
 
 		level, ts, line = sre.groups()
 		if line.startswith(SPECTATOR_MODE_TOKEN):
