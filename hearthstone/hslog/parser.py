@@ -5,6 +5,7 @@ from aniso8601 import parse_time
 from hearthstone import enums
 from ..enums import GameTag, PowerType
 from . import packets
+from .exceptions import ParsingError
 from .player import LazyPlayer, PlayerManager
 from .utils import parse_enum, parse_tag
 
@@ -65,10 +66,6 @@ SPECTATOR_MODE_BEGIN_FIRST = "Begin Spectating 1st player"
 SPECTATOR_MODE_BEGIN_SECOND = "Begin Spectating 2nd player"
 SPECTATOR_MODE_END_MODE = "End Spectator Mode"
 SPECTATOR_MODE_END_GAME = "End Spectator Game"
-
-
-class ParsingError(Exception):
-	pass
 
 
 def parse_entity_id(entity):

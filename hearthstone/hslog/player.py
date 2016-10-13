@@ -3,6 +3,7 @@ Classes to provide lazy players that are treatable as an entity ID but
 do not have to receive one immediately.
 """
 from ..enums import GameTag
+from .exceptions import ParsingError
 
 
 UNKNOWN_HUMAN_PLAYER = "UNKNOWN HUMAN PLAYER"
@@ -109,6 +110,8 @@ class PlayerManager:
 			return
 
 		for choice in packet.choices:
+			if choice not in self._entity_controller_map:
+				raise ParsingError("Unknown entity ID in choice: %r" % (choice))
 			player_id = self._entity_controller_map[choice]
 			# We need ENTITY_ID for register_player_name()
 			entity_id = int(self._players_by_player_id[player_id])
@@ -128,6 +131,8 @@ class PlayerManager:
 		elif tag == GameTag.LAST_CARD_PLAYED:
 			# This is a fallback to register_player_name_mulligan in case the mulligan
 			# phase is not available in this game (spectator mode, reconnects).
+			if value not in self._entity_controller_map:
+				raise ParsingError("Unknown entity ID on TAG_CHANGE: %r" % (value))
 			player_id = self._entity_controller_map[value]
 			entity_id = int(self._players_by_player_id[player_id])
 			return self.register_player_name(player.name, entity_id)
