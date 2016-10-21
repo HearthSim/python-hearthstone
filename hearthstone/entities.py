@@ -142,9 +142,14 @@ class Player(Entity):
 
 	@property
 	def hero(self):
-		for entity in self.in_zone(Zone.PLAY):
-			if entity.type == CardType.HERO:
-				return entity
+		entity_id = self.tags.get(GameTag.HERO_ENTITY, 0)
+		if entity_id:
+			return self.game.find_entity_by_id(entity_id)
+		else:
+			# Fallback that should never trigger
+			for entity in self.in_zone(Zone.PLAY):
+				if entity.type == CardType.HERO:
+					return entity
 
 	@property
 	def heroes(self):
