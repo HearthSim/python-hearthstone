@@ -308,6 +308,8 @@ class OptionsHandler(object):
 			sre = OPTIONS_SUBOPTION_RE.match(data)
 			optype, id, entity = sre.groups()
 			id = int(id)
+			if not entity:
+				raise ParsingError("SubOption / target got an empty entity: %r" % (data))
 			entity_id = parse_entity_id(entity)
 			packet = packets.Option(ts, entity_id, id, None, optype)
 			if optype == "subOption":

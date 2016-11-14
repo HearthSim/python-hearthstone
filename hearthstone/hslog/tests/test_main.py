@@ -1,3 +1,4 @@
+import pytest
 from datetime import datetime, time, timedelta
 from io import StringIO
 from aniso8601 import parse_datetime
@@ -5,6 +6,7 @@ from hearthstone.enums import (
 	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
 )
 from hearthstone.hslog import LogParser
+from hearthstone.hslog.exceptions import ParsingError
 from hearthstone.hslog.export import FriendlyPlayerExporter
 from hearthstone.hslog.parser import parse_initial_tag
 
@@ -203,6 +205,17 @@ def test_info_outside_of_metadata():
 	info = "D 02:59:14.6500380 GameState.DebugPrintPower() -             Info[0] = 99"
 	parser.read(StringIO(info))
 	parser.flush()
+
+
+def test_empty_entity_in_options():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.flush()
+
+	data = "target 0 entity="
+	with pytest.raises(ParsingError):
+		# This can happen, but the game is corrupt
+		parser.handle_options(None, data)
 
 
 def test_warn_level():
