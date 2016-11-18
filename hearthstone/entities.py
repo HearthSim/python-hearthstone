@@ -159,9 +159,10 @@ class Player(Entity):
 
 	@property
 	def starting_hero(self):
-		if not self.heroes:
+		heroes = list(self.heroes)
+		if not heroes:
 			return
-		return list(self.heroes)[0]
+		return heroes[0]
 
 	@property
 	def is_ai(self):
