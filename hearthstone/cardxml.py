@@ -20,6 +20,7 @@ class CardXML(object):
 		self.locale = locale
 		self._localized_tags = {}
 
+		self.dbf_id = 0
 		self.tags = {}
 		self.referenced_tags = {}
 		self.master_power = None
@@ -32,6 +33,7 @@ class CardXML(object):
 		self.xml = xml
 
 		self.id = self.xml.attrib["CardID"]
+		self.dbf_id = self.xml.attrib["ID"]
 
 		self.tags = self._build_tag_dict("./Tag")
 		self.referenced_tags = self._build_tag_dict("./ReferencedTag")
