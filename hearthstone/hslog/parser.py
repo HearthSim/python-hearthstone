@@ -281,6 +281,11 @@ class PowerHandler(object):
 
 
 class OptionsHandler(object):
+	def __init__(self):
+		super(OptionsHandler, self).__init__()
+		self._option_packet = None
+		self._options_packet = None
+
 	def find_callback(self, method):
 		if method == self.parse_method("SendOption"):
 			return self.handle_send_option
@@ -301,6 +306,8 @@ class OptionsHandler(object):
 			type = parse_enum(enums.OptionType, type)
 			entity_id = parse_entity_id(entity) if entity else None
 			self._option_packet = packets.Option(ts, entity_id, id, type, optype)
+			if not self._options_packet:
+				raise ParsingError("Option without a parent option group: %r" % (data))
 			self._options_packet.options.append(self._option_packet)
 			self._suboption_packet = None
 			return self._option_packet
