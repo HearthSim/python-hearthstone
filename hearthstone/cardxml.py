@@ -33,7 +33,7 @@ class CardXML(object):
 		self.xml = xml
 
 		self.id = self.xml.attrib["CardID"]
-		self.dbf_id = self.xml.attrib.get("ID", 0)
+		self.dbf_id = int(self.xml.attrib.get("ID", 0))
 
 		self.tags = self._build_tag_dict("./Tag")
 		self.referenced_tags = self._build_tag_dict("./ReferencedTag")
