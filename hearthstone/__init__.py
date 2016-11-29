@@ -1,3 +1,3 @@
 __author__ = "Jerome Leclanche"
 __email__ = "jerome@hearthsim.net"
-__version__ = "2.2.15300"
+__version__ = "2.2.15590"
