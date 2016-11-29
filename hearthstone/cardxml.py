@@ -196,7 +196,7 @@ class CardXML(object):
 
 	appear_functionally_dead = prop(GameTag.APPEAR_FUNCTIONALLY_DEAD, bool)
 	cant_be_fatigued = prop(GameTag.CANT_BE_FATIGUED, bool)
-	collectible = prop(GameTag.Collectible, bool)
+	collectible = prop(GameTag.COLLECTIBLE, bool)
 	battlecry = prop(GameTag.BATTLECRY, bool)
 	deathrattle = prop(GameTag.DEATHRATTLE, bool)
 	divine_shield = prop(GameTag.DIVINE_SHIELD, bool)
