@@ -93,6 +93,8 @@ class CardXML(object):
 			e = element.find(self.locale)
 			if e is None:
 				e = element.find("enUS")
+				if e is None:
+					return ""
 			return e.text
 
 		value = int(element.attrib["value"])
