@@ -201,7 +201,7 @@ class PowerHandler(object):
 		if not sre:
 			logging.warning("Could not correctly parse %r", data)
 			return
-		callback(ts, *sre.groups())
+		return callback(ts, *sre.groups())
 
 	# Messages
 	def create_game(self, ts):
