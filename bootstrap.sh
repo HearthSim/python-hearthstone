@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASEDIR="$(dirname $0)"
-HSDATA_URL="https://gitlab.com/HearthSim/hsdata.git"
+HSDATA_URL="https://github.com/HearthSim/hsdata.git"
 HSDATA_DIR="$BASEDIR/build/hs-data"
 CARDDEFS_OUT="$BASEDIR/hearthstone/CardDefs.xml"
 
