@@ -8,7 +8,7 @@ from hearthstone.enums import (
 from hearthstone.hslog import LogParser
 from hearthstone.hslog.exceptions import ParsingError
 from hearthstone.hslog.export import FriendlyPlayerExporter
-from hearthstone.hslog.parser import parse_initial_tag
+from hearthstone.hslog.parser import parse_initial_tag, parse_entity_id
 
 
 EMPTY_GAME = """
@@ -248,3 +248,21 @@ def test_empty_tasklist():
 	msg = "id=4 Player=The Innkeeper TaskList= ChoiceType=GENERAL CountMin=1 CountMax=1"
 	choices = parser.handle_entity_choices(ts, msg)
 	assert choices.tasklist is None
+
+
+def test_tag_change_unknown_entity_format():
+	# Format changed in 15590
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.flush()
+
+	entity_format = "[name=UNKNOWN ENTITY [cardType=INVALID] id=24 zone=DECK zonePos=0 cardId= player=1]"
+	id = parse_entity_id(entity_format)
+	assert id == 24
+
+	data = "TAG_CHANGE Entity=%s tag=ZONE value=HAND" % (entity_format)
+	packet = parser.handle_power(None, "TAG_CHANGE", data)
+	assert packet.power_type == PowerType.TAG_CHANGE
+	assert packet.entity == id
+	assert packet.tag == GameTag.ZONE
+	assert packet.value == Zone.HAND
