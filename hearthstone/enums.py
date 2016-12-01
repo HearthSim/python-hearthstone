@@ -920,6 +920,7 @@ class Booster(IntEnum):
 	THE_GRAND_TOURNAMENT = 10
 	OLD_GODS = 11
 	FIRST_PURCHASE = 17
+	MEAN_STREETS = 19
 
 
 class DeckType(IntEnum):
