@@ -449,9 +449,14 @@ class CardSet(IntEnum):
 	def craftable(self):
 		return self in (
 			CardSet.EXPERT1,
+			CardSet.NAXX,
 			CardSet.GVG,
+			CardSet.BRM,
 			CardSet.TGT,
+			CardSet.LOE,
 			CardSet.OG,
+			CardSet.KARA,
+			CardSet.GANGS,
 		)
 
 
