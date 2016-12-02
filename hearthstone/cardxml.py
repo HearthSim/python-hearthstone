@@ -1,6 +1,7 @@
 from xml.etree import ElementTree
 from .enums import (
-	CardClass, CardType, CardSet, Faction, Race, Rarity, GameTag, PlayReq
+	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
+	Race, Rarity, PlayReq
 )
 
 
@@ -192,21 +193,26 @@ class CardXML(object):
 	race = prop(GameTag.CARDRACE, Race)
 	rarity = prop(GameTag.RARITY, Rarity)
 	type = prop(GameTag.CARDTYPE, CardType)
+	multi_class_group = prop(GameTag.MULTI_CLASS_GROUP, MultiClassGroup)
 
 	##
 	# Bools
 
 	appear_functionally_dead = prop(GameTag.APPEAR_FUNCTIONALLY_DEAD, bool)
+	autoattack = prop(GameTag.AUTOATTACK, bool)
 	cant_be_fatigued = prop(GameTag.CANT_BE_FATIGUED, bool)
 	collectible = prop(GameTag.COLLECTIBLE, bool)
 	battlecry = prop(GameTag.BATTLECRY, bool)
 	deathrattle = prop(GameTag.DEATHRATTLE, bool)
+	discover = prop(GameTag.DISCOVER, bool)
 	divine_shield = prop(GameTag.DIVINE_SHIELD, bool)
 	double_spelldamage_bonus = prop(GameTag.RECEIVES_DOUBLE_SPELLDAMAGE_BONUS, bool)
 	elite = prop(GameTag.ELITE, bool)
 	evil_glow = prop(GameTag.EVIL_GLOW, bool)
 	forgetful = prop(GameTag.FORGETFUL, bool)
+	immune = prop(GameTag.IMMUNE, bool)
 	inspire = prop(GameTag.INSPIRE, bool)
+	jade_golem = prop(GameTag.JADE_GOLEM, bool)
 	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
 	poisonous = prop(GameTag.POISONOUS, bool)
 	ritual = prop(GameTag.RITUAL, bool)
@@ -231,6 +237,17 @@ class CardXML(object):
 	overload = prop(GameTag.OVERLOAD)
 	heropower_damage = prop(GameTag.HEROPOWER_DAMAGE)
 	spell_damage = prop(GameTag.SPELLPOWER)
+
+	##
+	# Misc
+
+	multiple_classes = prop(GameTag.MULTIPLE_CLASSES)
+	script_data_num_1 = prop(GameTag.TAG_SCRIPT_DATA_NUM_1)
+
+	# Faction bools
+	grimy_goons = prop(GameTag.GRIMY_GOONS, bool)
+	jade_lotus = prop(GameTag.JADE_LOTUS, bool)
+	kabal = prop(GameTag.KABAL, bool)
 
 
 def load(path=None, locale="enUS"):
