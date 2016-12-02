@@ -184,6 +184,22 @@ class CardXML(object):
 	def localization_notes(self):
 		return self.tags.get(GameTag.LocalizationNotes, "")
 
+	@property
+	def classes(self):
+		ret = []
+		multiclass = self.multiple_classes
+		if not multiclass:
+			ret.append(self.card_class)
+		else:
+			i = 1
+			while multiclass != 0:
+				if (multiclass & 1) == 1 and i in CardClass._value2member_map_:
+					ret.append(CardClass(i))
+				multiclass >>= 1
+				i += 1
+
+		return ret
+
 	##
 	# Enums
 
