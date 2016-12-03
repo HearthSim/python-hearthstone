@@ -78,9 +78,6 @@ class CardXML(object):
 
 		return tags
 
-	def _find_tag(self, id):
-		return self.xml.find('./Tag[@enumID="%i"]' % (id))
-
 	def _get_tag(self, element):
 		type = element.attrib.get("type", "Int")
 
