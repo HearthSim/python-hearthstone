@@ -66,6 +66,21 @@ def _unpack_tag_xml(element):
 	return value
 
 
+def _read_power_tag(e):
+	ret = {"definition": e.attrib["definition"]}
+	reqs = e.findall("PlayRequirement")
+	if reqs is not None:
+		ret["requirements"] = {}
+		for pr in reqs:
+			reqid = int(pr.attrib["reqID"])
+			try:
+				req = PlayReq(reqid)
+			except ValueError:
+				req = reqid
+			ret["requirements"][req] = int(pr.attrib["param"] or 0)
+	return ret
+
+
 class CardXML(object):
 	@classmethod
 	def from_xml(cls, xml):
@@ -85,14 +100,9 @@ class CardXML(object):
 		e = xml.findall("Texture")
 		self.texture = e and e[0].text or ""
 
-		e = xml.findall("Power[PlayRequirement]/PlayRequirement")
-		for t in e:
-			reqid = int(t.attrib["reqID"])
-			try:
-				req = PlayReq(reqid)
-			except ValueError:
-				req = reqid
-			self.requirements[req] = int(t.attrib["param"] or 0)
+		e = xml.findall("Power")
+		for power in e:
+			self.powers.append(_read_power_tag(power))
 
 		self.entourage = [t.attrib["cardID"] for t in xml.findall("EntourageCard")]
 		return self
@@ -105,8 +115,9 @@ class CardXML(object):
 		self.master_power = None
 		self.hero_power = None
 		self.texture = ""
-		self.requirements = {}
 		self.entourage = []
+		self.powers = []
+		self.triggered_power_history_info = []
 
 		self.locale = locale
 
@@ -148,6 +159,14 @@ class CardXML(object):
 		for entourage in self.entourage:
 			ElementTree.SubElement(ret, "EntourageCard", cardID=entourage)
 
+		for power in self.powers:
+			ep = ElementTree.SubElement(ret, "Power", definition=power["definition"])
+			reqs = power.get("requirements", {})
+			for reqid, param in reqs.items():
+				er = ElementTree.SubElement(ep, "PlayRequirement", reqID=str(int(reqid)))
+				if param:
+					er.attrib["param"] = str(param)
+
 		return ret
 
 	@property
@@ -180,6 +199,14 @@ class CardXML(object):
 		if self.rarity == Rarity.LEGENDARY:
 			return 1
 		return 2
+
+	@property
+	def requirements(self):
+		ret = {}
+		for power in self.powers:
+			for reqid, req in power.get("requirements", {}).items():
+				ret[reqid] = req
+		return ret
 
 	##
 	# Localized values
