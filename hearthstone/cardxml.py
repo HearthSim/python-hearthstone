@@ -67,20 +67,10 @@ def _unpack_tag_xml(element):
 
 
 class CardXML(object):
-	def __init__(self, locale="enUS"):
-		self.locale = locale
-
-		self.dbf_id = 0
-		self.tags = {}
-		self.referenced_tags = {}
-		self.master_power = None
-		self.hero_power = None
-		self.texture = ""
-		self.requirements = {}
-		self.entourage = {}
-
-	def load_xml(self, xml):
-		self.id = xml.attrib["CardID"]
+	@classmethod
+	def from_xml(cls, xml):
+		id = xml.attrib["CardID"]
+		self = cls(id)
 		self.dbf_id = int(xml.attrib.get("ID", 0))
 
 		self.tags = _build_tag_dict(xml, "./Tag")
@@ -96,7 +86,6 @@ class CardXML(object):
 		self.texture = e and e[0].text or ""
 
 		e = xml.findall("Power[PlayRequirement]/PlayRequirement")
-		self.requirements = {}
 		for t in e:
 			reqid = int(t.attrib["reqID"])
 			try:
@@ -106,6 +95,20 @@ class CardXML(object):
 			self.requirements[req] = int(t.attrib["param"] or 0)
 
 		self.entourage = [t.attrib["cardID"] for t in xml.findall("EntourageCard")]
+		return self
+
+	def __init__(self, id, locale="enUS"):
+		self.id = id
+		self.dbf_id = 0
+		self.tags = {}
+		self.referenced_tags = {}
+		self.master_power = None
+		self.hero_power = None
+		self.texture = ""
+		self.requirements = {}
+		self.entourage = []
+
+		self.locale = locale
 
 	def __str__(self):
 		return self.name
@@ -254,7 +257,7 @@ def load(path=None, locale="enUS"):
 	with open(path, "r", encoding="utf8") as f:
 		xml = ElementTree.parse(f)
 		for carddata in xml.findall("Entity"):
-			card = CardXML(locale)
-			card.load_xml(carddata)
+			card = CardXML.from_xml(carddata)
+			card.locale = locale
 			db[card.id] = card
 	return db, xml
