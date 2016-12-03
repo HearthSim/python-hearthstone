@@ -317,8 +317,12 @@ class GameTag(IntEnum):
 	# HISTORY_PROXY_NO_BIG_CARD = 427
 
 	@property
+	def type(self):
+		return TAG_TYPES.get(self, Type.NUMBER)
+
+	@property
 	def string_type(self):
-		return TAG_TYPES.get(self) == Type.LOCSTRING
+		return self.type in (Type.LOCSTRING, Type.STRING)
 
 
 TAG_NAMES = {
@@ -1000,7 +1004,8 @@ TAG_TYPES = {
 	GameTag.TAG_ONE_TURN_EFFECT: Type.BOOL,
 	GameTag.SILENCE: Type.BOOL,
 	GameTag.COUNTER: Type.BOOL,
-	GameTag.ARTISTNAME: Type.LOCSTRING,
+	GameTag.ARTISTNAME: Type.STRING,
+	GameTag.LocalizationNotes: Type.STRING,
 	GameTag.ImmuneToSpellpower: Type.BOOL,
 	GameTag.ADJACENT_BUFF: Type.BOOL,
 	GameTag.FLAVORTEXT: Type.LOCSTRING,
