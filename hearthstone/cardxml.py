@@ -134,7 +134,7 @@ class CardXML(object):
 			master_power = ElementTree.SubElement(ret, "MasterPower")
 			master_power.text = self.master_power
 
-		for tag, value in self.tags.items():
+		for tag, value in sorted(self.tags.items()):
 			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
 			if not isinstance(tag, GameTag):
 				tag = GameTag(tag)
