@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 from .enums import (
 	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
-	Race, Rarity, PlayReq
+	Race, Rarity, PlayReq, Type
 )
 
 
@@ -115,6 +115,35 @@ class CardXML(object):
 
 	def __repr__(self):
 		return "<%s: %r>" % (self.id, self.name)
+
+	def to_xml(self):
+		ret = ElementTree.Element("Entity", CardID=self.id, ID=str(self.dbf_id), version="2")
+
+		if self.master_power:
+			master_power = ElementTree.SubElement(ret, "MasterPower")
+			master_power.text = self.master_power
+
+		for tag, value in self.tags.items():
+			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
+			if tag.type == Type.LOCSTRING:
+				e.attrib["type"] = "LocString"
+				for locale, localized_value in sorted(value.items()):
+					loc_element = ElementTree.SubElement(e, locale)
+					loc_element.text = localized_value
+			elif tag.type == Type.STRING:
+				e.attrib["type"] = "String"
+				e.attrib["value"] = value
+			else:
+				e.attrib["type"] = "Int"
+				e.attrib["value"] = str(int(value))
+
+		if self.hero_power:
+			ElementTree.SubElement(ret, "HeroPower", cardID=self.hero_power)
+
+		for entourage in self.entourage:
+			ElementTree.SubElement(ret, "EntourageCard", cardID=entourage)
+
+		return ret
 
 	@property
 	def craftable(self):
