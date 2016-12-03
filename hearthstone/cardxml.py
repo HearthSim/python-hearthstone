@@ -80,24 +80,22 @@ class CardXML(object):
 		self.entourage = {}
 
 	def load_xml(self, xml):
-		self.xml = xml
-
-		self.id = self.xml.attrib["CardID"]
-		self.dbf_id = int(self.xml.attrib.get("ID", 0))
+		self.id = xml.attrib["CardID"]
+		self.dbf_id = int(xml.attrib.get("ID", 0))
 
 		self.tags = _build_tag_dict(xml, "./Tag")
 		self.referenced_tags = _build_tag_dict(xml, "./ReferencedTag")
 
-		e = self.xml.findall("MasterPower")
+		e = xml.findall("MasterPower")
 		self.master_power = e and e[0].text or None
 
-		e = self.xml.findall("HeroPower")
+		e = xml.findall("HeroPower")
 		self.hero_power = e and e[0].attrib["cardID"] or None
 
-		e = self.xml.findall("Texture")
+		e = xml.findall("Texture")
 		self.texture = e and e[0].text or ""
 
-		e = self.xml.findall("Power[PlayRequirement]/PlayRequirement")
+		e = xml.findall("Power[PlayRequirement]/PlayRequirement")
 		self.requirements = {}
 		for t in e:
 			reqid = int(t.attrib["reqID"])
