@@ -16,10 +16,18 @@ def prop(tag, cast=int):
 	return property(_func)
 
 
+def _locstring(tag):
+	def _func(self):
+		value = self.tags.get(tag, {})
+		if self.locale in value:
+			return value[self.locale]
+		return value.get("enUS", "")
+	return property(_func)
+
+
 class CardXML(object):
 	def __init__(self, locale="enUS"):
 		self.locale = locale
-		self._localized_tags = {}
 
 		self.dbf_id = 0
 		self.tags = {}
@@ -88,12 +96,10 @@ class CardXML(object):
 			return element.text
 
 		if type == "LocString":
-			e = element.find(self.locale)
-			if e is None:
-				e = element.find("enUS")
-				if e is None:
-					return ""
-			return e.text
+			ret = {}
+			for e in element:
+				ret[e.tag] = e.text
+			return ret
 
 		value = int(element.attrib["value"])
 		if type == "Bool":
@@ -135,43 +141,13 @@ class CardXML(object):
 	##
 	# Localized values
 
-	def get_localized_tag(self, tag):
-		if tag not in self._localized_tags:
-			self._localized_tags[tag] = {}
-		if self.locale not in self._localized_tags[tag]:
-			e = self.xml.find('./Tag[@enumID="%i"]' % (tag))
-			if e is not None:
-				value = self._get_tag(e)
-				self._localized_tags[tag][self.locale] = value
-		return self._localized_tags[tag].get(self.locale, "")
-
-	@property
-	def name(self):
-		return self.get_localized_tag(GameTag.CARDNAME)
-
-	@property
-	def description(self):
-		return self.get_localized_tag(GameTag.CARDTEXT_INHAND)
-
-	@property
-	def flavortext(self):
-		return self.get_localized_tag(GameTag.FLAVORTEXT)
-
-	@property
-	def how_to_earn(self):
-		return self.get_localized_tag(GameTag.HOW_TO_EARN)
-
-	@property
-	def how_to_earn_golden(self):
-		return self.get_localized_tag(GameTag.HOW_TO_EARN_GOLDEN)
-
-	@property
-	def playtext(self):
-		return self.get_localized_tag(GameTag.CardTextInPlay)
-
-	@property
-	def targeting_arrow_text(self):
-		return self.get_localized_tag(GameTag.TARGETING_ARROW_TEXT)
+	name = _locstring(GameTag.CARDNAME)
+	description = _locstring(GameTag.CARDTEXT_INHAND)
+	flavortext = _locstring(GameTag.FLAVORTEXT)
+	how_to_earn = _locstring(GameTag.HOW_TO_EARN)
+	how_to_earn_golden = _locstring(GameTag.HOW_TO_EARN_GOLDEN)
+	playtext = _locstring(GameTag.CardTextInPlay)
+	targeting_arrow_text = _locstring(GameTag.TARGETING_ARROW_TEXT)
 
 	@property
 	def artist(self):
