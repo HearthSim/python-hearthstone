@@ -124,7 +124,12 @@ class CardXML(object):
 			master_power.text = self.master_power
 
 		for tag, value in self.tags.items():
-			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
+			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
+			if not isinstance(tag, GameTag):
+				tag = GameTag(tag)
+
+			e.attrib["name"] = tag.name
+
 			if tag.type == Type.LOCSTRING:
 				e.attrib["type"] = "LocString"
 				for locale, localized_value in sorted(value.items()):
