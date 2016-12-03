@@ -164,8 +164,7 @@ class CardXML(object):
 			reqs = power.get("requirements", {})
 			for reqid, param in reqs.items():
 				er = ElementTree.SubElement(ep, "PlayRequirement", reqID=str(int(reqid)))
-				if param:
-					er.attrib["param"] = str(param)
+				er.attrib["param"] = str(param or "")
 
 		return ret
 
