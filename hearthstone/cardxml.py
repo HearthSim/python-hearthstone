@@ -25,6 +25,47 @@ def _locstring(tag):
 	return property(_func)
 
 
+def _build_tag_dict(xml, xpath):
+	"""
+	Given an Entity XML element and an XPath, return the XPath as dict of tags
+	"""
+	tags = {}
+	for e in xml.findall(xpath):
+		tag = int(e.attrib["enumID"])
+		try:
+			tag = GameTag(tag)
+		except ValueError:
+			pass
+		tags[tag] = _unpack_tag_xml(e)
+
+	return tags
+
+
+def _unpack_tag_xml(element):
+	"""
+	Unpack a single tag element into its value.
+	"""
+	type = element.attrib.get("type", "Int")
+
+	if type == "Card":
+		return element.attrib["value"]
+
+	if type == "String":
+		return element.text
+
+	if type == "LocString":
+		ret = {}
+		for e in element:
+			ret[e.tag] = e.text
+		return ret
+
+	value = int(element.attrib["value"])
+	if type == "Bool":
+		return bool(value)
+
+	return value
+
+
 class CardXML(object):
 	def __init__(self, locale="enUS"):
 		self.locale = locale
@@ -44,8 +85,8 @@ class CardXML(object):
 		self.id = self.xml.attrib["CardID"]
 		self.dbf_id = int(self.xml.attrib.get("ID", 0))
 
-		self.tags = self._build_tag_dict("./Tag")
-		self.referenced_tags = self._build_tag_dict("./ReferencedTag")
+		self.tags = _build_tag_dict(xml, "./Tag")
+		self.referenced_tags = _build_tag_dict(xml, "./ReferencedTag")
 
 		e = self.xml.findall("MasterPower")
 		self.master_power = e and e[0].text or None
@@ -73,39 +114,6 @@ class CardXML(object):
 
 	def __repr__(self):
 		return "<%s: %r>" % (self.id, self.name)
-
-	def _build_tag_dict(self, xpath):
-		tags = {}
-		for e in self.xml.findall(xpath):
-			tag = int(e.attrib["enumID"])
-			try:
-				tag = GameTag(tag)
-			except ValueError:
-				pass
-			tags[tag] = self._get_tag(e)
-
-		return tags
-
-	def _get_tag(self, element):
-		type = element.attrib.get("type", "Int")
-
-		if type == "Card":
-			return element.attrib["value"]
-
-		if type == "String":
-			return element.text
-
-		if type == "LocString":
-			ret = {}
-			for e in element:
-				ret[e.tag] = e.text
-			return ret
-
-		value = int(element.attrib["value"])
-		if type == "Bool":
-			return bool(value)
-
-		return value
 
 	@property
 	def craftable(self):
