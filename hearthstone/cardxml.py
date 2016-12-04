@@ -169,6 +169,11 @@ class CardXML(object):
 				er = ElementTree.SubElement(ep, "PlayRequirement", reqID=str(int(reqid)))
 				er.attrib["param"] = str(param or "")
 
+		for tphi in self.triggered_power_history_info:
+			e = ElementTree.SubElement(ret, "TriggeredPowerHistoryInfo")
+			e.attrib["effectIndex"] = str(tphi["effectIndex"])
+			e.attrib["showInHistory"] = str(tphi["showInHistory"])
+
 		return ret
 
 	@property
