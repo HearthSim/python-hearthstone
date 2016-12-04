@@ -1,4 +1,4 @@
-from xml.etree import ElementTree
+from lxml import etree as ElementTree
 from .enums import (
 	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
 	Race, Rarity, PlayReq, Type

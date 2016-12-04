@@ -1,8 +1,5 @@
 from collections import OrderedDict
-try:
-	from lxml import etree as ElementTree
-except ImportError:
-	from xml.etree import ElementTree
+from lxml import etree as ElementTree
 
 
 class Dbf:
