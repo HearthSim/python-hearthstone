@@ -97,9 +97,6 @@ class CardXML(object):
 		e = xml.findall("HeroPower")
 		self.hero_power = e and e[0].attrib["cardID"] or None
 
-		e = xml.findall("Texture")
-		self.texture = e and e[0].text or ""
-
 		e = xml.findall("Power")
 		for power in e:
 			self.powers.append(_read_power_tag(power))
@@ -114,7 +111,6 @@ class CardXML(object):
 		self.referenced_tags = {}
 		self.master_power = None
 		self.hero_power = None
-		self.texture = ""
 		self.entourage = []
 		self.powers = []
 		self.triggered_power_history_info = []
