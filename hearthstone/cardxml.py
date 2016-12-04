@@ -145,13 +145,24 @@ class CardXML(object):
 			master_power = ElementTree.SubElement(ret, "MasterPower")
 			master_power.text = self.master_power
 
-		for tag, value in sorted(self.strings.items()):
+		sorted_tags = (
+			GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
+			GameTag.HOW_TO_EARN, GameTag.HOW_TO_EARN_GOLDEN,
+			GameTag.CardTextInPlay, GameTag.TARGETING_ARROW_TEXT,
+			GameTag.ARTISTNAME, GameTag.LocalizationNotes
+		)
+
+		for tag in sorted_tags:
+			value = self.strings[tag]
+			if not value:
+				continue
 			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
 			if tag.type == Type.LOCSTRING:
 				e.attrib["type"] = "LocString"
 				for locale, localized_value in sorted(value.items()):
-					loc_element = ElementTree.SubElement(e, locale)
-					loc_element.text = localized_value
+					if localized_value:
+						loc_element = ElementTree.SubElement(e, locale)
+						loc_element.text = localized_value
 			elif tag.type == Type.STRING:
 				e.attrib["type"] = "String"
 				e.attrib["value"] = value
