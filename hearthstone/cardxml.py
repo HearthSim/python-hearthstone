@@ -118,6 +118,7 @@ class CardXML(object):
 		self.entourage = []
 		self.powers = []
 		self.triggered_power_history_info = []
+		self.version = 2
 
 		self.locale = locale
 
@@ -128,7 +129,9 @@ class CardXML(object):
 		return "<%s: %r>" % (self.id, self.name)
 
 	def to_xml(self):
-		ret = ElementTree.Element("Entity", CardID=self.id, ID=str(self.dbf_id), version="2")
+		ret = ElementTree.Element("Entity", CardID=self.id, ID=str(self.dbf_id))
+		if self.version:
+			ret.attrib["version"] = str(self.version)
 
 		if self.master_power:
 			master_power = ElementTree.SubElement(ret, "MasterPower")
