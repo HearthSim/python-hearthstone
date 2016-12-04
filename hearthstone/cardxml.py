@@ -18,7 +18,7 @@ def prop(tag, cast=int):
 
 def _locstring(tag):
 	def _func(self):
-		value = self.tags.get(tag, {})
+		value = self.strings[tag]
 		if self.locale in value:
 			return value[self.locale]
 		return value.get("enUS", "")
@@ -118,6 +118,18 @@ class CardXML(object):
 
 		self.locale = locale
 
+		self.strings = {
+			GameTag.CARDNAME: {},
+			GameTag.CARDTEXT_INHAND: {},
+			GameTag.FLAVORTEXT: {},
+			GameTag.HOW_TO_EARN: {},
+			GameTag.HOW_TO_EARN_GOLDEN: {},
+			GameTag.CardTextInPlay: {},
+			GameTag.TARGETING_ARROW_TEXT: {},
+			GameTag.ARTISTNAME: "",
+			GameTag.LocalizationNotes: "",
+		}
+
 	def __str__(self):
 		return self.name
 
@@ -133,13 +145,8 @@ class CardXML(object):
 			master_power = ElementTree.SubElement(ret, "MasterPower")
 			master_power.text = self.master_power
 
-		for tag, value in sorted(self.tags.items()):
-			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
-			if not isinstance(tag, GameTag):
-				tag = GameTag(tag)
-
-			e.attrib["name"] = tag.name
-
+		for tag, value in sorted(self.strings.items()):
+			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
 			if tag.type == Type.LOCSTRING:
 				e.attrib["type"] = "LocString"
 				for locale, localized_value in sorted(value.items()):
@@ -149,8 +156,16 @@ class CardXML(object):
 				e.attrib["type"] = "String"
 				e.attrib["value"] = value
 			else:
-				e.attrib["type"] = "Int"
-				e.attrib["value"] = str(int(value))
+				raise ValueError("Invalid tag type for %r (%r)" % (tag, tag.type))
+
+		for tag, value in sorted(self.tags.items()):
+			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
+			if not isinstance(tag, GameTag):
+				tag = GameTag(tag)
+
+			e.attrib["name"] = tag.name
+			e.attrib["type"] = "Int"
+			e.attrib["value"] = str(int(value))
 
 		if self.hero_power:
 			ElementTree.SubElement(ret, "HeroPower", cardID=self.hero_power)
@@ -224,11 +239,11 @@ class CardXML(object):
 
 	@property
 	def artist(self):
-		return self.tags.get(GameTag.ARTISTNAME, "")
+		return self.strings[GameTag.ARTISTNAME]
 
 	@property
 	def localization_notes(self):
-		return self.tags.get(GameTag.LocalizationNotes, "")
+		return self.strings[GameTag.LocalizationNotes]
 
 	@property
 	def classes(self):
