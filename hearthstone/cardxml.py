@@ -1,7 +1,7 @@
 from lxml import etree as ElementTree
 from .enums import (
 	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
-	Race, Rarity, PlayReq, Type
+	Race, Rarity, PlayReq
 )
 
 
@@ -81,6 +81,15 @@ def _read_power_tag(e):
 	return ret
 
 
+LOCALIZED_TAGS = [
+	GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
+	GameTag.HOW_TO_EARN, GameTag.HOW_TO_EARN_GOLDEN,
+	GameTag.CardTextInPlay, GameTag.TARGETING_ARROW_TEXT,
+]
+
+STRING_TAGS = [GameTag.ARTISTNAME, GameTag.LocalizationNotes]
+
+
 class CardXML(object):
 	@classmethod
 	def from_xml(cls, xml):
@@ -145,29 +154,23 @@ class CardXML(object):
 			master_power = ElementTree.SubElement(ret, "MasterPower")
 			master_power.text = self.master_power
 
-		sorted_tags = (
-			GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
-			GameTag.HOW_TO_EARN, GameTag.HOW_TO_EARN_GOLDEN,
-			GameTag.CardTextInPlay, GameTag.TARGETING_ARROW_TEXT,
-			GameTag.ARTISTNAME, GameTag.LocalizationNotes
-		)
-
-		for tag in sorted_tags:
+		for tag in LOCALIZED_TAGS:
 			value = self.strings[tag]
-			if not value:
-				continue
-			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
-			if tag.type == Type.LOCSTRING:
+			if value:
+				e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
 				e.attrib["type"] = "LocString"
 				for locale, localized_value in sorted(value.items()):
 					if localized_value:
 						loc_element = ElementTree.SubElement(e, locale)
-						loc_element.text = localized_value
-			elif tag.type == Type.STRING:
-				e.attrib["type"] = "String"
-				e.attrib["value"] = value
-			else:
-				raise ValueError("Invalid tag type for %r (%r)" % (tag, tag.type))
+						loc_element.text = str(localized_value)
+
+		for tag in STRING_TAGS:
+			value = self.strings[tag]
+			if value:
+				ElementTree.SubElement(
+					ret, "Tag", enumID=str(int(tag)), name=tag.name,
+					type="String", value=str(value)
+				)
 
 		for tag, value in sorted(self.tags.items()):
 			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
