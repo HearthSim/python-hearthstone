@@ -47,9 +47,6 @@ def _unpack_tag_xml(element):
 	"""
 	type = element.attrib.get("type", "Int")
 
-	if type == "Card":
-		return element.attrib["value"]
-
 	if type == "String":
 		return element.text
 
@@ -100,11 +97,14 @@ class CardXML(object):
 		self.tags = _build_tag_dict(xml, "./Tag")
 		self.referenced_tags = _build_tag_dict(xml, "./ReferencedTag")
 
+		if self.tags.get(GameTag.HERO_POWER):
+			i = int(GameTag.HERO_POWER)
+			t = xml.findall('./Tag[@enumID="%i"]' % (i))
+			if t is not None:
+				self.hero_power = t[0].attrib.get("cardID")
+
 		e = xml.findall("MasterPower")
 		self.master_power = e and e[0].text or None
-
-		e = xml.findall("HeroPower")
-		self.hero_power = e and e[0].attrib["cardID"] or None
 
 		e = xml.findall("Power")
 		for power in e:
@@ -116,14 +116,14 @@ class CardXML(object):
 	def __init__(self, id, locale="enUS"):
 		self.id = id
 		self.dbf_id = 0
+		self.version = 2
 		self.tags = {}
+		self.hero_power = None
 		self.referenced_tags = {}
 		self.master_power = None
-		self.hero_power = None
 		self.entourage = []
 		self.powers = []
 		self.triggered_power_history_info = []
-		self.version = 2
 
 		self.locale = locale
 
@@ -181,8 +181,9 @@ class CardXML(object):
 			e.attrib["type"] = "Int"
 			e.attrib["value"] = str(int(value))
 
-		if self.hero_power:
-			ElementTree.SubElement(ret, "HeroPower", cardID=self.hero_power)
+			if tag == GameTag.HERO_POWER and self.hero_power:
+				e.attrib["type"] = "Card"
+				e.attrib["cardID"] = self.hero_power
 
 		for entourage in self.entourage:
 			ElementTree.SubElement(ret, "EntourageCard", cardID=entourage)
