@@ -151,10 +151,9 @@ class CardXML(object):
 		for tag in STRING_TAGS:
 			value = self.strings[tag]
 			if value:
-				ElementTree.SubElement(
-					ret, "Tag", enumID=str(int(tag)), name=tag.name,
-					type="String", value=str(value)
-				)
+				e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
+				e.attrib["type"] = "String"
+				e.text = value
 
 		for tag, value in sorted(self.tags.items()):
 			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
