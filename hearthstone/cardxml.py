@@ -168,11 +168,12 @@ class CardXML(object):
 				e.text = value
 
 		for tag, value in sorted(self.tags.items()):
-			e = _make_tag_element(ret, "Tag", tag, value)
+			if value:
+				e = _make_tag_element(ret, "Tag", tag, value)
 
-			if tag == GameTag.HERO_POWER and self.hero_power:
-				e.attrib["type"] = "Card"
-				e.attrib["cardID"] = self.hero_power
+				if tag == GameTag.HERO_POWER and self.hero_power:
+					e.attrib["type"] = "Card"
+					e.attrib["cardID"] = self.hero_power
 
 		for tag, value in sorted(self.referenced_tags.items()):
 			e = _make_tag_element(ret, "ReferencedTag", tag, value)
