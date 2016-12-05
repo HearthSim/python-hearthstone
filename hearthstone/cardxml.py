@@ -5,6 +5,15 @@ from .enums import (
 )
 
 
+LOCALIZED_TAGS = [
+	GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
+	GameTag.HOW_TO_EARN, GameTag.HOW_TO_EARN_GOLDEN,
+	GameTag.CardTextInPlay, GameTag.TARGETING_ARROW_TEXT,
+]
+
+STRING_TAGS = [GameTag.ARTISTNAME, GameTag.LocalizationNotes]
+
+
 def prop(tag, cast=int):
 	def _func(self):
 		value = self.tags.get(tag, 0)
@@ -25,44 +34,6 @@ def _locstring(tag):
 	return property(_func)
 
 
-def _build_tag_dict(xml, xpath):
-	"""
-	Given an Entity XML element and an XPath, return the XPath as dict of tags
-	"""
-	tags = {}
-	for e in xml.findall(xpath):
-		tag = int(e.attrib["enumID"])
-		try:
-			tag = GameTag(tag)
-		except ValueError:
-			pass
-		tags[tag] = _unpack_tag_xml(e)
-
-	return tags
-
-
-def _unpack_tag_xml(element):
-	"""
-	Unpack a single tag element into its value.
-	"""
-	type = element.attrib.get("type", "Int")
-
-	if type == "String":
-		return element.text
-
-	if type == "LocString":
-		ret = {}
-		for e in element:
-			ret[e.tag] = e.text
-		return ret
-
-	value = int(element.attrib["value"])
-	if type == "Bool":
-		return bool(value)
-
-	return value
-
-
 def _read_power_tag(e):
 	ret = {"definition": e.attrib["definition"]}
 	reqs = e.findall("PlayRequirement")
@@ -78,13 +49,13 @@ def _read_power_tag(e):
 	return ret
 
 
-LOCALIZED_TAGS = [
-	GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
-	GameTag.HOW_TO_EARN, GameTag.HOW_TO_EARN_GOLDEN,
-	GameTag.CardTextInPlay, GameTag.TARGETING_ARROW_TEXT,
-]
-
-STRING_TAGS = [GameTag.ARTISTNAME, GameTag.LocalizationNotes]
+def _unpack_tag_xml(e):
+	tag = GameTag(int(e.attrib["enumID"]))
+	type = e.attrib.get("type", "Int")
+	value = int(e.attrib.get("value") or 0)
+	if type == "Bool":
+		value = bool(value)
+	return tag, type, value
 
 
 class CardXML(object):
@@ -94,8 +65,21 @@ class CardXML(object):
 		self = cls(id)
 		self.dbf_id = int(xml.attrib.get("ID", 0))
 
-		self.tags = _build_tag_dict(xml, "./Tag")
-		self.referenced_tags = _build_tag_dict(xml, "./ReferencedTag")
+		for e in xml.findall("./Tag"):
+			tag, type, value = _unpack_tag_xml(e)
+			if type == "String":
+				self.strings[tag] = e.text
+			elif type == "LocString":
+				for loc_element in e:
+					self.strings[tag][loc_element.tag] = loc_element.text
+			elif tag == GameTag.HERO_POWER:
+				self.hero_power = e.attrib.get("cardID")
+			else:
+				self.tags[tag] = value
+
+		for e in xml.findall("./ReferencedTag"):
+			tag, type, value = _unpack_tag_xml(e)
+			self.referenced_tags[tag] = value
 
 		if self.tags.get(GameTag.HERO_POWER):
 			i = int(GameTag.HERO_POWER)
