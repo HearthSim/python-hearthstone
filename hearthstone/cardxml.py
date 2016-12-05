@@ -34,6 +34,18 @@ def _locstring(tag):
 	return property(_func)
 
 
+def _make_tag_element(element, tagname, tag, value):
+	e = ElementTree.SubElement(element, tagname, enumID=str(int(tag)))
+	if not isinstance(tag, GameTag):
+		tag = GameTag(tag)
+
+	e.attrib["name"] = tag.name
+	e.attrib["type"] = "Int"
+	e.attrib["value"] = str(int(value))
+
+	return e
+
+
 def _read_power_tag(e):
 	ret = {"definition": e.attrib["definition"]}
 	reqs = e.findall("PlayRequirement")
@@ -156,17 +168,14 @@ class CardXML(object):
 				e.text = value
 
 		for tag, value in sorted(self.tags.items()):
-			e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)))
-			if not isinstance(tag, GameTag):
-				tag = GameTag(tag)
-
-			e.attrib["name"] = tag.name
-			e.attrib["type"] = "Int"
-			e.attrib["value"] = str(int(value))
+			e = _make_tag_element(ret, "Tag", tag, value)
 
 			if tag == GameTag.HERO_POWER and self.hero_power:
 				e.attrib["type"] = "Card"
 				e.attrib["cardID"] = self.hero_power
+
+		for tag, value in sorted(self.referenced_tags.items()):
+			e = _make_tag_element(ret, "ReferencedTag", tag, value)
 
 		for entourage in self.entourage:
 			ElementTree.SubElement(ret, "EntourageCard", cardID=entourage)
