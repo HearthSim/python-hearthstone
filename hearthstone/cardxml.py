@@ -295,6 +295,7 @@ class CardXML(object):
 	elite = prop(GameTag.ELITE, bool)
 	evil_glow = prop(GameTag.EVIL_GLOW, bool)
 	forgetful = prop(GameTag.FORGETFUL, bool)
+	hide_stats = prop(GameTag.HIDE_STATS, bool)
 	immune = prop(GameTag.IMMUNE, bool)
 	inspire = prop(GameTag.INSPIRE, bool)
 	jade_golem = prop(GameTag.JADE_GOLEM, bool)
