@@ -1,8 +1,8 @@
-from lxml import etree as ElementTree
 from .enums import (
 	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
 	Race, Rarity, PlayReq
 )
+from .utils import ElementTree
 
 
 LOCALIZED_TAGS = [

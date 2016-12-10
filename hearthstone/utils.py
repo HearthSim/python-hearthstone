@@ -1,3 +1,7 @@
+try:
+	from lxml import ElementTree
+except ImportError:
+	from xml.etree import ElementTree
 from .enums import CardClass, Rarity
 
 
