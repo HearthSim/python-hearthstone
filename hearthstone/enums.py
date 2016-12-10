@@ -240,7 +240,6 @@ class GameTag(IntEnum):
 	ADDITIONAL_PLAY_REQS_2 = 516
 
 	InvisibleDeathrattle = 335
-	OneTurnEffect = 338
 	ImmuneToSpellpower = 349
 	AttackVisualType = 251
 	DevState = 268
