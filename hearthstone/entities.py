@@ -192,4 +192,4 @@ class Card(Entity):
 
 	def change(self, card_id, tags):
 		self.card_id = card_id
-		self.tags = tags
+		self.tags.update(tags)
