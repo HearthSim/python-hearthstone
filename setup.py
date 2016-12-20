@@ -19,7 +19,7 @@ setup(
 	name="hearthstone",
 	version=hearthstone.__version__,
 	packages=find_packages(),
-	package_data={"": ["CardDefs.xml"]},
+	package_data={"": ["CardDefs.xml", "Strings/*/*.txt"]},
 	include_package_data=True,
 	author=hearthstone.__author__,
 	author_email=hearthstone.__email__,

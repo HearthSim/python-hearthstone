@@ -5,6 +5,7 @@ HSDATA_URL="https://github.com/HearthSim/hsdata.git"
 HSDATA_DIR="$BASEDIR/build/hs-data"
 CARDDEFS_OUT="$BASEDIR/hearthstone/CardDefs.xml"
 
+
 command -v git &>/dev/null || {
 	>&2 echo "ERROR: git is required to bootstrap this project."
 	exit 1
@@ -21,3 +22,6 @@ else
 fi
 
 cp "$HSDATA_DIR/CardDefs.xml" "$CARDDEFS_OUT"
+rm -rf "$BASEDIR/hearthstone/Strings"
+cp -rf "$HSDATA_DIR/Strings" -t "$BASEDIR/hearthstone"
+find "$BASEDIR/hearthstone/Strings" -type f -not -name "GLOBAL.txt" | xargs rm
