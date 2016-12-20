@@ -408,6 +408,10 @@ class CardClass(IntEnum):
 		from .utils import CARDCLASS_HERO_MAP
 		return CARDCLASS_HERO_MAP.get(self, "")
 
+	@property
+	def name_global(self):
+		return "GLOBAL_CLASS_%s" % (self.name)
+
 
 class CardSet(IntEnum):
 	"TAG_CARD_SET"
@@ -462,6 +466,14 @@ class CardSet(IntEnum):
 			CardSet.GANGS,
 		)
 
+	@property
+	def name_global(self):
+		return "GLOBAL_CARD_SET_%s" % (self.name)
+
+	@property
+	def short_name_global(self):
+		return self.name_global + "_SHORT"
+
 
 class CardType(IntEnum):
 	"TAG_CARDTYPE"
@@ -488,6 +500,12 @@ class CardType(IntEnum):
 			CardType.SPELL,
 			CardType.WEAPON,
 		)
+
+	@property
+	def name_global(self):
+		if self.name == "HERO_POWER":
+			return "GLOBAL_CARDTYPE_HEROPOWER"
+		return "GLOBAL_CARDTYPE_%s" % (self.name)
 
 
 class EnchantmentVisual(IntEnum):
@@ -610,6 +628,12 @@ class Race(IntEnum):
 	# Aliased
 	PET = 20
 
+	@property
+	def name_global(self):
+		if self.name == "BEAST":
+			return "GLOBAL_RACE_PET"
+		return "GLOBAL_RACE_%s" % (self.name)
+
 
 class Rarity(IntEnum):
 	"TAG_RARITY"
@@ -642,6 +666,10 @@ class Rarity(IntEnum):
 	def disenchant_costs(self):
 		from .utils import DISENCHANT_COSTS
 		return DISENCHANT_COSTS.get(self, (0, 0))
+
+	@property
+	def name_global(self):
+		return "GLOBAL_RARITY_%s" % (self.name)
 
 
 class Zone(IntEnum):
@@ -948,6 +976,13 @@ class FormatType(IntEnum):
 	FT_UNKNOWN = 0
 	FT_WILD = 1
 	FT_STANDARD = 2
+
+	@property
+	def name_global(self):
+		if self.name == "FT_WILD":
+			return "GLOBAL_WILD"
+		elif self.name == "FT_STANDARD":
+			return "GLOBAL_STANDARD"
 
 
 class Type(IntEnum):
