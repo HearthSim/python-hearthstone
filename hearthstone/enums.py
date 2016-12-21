@@ -634,6 +634,17 @@ class Race(IntEnum):
 			return "GLOBAL_RACE_PET"
 		return "GLOBAL_RACE_%s" % (self.name)
 
+	@property
+	def visible(self):
+		# XXX: Mech is only a visible tribe since GVG
+		return self in VISIBLE_RACES
+
+
+VISIBLE_RACES = [
+	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.BEAST,
+	Race.TOTEM, Race.PIRATE, Race.DRAGON
+]
+
 
 class Rarity(IntEnum):
 	"TAG_RARITY"
