@@ -1107,6 +1107,17 @@ class Locale(IntEnum):
 		return "GLOBAL_LANGUAGE_NATIVE_%s" % (self.name.upper())
 
 
+def get_localized_name(v, locale="enUS"):
+	name_global = getattr(v, "name_global", "")
+	if not name_global:
+		return ""
+
+	from .stringsfile import load_globalstrings
+
+	globalstrings = load_globalstrings(locale)
+	return globalstrings.get(name_global, {}).get("TEXT", "")
+
+
 if __name__ == "__main__":
 	import sys
 	import json
