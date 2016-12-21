@@ -1100,6 +1100,12 @@ class Locale(IntEnum):
 	def unused(self):
 		return self.name in ("UNKNOWN", "enGB", "ptPT")
 
+	@property
+	def name_global(self):
+		if self.name == "enGB":
+			return "GLOBAL_LANGUAGE_NATIVE_ENUS"
+		return "GLOBAL_LANGUAGE_NATIVE_%s" % (self.name.upper())
+
 
 if __name__ == "__main__":
 	import sys
