@@ -1,5 +1,5 @@
 try:
-	from lxml import ElementTree
+	from lxml import etree as ElementTree
 except ImportError:
 	from xml.etree import ElementTree
 from .enums import CardClass, Rarity
