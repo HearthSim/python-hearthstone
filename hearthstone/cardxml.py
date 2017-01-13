@@ -342,7 +342,7 @@ def load(path=None, locale="enUS"):
 		path = resource_filename("hearthstone", "CardDefs.xml")
 
 	db = {}
-	with open(path, "r", encoding="utf8") as f:
+	with open(path, "r") as f:
 		xml = ElementTree.parse(f)
 		for carddata in xml.findall("Entity"):
 			card = CardXML.from_xml(carddata)
