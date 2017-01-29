@@ -8,6 +8,7 @@ class Entity(object):
 		self.id = id
 		self.game = None
 		self.tags = {}
+		self._initial_controller = 0
 
 	def __repr__(self):
 		return "%s(id=%r, %s)" % (
@@ -20,6 +21,12 @@ class Entity(object):
 		return self.game.get_player(self.tags.get(GameTag.CONTROLLER, 0))
 
 	@property
+	def initial_controller(self):
+		return self.game.get_player(
+			self._initial_controller or self.tags.get(GameTag.CONTROLLER, 0)
+		)
+
+	@property
 	def type(self):
 		return self.tags.get(GameTag.CARDTYPE, CardType.INVALID)
 
@@ -28,6 +35,8 @@ class Entity(object):
 		return self.tags.get(GameTag.ZONE, Zone.INVALID)
 
 	def tag_change(self, tag, value):
+		if tag == GameTag.CONTROLLER and not self._initial_controller:
+			self._initial_controller = self.tags.get(GameTag.CONTROLLER, value)
 		self.tags[tag] = value
 
 
@@ -122,7 +131,7 @@ class Player(Entity):
 	@property
 	def initial_deck(self):
 		for entity in self.game.initial_entities:
-			if entity.controller != self:
+			if entity.initial_controller != self:
 				continue
 			# Exclude heroes and hero powers
 			if entity.tags.get(GameTag.CARDTYPE, 0) not in (

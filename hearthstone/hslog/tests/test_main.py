@@ -47,6 +47,15 @@ D 02:59:14.6497780 GameState.DebugPrintPower() -         tag=ENTITY_ID value=3
 D 02:59:14.6500380 GameState.DebugPrintPower() -         tag=CARDTYPE value=PLAYER
 """.strip()
 
+FULL_ENTITY = """D 22:25:48.0678873 GameState.DebugPrintPower() - FULL_ENTITY - Creating ID=4 CardID=
+D 22:25:48.0678873 GameState.DebugPrintPower() -     tag=ZONE value=DECK
+D 22:25:48.0678873 GameState.DebugPrintPower() -     tag=CONTROLLER value=1
+D 22:25:48.0678873 GameState.DebugPrintPower() -     tag=ENTITY_ID value=4
+""".strip()
+
+CONTROLLER_CHANGE = """
+D 22:25:48.0708939 GameState.DebugPrintPower() - TAG_CHANGE Entity=4 tag=CONTROLLER value=2
+""".strip() 
 
 def test_create_empty_game():
 	parser = LogParser()
@@ -266,3 +275,28 @@ def test_tag_change_unknown_entity_format():
 	assert packet.entity == id
 	assert packet.tag == GameTag.ZONE
 	assert packet.value == Zone.HAND
+
+
+def test_initial_deck_initial_controller():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.read(StringIO(FULL_ENTITY))
+	parser.flush()
+	packet_tree = parser.games[0]
+	game = packet_tree.export().game
+
+	assert len(list(game.players[0].initial_deck)) == 1
+	assert len(list(game.players[1].initial_deck)) == 0
+
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+	parser.read(StringIO(FULL_ENTITY))
+	parser.read(StringIO(CONTROLLER_CHANGE))
+	parser.flush()
+	packet_tree = parser.games[0]
+	game = packet_tree.export().game
+
+	assert len(list(game.players[0].initial_deck)) == 1
+	assert len(list(game.players[1].initial_deck)) == 0
+
+
