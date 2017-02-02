@@ -1,3 +1,4 @@
+import sys
 from .enums import (
 	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
 	Race, Rarity, PlayReq
@@ -342,7 +343,12 @@ def load(path=None, locale="enUS"):
 		path = resource_filename("hearthstone", "CardDefs.xml")
 
 	db = {}
-	with open(path, "r") as f:
+	file = None
+	if sys.version_info.major == 2:
+		file = open(path, "r")
+	else:
+		file = open(path, "r", encoding="utf-8")
+	with file as f:
 		xml = ElementTree.parse(f)
 		for carddata in xml.findall("Entity"):
 			card = CardXML.from_xml(carddata)
