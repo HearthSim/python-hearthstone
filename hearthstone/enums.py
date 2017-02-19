@@ -732,6 +732,17 @@ class BnetGameType(IntEnum):
 	BGT_LAST = 32
 
 
+STANDARD_GAME_TYPES = [
+	BnetGameType.BGT_CASUAL_STANDARD,
+	BnetGameType.BGT_RANKED_STANDARD,
+]
+
+WILD_GAME_TYPES = [
+	BnetGameType.BGT_CASUAL_WILD,
+	BnetGameType.BGT_RANKED_WILD,
+]
+
+
 class GameType(IntEnum):
 	"PegasusShared.GameType"
 	GT_UNKNOWN = 0
