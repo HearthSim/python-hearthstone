@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import pytest
 from datetime import datetime, time, timedelta
 from io import StringIO
