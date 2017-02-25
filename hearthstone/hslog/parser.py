@@ -100,6 +100,7 @@ class PowerHandler(object):
 		self.current_block = None
 		self._metadata_node = None
 		self._packets = None
+		self._creating_game = False
 
 	def _check_for_mulligan_hack(self, ts, tag, value):
 		# Old game logs didn't handle asynchronous mulligans properly.
@@ -123,6 +124,7 @@ class PowerHandler(object):
 
 		if opcode == "GameEntity":
 			self.flush()
+			self._creating_game = True
 			sre = GAME_ENTITY_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
@@ -241,6 +243,19 @@ class PowerHandler(object):
 		id = int(id)
 		self._entity_packet = packets.FullEntity(ts, id, card_id)
 		self.current_block.packets.append(self._entity_packet)
+
+		if self._creating_game:
+			# First packet after create game should always be a FULL_ENTITY
+			self._creating_game = False
+			# It should always have ID 4
+			if id != 4:
+				raise ParsingError("Expected entity 4 after creating game, got %r" % (id))
+
+			# While we're at it, we check if we got an abnormal amount of players
+			player_count = len(self._game_packet.players)
+			if player_count != 2:
+				raise ParsingError("Expected exactly 2 players, got %r" % (player_count))
+
 		return self._entity_packet
 
 	def full_entity_update(self, ts, entity, card_id):

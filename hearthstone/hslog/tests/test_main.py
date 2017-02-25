@@ -53,9 +53,19 @@ D 22:25:48.0678873 GameState.DebugPrintPower() -     tag=CONTROLLER value=1
 D 22:25:48.0678873 GameState.DebugPrintPower() -     tag=ENTITY_ID value=4
 """.strip()
 
+INVALID_GAME = """
+D 02:59:14.6088620 GameState.DebugPrintPower() - CREATE_GAME
+D 02:59:14.6149420 GameState.DebugPrintPower() -     GameEntity EntityID=1
+D 02:59:14.6428100 GameState.DebugPrintPower() -         tag=ZONE value=PLAY
+D 02:59:14.6481950 GameState.DebugPrintPower() -     Player EntityID=3 PlayerID=2 GameAccountId=[hi=3 lo=2]
+D 02:59:14.6483770 GameState.DebugPrintPower() -         tag=PLAYSTATE value=PLAYING
+D 02:59:14.6492590 GameState.DebugPrintPower() -         tag=PLAYER_ID value=2
+""".strip() + "\n" + FULL_ENTITY
+
 CONTROLLER_CHANGE = """
 D 22:25:48.0708939 GameState.DebugPrintPower() - TAG_CHANGE Entity=4 tag=CONTROLLER value=2
-""".strip() 
+""".strip()
+
 
 def test_create_empty_game():
 	parser = LogParser()
@@ -300,3 +310,7 @@ def test_initial_deck_initial_controller():
 	assert len(list(game.players[1].initial_deck)) == 0
 
 
+def test_invalid_game_one_player():
+	parser = LogParser()
+	with pytest.raises(ParsingError):
+		parser.read(StringIO(INVALID_GAME))
