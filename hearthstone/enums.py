@@ -238,6 +238,7 @@ class GameTag(IntEnum):
 	KABAL = 484
 	ADDITIONAL_PLAY_REQS_1 = 515
 	ADDITIONAL_PLAY_REQS_2 = 516
+	BOSS = 556
 
 	InvisibleDeathrattle = 335
 	ImmuneToSpellpower = 349
@@ -978,7 +979,9 @@ class Booster(IntEnum):
 	THE_GRAND_TOURNAMENT = 10
 	OLD_GODS = 11
 	FIRST_PURCHASE = 17
+	SIGNUP_INCENTIVE = 18
 	MEAN_STREETS = 19
+	UNGORO = 20
 
 
 class DeckType(IntEnum):
