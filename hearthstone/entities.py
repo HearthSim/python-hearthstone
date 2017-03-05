@@ -75,6 +75,10 @@ class Game(Entity):
 			if entity.zone == zone:
 				yield entity
 
+	def create(self, tags):
+		self.tags = dict(tags)
+		self.register_entity(self)
+
 	def register_entity(self, entity):
 		entity.game = self
 		self.entities.append(entity)

@@ -105,8 +105,7 @@ class EntityTreeExporter(BaseExporter):
 
 	def handle_create_game(self, packet):
 		self.game = self.game_class(packet.entity)
-		self.game.tags = dict(packet.tags)
-		self.game.register_entity(self.game)
+		self.game.create(packet.tags)
 		for player in packet.players:
 			self.export_packet(player)
 		return self.game
