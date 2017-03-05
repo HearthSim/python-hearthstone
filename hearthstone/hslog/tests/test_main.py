@@ -84,6 +84,8 @@ def test_create_empty_game():
 	assert game.entities[0].id == 1
 	assert game.entities[1] is game.players[0]
 	assert game.entities[2] is game.players[1]
+	assert game.initial_state == State.INVALID
+	assert game.initial_step == Step.INVALID
 
 	# Test player objects
 	assert game.players[0].id == 2
@@ -159,6 +161,8 @@ def test_game_initialization():
 		GameTag.CARDTYPE: CardType.GAME,
 		GameTag.STATE: State.RUNNING,
 	}
+	assert game.initial_state == State.RUNNING
+	assert game.initial_step == Step.INVALID
 
 	assert game.players[0].tags == {
 		GameTag.PLAYSTATE: PlayState.PLAYING,

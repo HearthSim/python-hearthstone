@@ -1,4 +1,4 @@
-from .enums import CardType, GameTag, Step, Zone
+from .enums import CardType, GameTag, State, Step, Zone
 
 
 class Entity(object):
@@ -48,6 +48,8 @@ class Game(Entity):
 		self.players = []
 		self.entities = []
 		self.initial_entities = []
+		self.initial_state = State.INVALID
+		self.initial_step = Step.INVALID
 
 	@property
 	def current_player(self):
@@ -77,6 +79,8 @@ class Game(Entity):
 
 	def create(self, tags):
 		self.tags = dict(tags)
+		self.initial_state = self.tags.get(GameTag.STATE, State.INVALID)
+		self.initial_step = self.tags.get(GameTag.STEP, Step.INVALID)
 		self.register_entity(self)
 
 	def register_entity(self, entity):
