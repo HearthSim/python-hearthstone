@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
-import pytest
 from datetime import datetime, time, timedelta
 from io import StringIO
+
+import pytest
 from aniso8601 import parse_datetime
 from hearthstone.enums import (
 	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
@@ -9,7 +10,7 @@ from hearthstone.enums import (
 from hearthstone.hslog import LogParser
 from hearthstone.hslog.exceptions import ParsingError
 from hearthstone.hslog.export import FriendlyPlayerExporter
-from hearthstone.hslog.parser import parse_initial_tag, parse_entity_id
+from hearthstone.hslog.parser import parse_entity_id, parse_initial_tag
 
 
 EMPTY_GAME = """

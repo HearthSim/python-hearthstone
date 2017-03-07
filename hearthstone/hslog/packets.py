@@ -1,4 +1,4 @@
-from ..enums import GameTag, PowerType, Zone
+from ..enums import PowerType
 
 
 class PacketTree:

@@ -1,6 +1,6 @@
+from . import packets
 from .. import entities
 from ..enums import GameTag, Zone
-from . import packets
 
 
 class BaseExporter(object):

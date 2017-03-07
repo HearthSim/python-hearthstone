@@ -1,1 +1,1 @@
-from .parser import LogParser
+from .parser import LogParser  # noqa

@@ -2,8 +2,8 @@
 Classes to provide lazy players that are treatable as an entity ID but
 do not have to receive one immediately.
 """
-from ..enums import GameTag
 from .exceptions import ParsingError
+from ..enums import GameTag
 
 
 UNKNOWN_HUMAN_PLAYER = "UNKNOWN HUMAN PLAYER"

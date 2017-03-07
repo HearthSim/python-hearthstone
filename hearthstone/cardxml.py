@@ -1,6 +1,6 @@
 from .enums import (
-	CardClass, CardType, CardSet, Faction, GameTag, MultiClassGroup,
-	Race, Rarity, PlayReq
+	CardClass, CardSet, CardType, Faction, GameTag, MultiClassGroup,
+	PlayReq, Race, Rarity
 )
 from .utils import ElementTree
 

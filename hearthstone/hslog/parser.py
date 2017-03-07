@@ -3,11 +3,11 @@ import re
 from datetime import datetime, timedelta
 from aniso8601 import parse_time
 from hearthstone import enums
-from ..enums import GameTag, PowerType
 from . import packets
 from .exceptions import ParsingError, RegexParsingError
 from .player import LazyPlayer, PlayerManager
 from .utils import parse_enum, parse_tag
+from ..enums import GameTag, PowerType
 
 
 # Entity format
