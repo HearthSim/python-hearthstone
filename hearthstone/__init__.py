@@ -1,1 +1,4 @@
-__version__ = "3.4.17720"
+import pkg_resources
+
+
+__version__ = pkg_resources.require("hearthstone")[0].version
