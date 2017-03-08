@@ -1,15 +1,25 @@
 # https://travis-ci.org/HearthSim/python-hearthstone
 sudo: false
 language: python
+
 python:
   - 3.6
+
+env:
+  - TOXENV=py27
+  - TOXENV=py34
+  - TOXENV=py36
+
 cache:
   directories:
     - $HOME/.cache/pip
+
 install:
   - pip install tox
+
 script:
   - tox
+
 notifications:
   email:
     on_failure: always
