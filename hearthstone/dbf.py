@@ -52,7 +52,7 @@ class Dbf:
 		for column in self._xml.findall("Column"):
 			self.columns[column.attrib["name"]] = column.attrib["type"]
 
-		self.records = (self._deserialize_record(e) for e in self._xml.findall("Record"))
+		self.records = [self._deserialize_record(e) for e in self._xml.findall("Record")]
 
 	def _to_xml(self):
 		root = ElementTree.Element("Dbf")
