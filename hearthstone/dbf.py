@@ -1,5 +1,7 @@
+import re
 from collections import OrderedDict
 from .utils import ElementTree
+from .enums import Locale
 
 
 class Dbf:
@@ -53,6 +55,54 @@ class Dbf:
 			self.columns[column.attrib["name"]] = column.attrib["type"]
 
 		self.records = [self._deserialize_record(e) for e in self._xml.findall("Record")]
+
+	def object_to_xml_column_name(self, name):
+		if name.startswith('m_'):
+			name = name[2:]
+		name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+		return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).upper()
+
+	def populate_from_unity_object(self, obj):
+		d = obj.read()
+		self.name = d["m_Name"]
+		colnames = {}
+		coltypes = {}
+
+		# m_Records > Array > data
+		record_tree = obj.type_tree.children[4].children[0].children[1]
+		for field in record_tree.children:
+			coltype = {
+				"SInt64": "Long",
+				"UInt64": "ULong",
+				"int": "Int",
+				"float": "Float",
+				"string": "String",
+				"DbfLocValue": "LocString",
+				"UInt8": "Bool"
+			}[field.type]
+			colname = field.name
+			if colname.startswith('m_'):
+				colname = colname[2:]
+			colname = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", colname)
+			colname = re.sub("([a-z0-9])([A-Z])", r"\1_\2", colname).upper()
+			colnames[field.name] = colname
+			coltypes[field.name] = coltype
+			self.columns[colname] = coltype
+
+		records = d["Records"]
+		for record in records:
+			r = {}
+			for name, val in record.items():
+				colname = colnames[name]
+				coltype = coltypes[name]
+				if coltype == "LocString":
+					locStrings = zip(val["m_locales"], val['m_locValues'])
+					r[colname] = dict((Locale(loc).name, s) for loc, s in locStrings)
+				elif coltype == "Bool":
+					r[colname] = val != 0
+				else:
+					r[colname] = val
+			self.records.append(r)
 
 	def _to_xml(self):
 		root = ElementTree.Element("Dbf")
