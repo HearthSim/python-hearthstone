@@ -1,84 +1,23 @@
 import logging
-import re
 from datetime import datetime, timedelta
 from aniso8601 import parse_time
 from hearthstone import enums
-from . import packets
+from . import packets, tokens
 from .exceptions import ParsingError, RegexParsingError
 from .player import LazyPlayer, PlayerManager
 from .utils import parse_enum, parse_tag
 from ..enums import GameTag, PlayReq, PowerType
 
 
-# Entity format
-GAME_ENTITY_TOKEN = "GameEntity"
-_E = r"(%s|UNKNOWN HUMAN PLAYER|\[.+\]|\d+|.+)" % (GAME_ENTITY_TOKEN)
-ENTITY_RE = re.compile("\[.*\s*id=(\d+)\s*.*\]")
-
-# Line format
-TIMESTAMP_POWERLOG_FORMAT = r"%H:%M:%S.%f"
-TIMESTAMP_RE = re.compile(r"^(D|W) ([\d:.]+) (.+)$")
-POWERLOG_LINE_RE = re.compile(r"([^(]+)\(\) - (.+)$")
-OUTPUTLOG_LINE_RE = re.compile(r"\[Power\] ()([^(]+)\(\) - (.+)$")
-
-# Game / Player
-GAME_ENTITY_RE = re.compile(r"GameEntity EntityID=(\d+)")
-PLAYER_ENTITY_RE = re.compile(r"Player EntityID=(\d+) PlayerID=(\d+) GameAccountId=\[hi=(\d+) lo=(\d+)\]$")
-
-# Messages
-CREATE_GAME_RE = re.compile(r"^CREATE_GAME$")
-ACTION_START_OLD_RE = re.compile(r"ACTION_START Entity=%s (?:SubType|BlockType)=(\w+) Index=(-1|\d+) Target=%s$" % (_E, _E))
-BLOCK_START_RE = re.compile(r"(?:ACTION|BLOCK)_START (?:SubType|BlockType)=(\w+) Entity=%s EffectCardId=(.*) EffectIndex=(-1|\d+) Target=%s$" % (_E, _E))  # Changed in 12051
-BLOCK_END_RE = re.compile(r"^(?:ACTION|BLOCK)_END$")
-FULL_ENTITY_CREATE_RE = re.compile(r"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+)?$")
-FULL_ENTITY_UPDATE_RE = re.compile(r"FULL_ENTITY - Updating %s CardID=(\w+)?$" % _E)
-SHOW_ENTITY_RE = re.compile(r"SHOW_ENTITY - Updating Entity=%s CardID=(\w+)$" % _E)
-HIDE_ENTITY_RE = re.compile(r"HIDE_ENTITY - Entity=%s tag=(\w+) value=(\w+)$" % _E)
-CHANGE_ENTITY_RE = re.compile(r"CHANGE_ENTITY - Updating Entity=%s CardID=(\w+)$" % _E)
-TAG_CHANGE_RE = re.compile(r"TAG_CHANGE Entity=%s tag=(\w+) value=(\w+)" % _E)
-META_DATA_RE = re.compile(r"META_DATA - Meta=(\w+) Data=%s Info=(\d+)" % _E)
-
-# Message details
-TAG_VALUE_RE = re.compile(r"tag=(\w+) value=(\w+)")
-METADATA_INFO_RE = re.compile(r"Info\[(\d+)\] = %s" % _E)
-
-# Choices
-CHOICES_CHOICE_OLD_1_RE = re.compile(r"id=(\d+) ChoiceType=(\w+)$")
-CHOICES_CHOICE_OLD_2_RE = re.compile(r"id=(\d+) PlayerId=(\d+) ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$")
-CHOICES_CHOICE_RE = re.compile(r"id=(\d+) Player=%s TaskList=(\d+)? ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$" % _E)
-CHOICES_SOURCE_RE = re.compile(r"Source=%s$" % _E)
-CHOICES_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=(\[.+\])$")
-SEND_CHOICES_CHOICE_RE = re.compile(r"id=(\d+) ChoiceType=(.+)$")
-SEND_CHOICES_ENTITIES_RE = re.compile(r"m_chosenEntities\[(\d+)\]=(\[.+\])$")
-ENTITIES_CHOSEN_RE = re.compile(r"id=(\d+) Player=%s EntitiesCount=(\d+)$" % _E)
-ENTITIES_CHOSEN_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=%s$" % _E)
-
-# Options
-OPTIONS_ENTITY_RE = re.compile(r"id=(\d+)$")
-OPTIONS_OPTION_RE = re.compile(r"(option) (\d+) type=(\w+) mainEntity=%s?$" % _E)
-OPTIONS_OPTION_ERROR_RE = re.compile(r"(option) (\d+) type=(\w+) mainEntity=%s? error=(\w+) errorParam=(\d+)?$" % _E)
-OPTIONS_SUBOPTION_RE = re.compile(r"(subOption|target) (\d+) entity=%s?$" % _E)
-OPTIONS_SUBOPTION_ERROR_RE = re.compile(r"(subOption|target) (\d+) entity=%s? error=(\w+) errorParam=(\d+)?$" % _E)
-SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) selectedTarget=(\d+) selectedPosition=(\d+)")
-
-# Spectator mode
-SPECTATOR_MODE_TOKEN = "=================="
-SPECTATOR_MODE_BEGIN_GAME = "Start Spectator Game"
-SPECTATOR_MODE_BEGIN_FIRST = "Begin Spectating 1st player"
-SPECTATOR_MODE_BEGIN_SECOND = "Begin Spectating 2nd player"
-SPECTATOR_MODE_END_MODE = "End Spectator Mode"
-SPECTATOR_MODE_END_GAME = "End Spectator Game"
-
-
 def parse_entity_id(entity):
 	if entity.isdigit():
 		return int(entity)
 
-	if entity == GAME_ENTITY_TOKEN:
+	if entity == tokens.GAME_ENTITY:
 		# GameEntity is always 1
 		return 1
 
-	sre = ENTITY_RE.match(entity)
+	sre = tokens.ENTITY_RE.match(entity)
 	if sre:
 		id = sre.groups()[0]
 		return int(id)
@@ -89,7 +28,7 @@ def parse_initial_tag(data):
 	Parse \a data, a line formatted as tag=FOO value=BAR
 	Returns the values as int.
 	"""
-	sre = TAG_VALUE_RE.match(data)
+	sre = tokens.TAG_VALUE_RE.match(data)
 	if not sre:
 		raise RegexParsingError(data)
 	tag, value = sre.groups()
@@ -147,7 +86,7 @@ class PowerHandler(object):
 		if opcode == "GameEntity":
 			self.flush()
 			self._creating_game = True
-			sre = GAME_ENTITY_RE.match(data)
+			sre = tokens.GAME_ENTITY_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			id, = sre.groups()
@@ -155,7 +94,7 @@ class PowerHandler(object):
 				raise ParsingError("GameEntity ID: Expected 1, got %r" % (id))
 		elif opcode == "Player":
 			self.flush()
-			sre = PLAYER_ENTITY_RE.match(data)
+			sre = tokens.PLAYER_ENTITY_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			self.register_player(ts, *sre.groups())
@@ -169,7 +108,7 @@ class PowerHandler(object):
 			if not self._metadata_node:
 				logging.warning("Metadata Info outside of META_DATA: %r", data)
 				return
-			sre = METADATA_INFO_RE.match(data)
+			sre = tokens.METADATA_INFO_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			idx, entity = sre.groups()
@@ -187,11 +126,11 @@ class PowerHandler(object):
 		self.flush()
 
 		if opcode == "CREATE_GAME":
-			regex, callback = CREATE_GAME_RE, self.create_game
+			regex, callback = tokens.CREATE_GAME_RE, self.create_game
 		elif opcode in ("ACTION_START", "BLOCK_START"):
-			sre = BLOCK_START_RE.match(data)
+			sre = tokens.BLOCK_START_RE.match(data)
 			if sre is None:
-				sre = ACTION_START_OLD_RE.match(data)
+				sre = tokens.ACTION_START_OLD_RE.match(data)
 				if not sre:
 					raise RegexParsingError(data)
 				entity, type, index, target = sre.groups()
@@ -202,22 +141,22 @@ class PowerHandler(object):
 			self.block_start(ts, entity, type, index, effectid, effectindex, target)
 			return
 		elif opcode in ("ACTION_END", "BLOCK_END"):
-			regex, callback = BLOCK_END_RE, self.block_end
+			regex, callback = tokens.BLOCK_END_RE, self.block_end
 		elif opcode == "FULL_ENTITY":
 			if data.startswith("FULL_ENTITY - Updating"):
-				regex, callback = FULL_ENTITY_UPDATE_RE, self.full_entity_update
+				regex, callback = tokens.FULL_ENTITY_UPDATE_RE, self.full_entity_update
 			else:
-				regex, callback = FULL_ENTITY_CREATE_RE, self.full_entity
+				regex, callback = tokens.FULL_ENTITY_CREATE_RE, self.full_entity
 		elif opcode == "SHOW_ENTITY":
-			regex, callback = SHOW_ENTITY_RE, self.show_entity
+			regex, callback = tokens.SHOW_ENTITY_RE, self.show_entity
 		elif opcode == "HIDE_ENTITY":
-			regex, callback = HIDE_ENTITY_RE, self.hide_entity
+			regex, callback = tokens.HIDE_ENTITY_RE, self.hide_entity
 		elif opcode == "CHANGE_ENTITY":
-			regex, callback = CHANGE_ENTITY_RE, self.change_entity
+			regex, callback = tokens.CHANGE_ENTITY_RE, self.change_entity
 		elif opcode == "TAG_CHANGE":
-			regex, callback = TAG_CHANGE_RE, self.tag_change
+			regex, callback = tokens.TAG_CHANGE_RE, self.tag_change
 		elif opcode == "META_DATA":
-			regex, callback = META_DATA_RE, self.meta_data
+			regex, callback = tokens.META_DATA_RE, self.meta_data
 		else:
 			raise NotImplementedError(data)
 
@@ -341,13 +280,13 @@ class OptionsHandler(object):
 
 	def _parse_option_packet(self, ts, data):
 		if " errorParam=" in data:
-			sre = OPTIONS_OPTION_ERROR_RE.match(data)
+			sre = tokens.OPTIONS_OPTION_ERROR_RE.match(data)
 			optype, id, type, entity, error, error_param = sre.groups()
 			if not sre:
 				raise RegexParsingError(data)
 			error, error_param = clean_option_errors(error, error_param)
 		else:
-			sre = OPTIONS_OPTION_RE.match(data)
+			sre = tokens.OPTIONS_OPTION_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			optype, id, type, entity = sre.groups()
@@ -368,13 +307,13 @@ class OptionsHandler(object):
 
 	def _parse_suboption_packet(self, ts, data):
 		if " errorParam=" in data:
-			sre = OPTIONS_SUBOPTION_ERROR_RE.match(data)
+			sre = tokens.OPTIONS_SUBOPTION_ERROR_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			optype, id, entity, error, error_param = sre.groups()
 			error, error_param = clean_option_errors(error, error_param)
 		else:
-			sre = OPTIONS_SUBOPTION_RE.match(data)
+			sre = tokens.OPTIONS_SUBOPTION_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			optype, id, entity = sre.groups()
@@ -397,7 +336,7 @@ class OptionsHandler(object):
 
 	def handle_options(self, ts, data):
 		if data.startswith("id="):
-			sre = OPTIONS_ENTITY_RE.match(data)
+			sre = tokens.OPTIONS_ENTITY_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			id, = sre.groups()
@@ -411,7 +350,7 @@ class OptionsHandler(object):
 
 	def handle_send_option(self, ts, data):
 		if data.startswith("selectedOption="):
-			sre = SEND_OPTION_RE.match(data)
+			sre = tokens.SEND_OPTION_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			option, suboption, target, position = sre.groups()
@@ -450,11 +389,11 @@ class ChoicesHandler(object):
 
 	def handle_entity_choices_old(self, ts, data):
 		if data.startswith("id="):
-			sre = CHOICES_CHOICE_OLD_1_RE.match(data)
+			sre = tokens.CHOICES_CHOICE_OLD_1_RE.match(data)
 			if sre:
 				self.register_choices_old_1(ts, *sre.groups())
 			else:
-				sre = CHOICES_CHOICE_OLD_2_RE.match(data)
+				sre = tokens.CHOICES_CHOICE_OLD_2_RE.match(data)
 				if not sre:
 					raise RegexParsingError(data)
 				self.register_choices_old_2(ts, *sre.groups())
@@ -463,12 +402,12 @@ class ChoicesHandler(object):
 
 	def handle_entity_choices(self, ts, data):
 		if data.startswith("id="):
-			sre = CHOICES_CHOICE_RE.match(data)
+			sre = tokens.CHOICES_CHOICE_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			return self.register_choices(ts, *sre.groups())
 		elif data.startswith("Source="):
-			sre = CHOICES_SOURCE_RE.match(data)
+			sre = tokens.CHOICES_SOURCE_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			entity, = sre.groups()
@@ -478,7 +417,7 @@ class ChoicesHandler(object):
 			self._choice_packet.source = id
 			return id
 		elif data.startswith("Entities["):
-			sre = CHOICES_ENTITIES_RE.match(data)
+			sre = tokens.CHOICES_ENTITIES_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			idx, entity = sre.groups()
@@ -522,7 +461,7 @@ class ChoicesHandler(object):
 
 	def handle_send_choices(self, ts, data):
 		if data.startswith("id="):
-			sre = SEND_CHOICES_CHOICE_RE.match(data)
+			sre = tokens.SEND_CHOICES_CHOICE_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			id, type = sre.groups()
@@ -532,7 +471,7 @@ class ChoicesHandler(object):
 			self.current_block.packets.append(self._send_choice_packet)
 			return self._send_choice_packet
 		elif data.startswith("m_chosenEntities"):
-			sre = SEND_CHOICES_ENTITIES_RE.match(data)
+			sre = tokens.SEND_CHOICES_ENTITIES_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			idx, entity = sre.groups()
@@ -547,7 +486,7 @@ class ChoicesHandler(object):
 
 	def handle_entities_chosen(self, ts, data):
 		if data.startswith("id="):
-			sre = ENTITIES_CHOSEN_RE.match(data)
+			sre = tokens.ENTITIES_CHOSEN_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			id, player, count = sre.groups()
@@ -558,7 +497,7 @@ class ChoicesHandler(object):
 			self.current_block.packets.append(self._chosen_packet)
 			return self._chosen_packet
 		elif data.startswith("Entities["):
-			sre = ENTITIES_CHOSEN_ENTITIES_RE.match(data)
+			sre = tokens.ENTITIES_CHOSEN_ENTITIES_RE.match(data)
 			if not sre:
 				raise RegexParsingError(data)
 			idx, entity = sre.groups()
@@ -590,15 +529,15 @@ class SpectatorModeHandler(object):
 			self.spectating_second_player = second
 
 	def process_spectator_mode(self, line):
-		if line == SPECTATOR_MODE_BEGIN_GAME:
+		if line == tokens.SPECTATOR_MODE_BEGIN_GAME:
 			self.set_spectating(True)
-		elif line == SPECTATOR_MODE_BEGIN_FIRST:
+		elif line == tokens.SPECTATOR_MODE_BEGIN_FIRST:
 			self.set_spectating(True, False)
-		elif line == SPECTATOR_MODE_BEGIN_SECOND:
+		elif line == tokens.SPECTATOR_MODE_BEGIN_SECOND:
 			self.set_spectating(True, True)
-		elif line == SPECTATOR_MODE_END_MODE:
+		elif line == tokens.SPECTATOR_MODE_END_MODE:
 			self.set_spectating(False, False)
-		elif line == SPECTATOR_MODE_END_GAME:
+		elif line == tokens.SPECTATOR_MODE_END_GAME:
 			self.set_spectating(False, False)
 		else:
 			raise NotImplementedError("Unhandled spectator mode: %r" % (line))
@@ -608,7 +547,7 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 	def __init__(self):
 		super(LogParser, self).__init__()
 		self.games = []
-		self.line_regex = POWERLOG_LINE_RE
+		self.line_regex = tokens.POWERLOG_LINE_RE
 		self._game_state_processor = "GameState"
 		self._current_date = None
 		self._synced_timestamp = False
@@ -648,12 +587,12 @@ class LogParser(PowerHandler, ChoicesHandler, OptionsHandler, SpectatorModeHandl
 			self.read_line(line)
 
 	def read_line(self, line):
-		sre = TIMESTAMP_RE.match(line)
+		sre = tokens.TIMESTAMP_RE.match(line)
 		if not sre:
 			raise RegexParsingError(line)
 		level, ts, line = sre.groups()
-		if line.startswith(SPECTATOR_MODE_TOKEN):
-			line = line.replace(SPECTATOR_MODE_TOKEN, "").strip()
+		if line.startswith(tokens.SPECTATOR_MODE_TOKEN):
+			line = line.replace(tokens.SPECTATOR_MODE_TOKEN, "").strip()
 			return self.process_spectator_mode(line)
 
 		sre = self.line_regex.match(line)
