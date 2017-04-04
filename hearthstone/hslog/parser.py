@@ -7,7 +7,7 @@ from . import packets
 from .exceptions import ParsingError, RegexParsingError
 from .player import LazyPlayer, PlayerManager
 from .utils import parse_enum, parse_tag
-from ..enums import GameTag, PowerType
+from ..enums import GameTag, PlayReq, PowerType
 
 
 # Entity format
@@ -56,7 +56,9 @@ ENTITIES_CHOSEN_ENTITIES_RE = re.compile(r"Entities\[(\d+)\]=%s$" % _E)
 # Options
 OPTIONS_ENTITY_RE = re.compile(r"id=(\d+)$")
 OPTIONS_OPTION_RE = re.compile(r"(option) (\d+) type=(\w+) mainEntity=%s?$" % _E)
+OPTIONS_OPTION_ERROR_RE = re.compile(r"(option) (\d+) type=(\w+) mainEntity=%s? error=(\w+) errorParam=(\d+)?$" % _E)
 OPTIONS_SUBOPTION_RE = re.compile(r"(subOption|target) (\d+) entity=%s?$" % _E)
+OPTIONS_SUBOPTION_ERROR_RE = re.compile(r"(subOption|target) (\d+) entity=%s? error=(\w+) errorParam=(\d+)?$" % _E)
 SEND_OPTION_RE = re.compile(r"selectedOption=(\d+) selectedSubOption=(-1|\d+) selectedTarget=(\d+) selectedPosition=(\d+)")
 
 # Spectator mode
@@ -92,6 +94,26 @@ def parse_initial_tag(data):
 		raise RegexParsingError(data)
 	tag, value = sre.groups()
 	return parse_tag(tag, value)
+
+
+def clean_option_errors(error, error_param):
+	"""
+	As of 8.0.0.18336, all option packets are accompanied by an error and an
+	errorParam argument.
+	This function turns both into their respective types.
+	"""
+
+	if error == "NONE":
+		error = None
+	else:
+		error = parse_enum(PlayReq, error)
+
+	if not error_param:
+		error_param = None
+	else:
+		error_param = int(error_param)
+
+	return error, error_param
 
 
 class PowerHandler(object):
@@ -317,6 +339,61 @@ class OptionsHandler(object):
 		elif method == self.parse_method("DebugPrintOptions"):
 			return self.handle_options
 
+	def _parse_option_packet(self, ts, data):
+		if " errorParam=" in data:
+			sre = OPTIONS_OPTION_ERROR_RE.match(data)
+			optype, id, type, entity, error, error_param = sre.groups()
+			if not sre:
+				raise RegexParsingError(data)
+			error, error_param = clean_option_errors(error, error_param)
+		else:
+			sre = OPTIONS_OPTION_RE.match(data)
+			if not sre:
+				raise RegexParsingError(data)
+			optype, id, type, entity = sre.groups()
+			error, error_param = None, None
+
+		id = int(id)
+		type = parse_enum(enums.OptionType, type)
+		entity_id = parse_entity_id(entity) if entity else None
+		self._option_packet = packets.Option(ts, entity_id, id, type, optype, error, error_param)
+		if not self._options_packet:
+			raise ParsingError("Option without a parent option group: %r" % (data))
+
+		self._options_packet.options.append(self._option_packet)
+		self._suboption_packet = None
+
+		return self._option_packet
+
+	def _parse_suboption_packet(self, ts, data):
+		if " errorParam=" in data:
+			sre = OPTIONS_SUBOPTION_ERROR_RE.match(data)
+			if not sre:
+				raise RegexParsingError(data)
+			optype, id, entity, error, error_param = sre.groups()
+			error, error_param = clean_option_errors(error, error_param)
+		else:
+			sre = OPTIONS_SUBOPTION_RE.match(data)
+			if not sre:
+				raise RegexParsingError(data)
+			optype, id, entity = sre.groups()
+			error, error_param = None, None
+
+		id = int(id)
+		if not entity:
+			raise ParsingError("SubOption / target got an empty entity: %r" % (data))
+
+		entity_id = parse_entity_id(entity)
+		packet = packets.Option(ts, entity_id, id, None, optype, error, error_param)
+		if optype == "subOption":
+			self._suboption_packet = packet
+			node = self._option_packet
+		elif optype == "target":
+			node = self._suboption_packet or self._option_packet
+		node.options.append(packet)
+
+		return packet
+
 	def handle_options(self, ts, data):
 		if data.startswith("id="):
 			sre = OPTIONS_ENTITY_RE.match(data)
@@ -327,36 +404,9 @@ class OptionsHandler(object):
 			self._options_packet = packets.Options(ts, id)
 			self.current_block.packets.append(self._options_packet)
 		elif data.startswith("option "):
-			sre = OPTIONS_OPTION_RE.match(data)
-			if not sre:
-				raise RegexParsingError(data)
-			optype, id, type, entity = sre.groups()
-			id = int(id)
-			type = parse_enum(enums.OptionType, type)
-			entity_id = parse_entity_id(entity) if entity else None
-			self._option_packet = packets.Option(ts, entity_id, id, type, optype)
-			if not self._options_packet:
-				raise ParsingError("Option without a parent option group: %r" % (data))
-			self._options_packet.options.append(self._option_packet)
-			self._suboption_packet = None
-			return self._option_packet
+			return self._parse_option_packet(ts, data)
 		elif data.startswith(("subOption ", "target ")):
-			sre = OPTIONS_SUBOPTION_RE.match(data)
-			if not sre:
-				raise RegexParsingError(data)
-			optype, id, entity = sre.groups()
-			id = int(id)
-			if not entity:
-				raise ParsingError("SubOption / target got an empty entity: %r" % (data))
-			entity_id = parse_entity_id(entity)
-			packet = packets.Option(ts, entity_id, id, None, optype)
-			if optype == "subOption":
-				self._suboption_packet = packet
-				node = self._option_packet
-			elif optype == "target":
-				node = self._suboption_packet or self._option_packet
-			node.options.append(packet)
-			return packet
+			return self._parse_suboption_packet(ts, data)
 
 	def handle_send_option(self, ts, data):
 		if data.startswith("selectedOption="):

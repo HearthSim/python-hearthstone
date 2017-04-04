@@ -4,7 +4,8 @@ from io import StringIO
 import pytest
 from aniso8601 import parse_datetime
 from hearthstone.enums import (
-	CardType, ChoiceType, GameTag, PlayState, PowerType, State, Step, Zone
+	CardType, ChoiceType, GameTag, OptionType, PlayReq, PlayState, PowerType,
+	State, Step, Zone
 )
 from hearthstone.hslog import LogParser
 from hearthstone.hslog.exceptions import ParsingError
@@ -12,6 +13,7 @@ from hearthstone.hslog.export import FriendlyPlayerExporter
 from hearthstone.hslog.parser import parse_entity_id, parse_initial_tag
 from .data import (
 	CONTROLLER_CHANGE, EMPTY_GAME, FULL_ENTITY, INITIAL_GAME, INVALID_GAME,
+	OPTIONS_WITH_ERRORS,
 )
 
 
@@ -266,3 +268,35 @@ def test_invalid_game_one_player():
 	parser = LogParser()
 	with pytest.raises(ParsingError):
 		parser.read(StringIO(INVALID_GAME))
+
+
+def test_options_packet_with_errors():
+	parser = LogParser()
+	parser.read(StringIO(INITIAL_GAME))
+
+	parser.read(StringIO(OPTIONS_WITH_ERRORS))
+	parser.flush()
+	packet_tree = parser.games[0]
+
+	options_packet = packet_tree.packets[-1]
+
+	op0 = options_packet.options[0]
+	assert op0.id == 0
+	assert op0.type == OptionType.END_TURN
+	assert op0.entity is None
+	assert op0.error == PlayReq.INVALID
+	assert op0.error_param is None
+
+	op1 = options_packet.options[1]
+	assert op1.id == 1
+	assert op1.type == OptionType.POWER
+	assert op1.entity == 33
+	assert op1.error is None
+	assert op1.error_param is None
+
+	assert len(op1.options) == 12
+	target = op1.options[11]
+	assert target.id == 11
+	assert target.entity == 37
+	assert target.error == PlayReq.REQ_TARGET_MAX_ATTACK
+	assert target.error_param == 3

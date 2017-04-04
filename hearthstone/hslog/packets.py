@@ -194,12 +194,14 @@ class Options(Packet):
 
 
 class Option(Packet):
-	def __init__(self, ts, entity, id, type, optype):
+	def __init__(self, ts, entity, id, type, optype, error, error_param):
 		self.ts = ts
 		self.entity = entity
 		self.id = id
 		self.type = type
 		self.optype = optype
+		self.error = error
+		self.error_param = error_param
 		self.options = []
 
 
