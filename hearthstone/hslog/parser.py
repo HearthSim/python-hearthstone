@@ -355,8 +355,9 @@ class OptionsHandler(object):
 
 		id = int(id)
 		type = parse_enum(enums.OptionType, type)
-		entity_id = parse_entity_id(entity) if entity else None
-		self._option_packet = packets.Option(ts, entity_id, id, type, optype, error, error_param)
+		if entity:
+			entity = self.parse_entity_or_player(entity)
+		self._option_packet = packets.Option(ts, entity, id, type, optype, error, error_param)
 		if not self._options_packet:
 			raise ParsingError("Option without a parent option group: %r" % (data))
 
@@ -383,8 +384,8 @@ class OptionsHandler(object):
 		if not entity:
 			raise ParsingError("SubOption / target got an empty entity: %r" % (data))
 
-		entity_id = parse_entity_id(entity)
-		packet = packets.Option(ts, entity_id, id, None, optype, error, error_param)
+		entity = self.parse_entity_or_player(entity)
+		packet = packets.Option(ts, entity, id, None, optype, error, error_param)
 		if optype == "subOption":
 			self._suboption_packet = packet
 			node = self._option_packet
