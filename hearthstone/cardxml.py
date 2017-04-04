@@ -37,11 +37,20 @@ def _locstring(tag):
 def _make_tag_element(element, tagname, tag, value):
 	e = ElementTree.SubElement(element, tagname, enumID=str(int(tag)))
 	if not isinstance(tag, GameTag):
-		tag = GameTag(tag)
+		try:
+			tag = GameTag(tag)
+			name = tag.name
+			value = str(int(value))
+		except ValueError:
+			name = str(value)
+			value = str(value)
+	else:
+		name = tag.name
+		value = str(int(value))
 
-	e.attrib["name"] = tag.name
+	e.attrib["name"] = name
 	e.attrib["type"] = "Int"
-	e.attrib["value"] = str(int(value))
+	e.attrib["value"] = value
 
 	return e
 
@@ -62,7 +71,11 @@ def _read_power_tag(e):
 
 
 def _unpack_tag_xml(e):
-	tag = GameTag(int(e.attrib["enumID"]))
+	value = int(e.attrib["enumID"])
+	try:
+		tag = GameTag(value)
+	except ValueError:
+		tag = value
 	type = e.attrib.get("type", "Int")
 	value = int(e.attrib.get("value") or 0)
 	if type == "Bool":
