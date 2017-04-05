@@ -1,7 +1,7 @@
 import re
 from collections import OrderedDict
-from .utils import ElementTree
 from .enums import Locale
+from .utils import ElementTree
 
 
 class Dbf:
@@ -57,7 +57,7 @@ class Dbf:
 		self.records = [self._deserialize_record(e) for e in self._xml.findall("Record")]
 
 	def object_to_xml_column_name(self, name):
-		if name.startswith('m_'):
+		if name.startswith("m_"):
 			name = name[2:]
 		name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
 		return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).upper()
@@ -81,7 +81,7 @@ class Dbf:
 				"UInt8": "Bool"
 			}[field.type]
 			colname = field.name
-			if colname.startswith('m_'):
+			if colname.startswith("m_"):
 				colname = colname[2:]
 			colname = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", colname)
 			colname = re.sub("([a-z0-9])([A-Z])", r"\1_\2", colname).upper()
@@ -96,7 +96,7 @@ class Dbf:
 				colname = colnames[name]
 				coltype = coltypes[name]
 				if coltype == "LocString":
-					locStrings = zip(val["m_locales"], val['m_locValues'])
+					locStrings = zip(val["m_locales"], val["m_locValues"])
 					r[colname] = dict((Locale(loc).name, s) for loc, s in locStrings)
 				elif coltype == "Bool":
 					r[colname] = val != 0

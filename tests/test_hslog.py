@@ -229,7 +229,9 @@ def test_tag_change_unknown_entity_format():
 	parser.read(StringIO(INITIAL_GAME))
 	parser.flush()
 
-	entity_format = "[name=UNKNOWN ENTITY [cardType=INVALID] id=24 zone=DECK zonePos=0 cardId= player=1]"
+	entity_format = (
+		"[name=UNKNOWN ENTITY [cardType=INVALID] id=24 zone=DECK zonePos=0 cardId= player=1]"
+	)
 	id = parse_entity_id(entity_format)
 	assert id == 24
 

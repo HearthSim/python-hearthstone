@@ -1,7 +1,7 @@
 try:
-	from lxml import etree as ElementTree
+	from lxml import etree as ElementTree  # noqa
 except ImportError:
-	from xml.etree import ElementTree
+	from xml.etree import ElementTree  # noqa
 from .enums import CardClass, Rarity
 
 
