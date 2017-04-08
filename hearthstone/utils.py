@@ -31,3 +31,17 @@ DISENCHANT_COSTS = {
 	Rarity.EPIC: (100, 400),
 	Rarity.LEGENDARY: (400, 1600),
 }
+
+
+# QuestController.cs
+QUEST_REWARDS = {
+	"UNG_940": "UNG_940t8",
+	"UNG_954": "UNG_954t1",
+	"UNG_934": "UNG_934t1",
+	"UNG_829": "UNG_829t1",
+	"UNG_028": "UNG_028t",
+	"UNG_067": "UNG_067t1",
+	"UNG_116": "UNG_116t",
+	"UNG_920": "UNG_920t1",
+	"UNG_942": "UNG_942t",
+}
