@@ -1170,6 +1170,18 @@ def get_localized_name(v, locale="enUS"):
 	return globalstrings.get(name_global, {}).get("TEXT", "")
 
 
+class ZodiacYear(IntEnum):
+	INVALID = -1
+	PRE_STANDARD = 0
+	KRAKEN = 1
+	MAMMOTH = 2
+
+	@property
+	def standard_card_sets(self):
+		from .utils import STANDARD_SETS
+		return STANDARD_SETS.get(self, [])
+
+
 if __name__ == "__main__":
 	import sys
 	import json

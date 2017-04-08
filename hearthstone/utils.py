@@ -2,7 +2,7 @@ try:
 	from lxml import etree as ElementTree  # noqa
 except ImportError:
 	from xml.etree import ElementTree  # noqa
-from .enums import CardClass, Rarity
+from .enums import CardClass, CardSet, Rarity, ZodiacYear
 
 
 CARDCLASS_HERO_MAP = {
@@ -30,6 +30,24 @@ DISENCHANT_COSTS = {
 	Rarity.RARE: (20, 100),
 	Rarity.EPIC: (100, 400),
 	Rarity.LEGENDARY: (400, 1600),
+}
+
+
+STANDARD_SETS = {
+	ZodiacYear.PRE_STANDARD: [
+		CardSet.CORE, CardSet.EXPERT1, CardSet.REWARD, CardSet.PROMO,
+		CardSet.NAXX, CardSet.GVG, CardSet.BRM, CardSet.TGT, CardSet.LOE,
+	],
+	ZodiacYear.KRAKEN: [
+		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.BRM, CardSet.TGT, CardSet.LOE, CardSet.OG, CardSet.OG_RESERVE,
+		CardSet.KARA, CardSet.KARA_RESERVE, CardSet.GANGS, CardSet.GANGS_RESERVE,
+	],
+	ZodiacYear.MAMMOTH: [
+		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.OG, CardSet.OG_RESERVE, CardSet.KARA, CardSet.KARA_RESERVE,
+		CardSet.GANGS, CardSet.GANGS_RESERVE, CardSet.UNGORO,
+	],
 }
 
 
