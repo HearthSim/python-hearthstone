@@ -314,6 +314,7 @@ class CardXML(object):
 	jade_golem = prop(GameTag.JADE_GOLEM, bool)
 	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
 	poisonous = prop(GameTag.POISONOUS, bool)
+	quest = prop(GameTag.QUEST, bool)
 	ritual = prop(GameTag.RITUAL, bool)
 	secret = prop(GameTag.SECRET, bool)
 	spare_part = prop(GameTag.SPARE_PART, bool)
@@ -329,6 +330,7 @@ class CardXML(object):
 	cost = prop(GameTag.COST)
 	health = prop(GameTag.HEALTH)
 	windfury = prop(GameTag.WINDFURY)
+	quest_progress_total = prop(GameTag.QUEST_PROGRESS_TOTAL)
 
 	##
 	# Auto-guessed extras
