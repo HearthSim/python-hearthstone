@@ -130,6 +130,11 @@ class ShowEntity(Packet):
 		self.card_id = card_id
 		self.tags = []
 
+	def __repr__(self):
+		return "%s(entity=%r, card_id=%r)" % (
+			self.__class__.__name__, self.entity, self.card_id
+		)
+
 
 class ChangeEntity(Packet):
 	power_type = PowerType.CHANGE_ENTITY
