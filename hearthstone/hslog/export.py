@@ -190,7 +190,7 @@ class FriendlyPlayerExporter(BaseExporter):
 		if GameTag.CONTROLLER in tags:
 			self._controller_map[packet.entity] = tags[GameTag.CONTROLLER]
 
-		if tags.get(GameTag.ZONE) == Zone.PLAY:
+		if tags.get(GameTag.ZONE) != Zone.HAND:
 			# Ignore cards already in play (such as enchantments, common in TB)
 			return
 
