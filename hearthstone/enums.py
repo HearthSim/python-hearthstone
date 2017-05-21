@@ -491,6 +491,15 @@ class CardSet(IntEnum):
 	def short_name_global(self):
 		return self.name_global + "_SHORT"
 
+	@property
+	def is_standard(self):
+		return self in (
+			CardSet.OG,
+			CardSet.KARA,
+			CardSet.GANGS,
+			CardSet.UNGORO,
+		)
+
 
 class CardType(IntEnum):
 	"TAG_CARDTYPE"
