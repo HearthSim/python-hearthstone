@@ -480,6 +480,7 @@ class CardSet(IntEnum):
 			CardSet.OG,
 			CardSet.KARA,
 			CardSet.GANGS,
+			CardSet.UNGORO,
 		)
 
 	@property
