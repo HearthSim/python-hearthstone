@@ -368,3 +368,17 @@ def load(path=None, locale="enUS"):
 			card.locale = locale
 			db[card.id] = card
 	return db, xml
+
+
+def load_dbf(path=None, locale="enUS"):
+	if path is None:
+		path = get_default_carddefs_path()
+
+	db = {}
+	with open(path, "rb") as f:
+		xml = ElementTree.parse(f)
+		for carddata in xml.findall("Entity"):
+			card = CardXML.from_xml(carddata)
+			card.locale = locale
+			db[card.dbf_id] = card
+	return db, xml
