@@ -501,6 +501,8 @@ class CardSet(IntEnum):
 	@property
 	def is_standard(self):
 		return self in (
+			CardSet.CORE,
+			CardSet.EXPERT1,
 			CardSet.OG,
 			CardSet.KARA,
 			CardSet.GANGS,
