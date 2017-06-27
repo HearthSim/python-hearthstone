@@ -1,7 +1,7 @@
 from .enums import CardType, GameTag, State, Step, Zone
 
 
-class Entity(object):
+class Entity:
 	_args = ()
 
 	def __init__(self, id):

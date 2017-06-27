@@ -83,7 +83,7 @@ def _unpack_tag_xml(e):
 	return tag, type, value
 
 
-class CardXML(object):
+class CardXML:
 	@classmethod
 	def from_xml(cls, xml):
 		id = xml.attrib["CardID"]
