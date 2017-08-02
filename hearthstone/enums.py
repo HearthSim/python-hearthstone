@@ -431,6 +431,10 @@ class CardClass(IntEnum):
 		return CARDCLASS_HERO_MAP.get(self, "")
 
 	@property
+	def is_playable(self):
+		return bool(self.default_hero)
+
+	@property
 	def name_global(self):
 		return "GLOBAL_CLASS_%s" % (self.name)
 
