@@ -1,3 +1,4 @@
+from datetime import datetime
 try:
 	from lxml import etree as ElementTree  # noqa
 except ImportError:
@@ -48,6 +49,13 @@ STANDARD_SETS = {
 		CardSet.OG, CardSet.OG_RESERVE, CardSet.KARA, CardSet.KARA_RESERVE,
 		CardSet.GANGS, CardSet.GANGS_RESERVE, CardSet.UNGORO,
 	],
+}
+
+
+ZODIAC_ROTATION_DATES = {
+	ZodiacYear.PRE_STANDARD: datetime.fromtimestamp(0),
+	ZodiacYear.KRAKEN: datetime(2016, 4, 26),
+	ZodiacYear.MAMMOTH: datetime(2017, 4, 7),
 }
 
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import IntEnum
 
 
@@ -1196,6 +1197,22 @@ class ZodiacYear(IntEnum):
 	def standard_card_sets(self):
 		from .utils import STANDARD_SETS
 		return STANDARD_SETS.get(self, [])
+
+	@classmethod
+	def as_of_date(self, date=None):
+		from .utils import ZODIAC_ROTATION_DATES
+
+		if date is None:
+			date = datetime.now()
+
+		ret = ZodiacYear.INVALID
+		rotation_dates = sorted(ZODIAC_ROTATION_DATES.items(), key=lambda x: x[1])
+		for enum_value, rotation_date in rotation_dates:
+			if rotation_date > date:
+				break
+			ret = enum_value
+
+		return ret
 
 
 if __name__ == "__main__":
