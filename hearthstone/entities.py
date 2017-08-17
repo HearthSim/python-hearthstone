@@ -203,6 +203,8 @@ class Card(Entity):
 	def reveal(self, id, tags):
 		self.revealed = True
 		self.card_id = id
+		if self.initial_card_id is None:
+			self.initial_card_id = id
 		self.tags.update(tags)
 
 	def hide(self):
