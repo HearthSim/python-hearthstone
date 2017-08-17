@@ -196,6 +196,7 @@ class Card(Entity):
 
 	def __init__(self, id, card_id):
 		super(Card, self).__init__(id)
+		self.initial_card_id = card_id
 		self.card_id = card_id
 		self.revealed = False
 
