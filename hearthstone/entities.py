@@ -1,4 +1,9 @@
-from .enums import CardType, GameTag, State, Step, Zone
+from .enums import CardSet, CardType, GameTag, State, Step, Zone
+
+
+PLAYABLE_CARD_TYPES = (
+	CardType.HERO, CardType.MINION, CardType.SPELL, CardType.WEAPON
+)
 
 
 class Entity:
@@ -42,6 +47,7 @@ class Entity:
 
 class Game(Entity):
 	_args = ("players", )
+	can_be_in_deck = False
 
 	def __init__(self, id):
 		super(Game, self).__init__(id)
@@ -110,6 +116,7 @@ class Game(Entity):
 class Player(Entity):
 	_args = ("name", )
 	UNKNOWN_HUMAN_PLAYER = "UNKNOWN HUMAN PLAYER"
+	can_be_in_deck = False
 
 	def __init__(self, id, player_id, hi, lo, name=None):
 		super(Player, self).__init__(id)
@@ -141,10 +148,8 @@ class Player(Entity):
 		for entity in self.game.initial_entities:
 			if entity.initial_controller != self:
 				continue
-			# Exclude heroes and hero powers
-			if entity.tags.get(GameTag.CARDTYPE, 0) not in (
-				CardType.INVALID, CardType.MINION, CardType.SPELL, CardType.WEAPON
-			):
+			# Exclude entity types that cannot be in the deck
+			if not entity.can_be_in_deck:
 				continue
 			# Exclude choice cards, The Coin, Malchezaar legendaries
 			if entity.tags.get(GameTag.CREATOR, 0):
@@ -199,6 +204,18 @@ class Card(Entity):
 		self.initial_card_id = card_id
 		self.card_id = card_id
 		self.revealed = False
+
+	@property
+	def can_be_in_deck(self):
+		card_type = self.type
+		if not card_type:
+			# If we don't know the card type, assume yes
+			return True
+		elif card_type == CardType.HERO:
+			card_set = self.tags.get(GameTag.CARD_SET, CardSet.INVALID)
+			return card_set not in (CardSet.CORE, CardSet.HERO_SKINS)
+
+		return card_type in PLAYABLE_CARD_TYPES
 
 	def reveal(self, id, tags):
 		self.revealed = True
