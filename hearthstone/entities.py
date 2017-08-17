@@ -4,6 +4,11 @@ from .enums import CardSet, CardType, GameTag, State, Step, Zone
 PLAYABLE_CARD_TYPES = (
 	CardType.HERO, CardType.MINION, CardType.SPELL, CardType.WEAPON
 )
+PLAYABLE_HERO_CARD_IDS = (
+	"ICC_481", "ICC_827", "ICC_828",
+	"ICC_829", "ICC_830", "ICC_831",
+	"ICC_832", "ICC_833", "ICC_834",
+)
 
 
 class Entity:
@@ -212,8 +217,9 @@ class Card(Entity):
 			# If we don't know the card type, assume yes
 			return True
 		elif card_type == CardType.HERO:
-			card_set = self.tags.get(GameTag.CARD_SET, CardSet.INVALID)
-			return card_set not in (CardSet.CORE, CardSet.HERO_SKINS)
+			# The card set is not available, use a hardcoded list for now...
+			return self.card_id in PLAYABLE_HERO_CARD_IDS
+			# return self.tags.get(GameTag.CARD_SET, 0) not in (CardSet.CORE, CardSet.HERO_SKINS)
 
 		return card_type in PLAYABLE_CARD_TYPES
 
