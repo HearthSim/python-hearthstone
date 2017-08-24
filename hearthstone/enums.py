@@ -269,6 +269,7 @@ class GameTag(IntEnum):
 	OVERRIDECARDTEXTBUILDER = 782
 	HIDDEN_CHOICE = 813
 	ZOMBEAST = 823
+	HERO_EMOTE_SILENCED = 832
 
 	InvisibleDeathrattle = 335
 	ImmuneToSpellpower = 349
