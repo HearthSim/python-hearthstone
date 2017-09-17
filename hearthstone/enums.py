@@ -525,6 +525,7 @@ class CardSet(IntEnum):
 			CardSet.KARA,
 			CardSet.GANGS,
 			CardSet.UNGORO,
+			CardSet.ICECROWN,
 		)
 
 
