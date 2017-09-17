@@ -1,9 +1,12 @@
 from datetime import datetime
+
+from .enums import CardClass, CardSet, Rarity, ZodiacYear
+
+
 try:
 	from lxml import etree as ElementTree  # noqa
 except ImportError:
 	from xml.etree import ElementTree  # noqa
-from .enums import CardClass, CardSet, Rarity, ZodiacYear
 
 
 CARDCLASS_HERO_MAP = {

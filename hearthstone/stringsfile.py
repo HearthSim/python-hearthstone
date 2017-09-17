@@ -5,6 +5,7 @@ File format: TSV. Lines starting with `#` are ignored.
 Key is always `TAG`
 """
 import csv
+
 from pkg_resources import resource_filename
 
 

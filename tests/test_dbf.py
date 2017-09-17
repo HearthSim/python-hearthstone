@@ -1,6 +1,7 @@
 import os.path
 from collections import OrderedDict
 from io import BytesIO
+
 from hearthstone.dbf import Dbf
 
 

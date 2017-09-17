@@ -1,4 +1,4 @@
-from .enums import CardSet, CardType, GameTag, State, Step, Zone
+from .enums import CardType, GameTag, State, Step, Zone
 
 
 PLAYABLE_CARD_TYPES = (
