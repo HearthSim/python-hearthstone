@@ -324,6 +324,7 @@ class CardXML:
 	##
 	# Tags
 
+	armor = prop(GameTag.ARMOR)
 	atk = prop(GameTag.ATK)
 	durability = prop(GameTag.DURABILITY)
 	cost = prop(GameTag.COST)
