@@ -483,6 +483,7 @@ class CardSet(IntEnum):
 	GANGS_RESERVE = 26
 	UNGORO = 27
 	ICECROWN = 1001
+	LOOTAPALOOZA = 1004
 
 	# Aliased from the original enums
 	FP1 = 12
@@ -1049,6 +1050,8 @@ class Booster(IntEnum):
 	MEAN_STREETS = 19
 	UNGORO = 20
 	FROZEN_THRONE = 21
+	GOLDEN_CLASSIC_PACK = 23
+	KOBOLDS_CATACOMBS = 30
 
 
 class BrawlType(IntEnum):
