@@ -710,7 +710,7 @@ class Race(IntEnum):
 
 
 VISIBLE_RACES = [
-	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.BEAST,
+	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.ELEMENTAL, Race.BEAST,
 	Race.TOTEM, Race.PIRATE, Race.DRAGON
 ]
 
