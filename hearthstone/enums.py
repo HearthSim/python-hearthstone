@@ -529,6 +529,7 @@ class CardSet(IntEnum):
 			CardSet.GANGS,
 			CardSet.UNGORO,
 			CardSet.ICECROWN,
+			CardSet.LOOTAPALOOZA,
 		)
 
 
