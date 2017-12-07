@@ -944,6 +944,7 @@ class MetaDataType(IntEnum):
 	BEGIN_ARTIFICIAL_HISTORY_TILE = 10
 	BEGIN_ARTIFICIAL_HISTORY_TRIGGER_TILE = 11
 	END_ARTIFICIAL_HISTORY_TILE = 12
+	START_DRAW = 13
 
 	# Renamed in 9786 from PowerHistoryMetaData.Type
 	META_TARGET = TARGET
@@ -1027,6 +1028,7 @@ class BlockType(IntEnum):
 	PLAY = 7
 	FATIGUE = 8
 	RITUAL = 9
+	REVEAL_CARD = 10
 
 	# Removed
 	SCRIPT = 4
