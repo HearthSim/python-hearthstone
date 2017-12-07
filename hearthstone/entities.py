@@ -61,6 +61,7 @@ class Game(Entity):
 		self.initial_entities = []
 		self.initial_state = State.INVALID
 		self.initial_step = Step.INVALID
+		self.initial_hero_entity_id = 0
 
 	@property
 	def current_player(self):
@@ -186,9 +187,14 @@ class Player(Entity):
 
 	@property
 	def starting_hero(self):
+		if self.initial_hero_entity_id:
+			return self.game.find_entity_by_id(self.initial_hero_entity_id)
+
+		# Fallback
 		heroes = list(self.heroes)
 		if not heroes:
 			return
+
 		return heroes[0]
 
 	@property
