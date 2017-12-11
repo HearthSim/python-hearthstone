@@ -22,6 +22,15 @@ CARDCLASS_HERO_MAP = {
 }
 
 
+SECRET_COSTS = {
+	CardClass.HUNTER: 2,
+	CardClass.MAGE: 3,
+	CardClass.PALADIN: 1,
+	CardClass.ROGUE: 2,
+	CardClass.WARRIOR: 0,
+}
+
+
 CRAFTING_COSTS = {
 	Rarity.COMMON: (40, 400),
 	Rarity.RARE: (100, 800),
