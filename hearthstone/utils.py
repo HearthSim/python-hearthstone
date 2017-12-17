@@ -60,6 +60,7 @@ STANDARD_SETS = {
 		CardSet.CORE, CardSet.EXPERT1,
 		CardSet.OG, CardSet.OG_RESERVE, CardSet.KARA, CardSet.KARA_RESERVE,
 		CardSet.GANGS, CardSet.GANGS_RESERVE, CardSet.UNGORO, CardSet.ICECROWN,
+		CardSet.LOOTAPALOOZA
 	],
 }
 

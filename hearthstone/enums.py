@@ -530,6 +530,7 @@ class CardSet(IntEnum):
 			CardSet.GANGS,
 			CardSet.UNGORO,
 			CardSet.ICECROWN,
+			CardSet.LOOTAPALOOZA,
 		)
 
 	@property
@@ -542,16 +543,7 @@ class CardSet(IntEnum):
 
 	@property
 	def is_standard(self):
-		return self in (
-			CardSet.CORE,
-			CardSet.EXPERT1,
-			CardSet.OG,
-			CardSet.KARA,
-			CardSet.GANGS,
-			CardSet.UNGORO,
-			CardSet.ICECROWN,
-			CardSet.LOOTAPALOOZA,
-		)
+		return self in ZodiacYear.MAMMOTH.standard_card_sets
 
 
 class CardType(IntEnum):
