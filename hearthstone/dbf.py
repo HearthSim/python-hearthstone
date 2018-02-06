@@ -76,6 +76,7 @@ class Dbf:
 				"SInt64": "Long",
 				"UInt64": "ULong",
 				"int": "Int",
+				"double": "Float",
 				"float": "Float",
 				"string": "String",
 				"DbfLocValue": "LocString",
