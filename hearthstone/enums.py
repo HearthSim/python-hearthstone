@@ -290,6 +290,10 @@ class GameTag(IntEnum):
 	IGNORE_HIDE_STATS_FOR_BIG_CARD = 857
 	REAL_TIME_TRANSFORM = 859
 	WAIT_FOR_PLAYER_RECONNECT_PERIOD = 860
+	PHASED_RESTART = 888
+	HEALTH_DISPLAY = 917
+	ENABLE_HEALTH_DISPLAY = 920
+	SHIFTING_SPELL = 936
 
 	InvisibleDeathrattle = 335
 	ImmuneToSpellpower = 349
@@ -1080,6 +1084,7 @@ class Booster(IntEnum):
 	FROZEN_THRONE = 21
 	GOLDEN_CLASSIC_PACK = 23
 	KOBOLDS_AND_CATACOMBS = 30
+	MAMMOTH_BUNDLE = 41
 
 	# Renamed
 	KOBOLDS_CATACOMBS = KOBOLDS_AND_CATACOMBS
@@ -1164,6 +1169,13 @@ class FormatType(IntEnum):
 			return "GLOBAL_WILD"
 		elif self.name == "FT_STANDARD":
 			return "GLOBAL_STANDARD"
+
+
+class TavernBrawlMode(IntEnum):
+	"PegasusShared.TavernBrawlMode"
+
+	TB_MODE_NORMAL = 0
+	TB_MODE_HEROIC = 1
 
 
 class Type(IntEnum):
