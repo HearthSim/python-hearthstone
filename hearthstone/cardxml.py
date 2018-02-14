@@ -122,7 +122,7 @@ class CardXML:
 		return self
 
 	def __init__(self, id, locale="enUS"):
-		self.id = id
+		self.card_id = self.id = id
 		self.dbf_id = 0
 		self.version = 2
 		self.tags = {}
