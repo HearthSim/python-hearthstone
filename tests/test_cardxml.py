@@ -13,3 +13,6 @@ def test_cardxml_load():
 
 	for dbf_id, card in dbf_db.items():
 		assert cardid_db[card.id].dbf_id == dbf_id
+
+	assert cardid_db["EX1_001"].quest_reward == ""
+	assert cardid_db["UNG_940"].quest_reward == "UNG_940t8"

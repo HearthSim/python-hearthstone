@@ -246,6 +246,11 @@ class CardXML:
 				ret[reqid] = req
 		return ret
 
+	@property
+	def quest_reward(self):
+		from .utils import QUEST_REWARDS
+		return QUEST_REWARDS.get(self.card_id, "")
+
 	##
 	# Localized values
 
