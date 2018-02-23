@@ -66,7 +66,7 @@ STANDARD_SETS = {
 
 
 ZODIAC_ROTATION_DATES = {
-	ZodiacYear.PRE_STANDARD: datetime.fromtimestamp(0),
+	ZodiacYear.PRE_STANDARD: datetime.fromtimestamp(86400),
 	ZodiacYear.KRAKEN: datetime(2016, 4, 26),
 	ZodiacYear.MAMMOTH: datetime(2017, 4, 7),
 }
