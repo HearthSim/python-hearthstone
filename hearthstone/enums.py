@@ -909,6 +909,15 @@ class BnetRegion(IntEnum):
 		# CN: 0x200000557544347 (144115211015832391)
 		return cls((hi >> 32) & 0xFF)
 
+	@property
+	def is_live(self):
+		return self.name in (
+			"REGION_US",
+			"REGION_EU",
+			"REGION_KR",
+			"REGION_CN",
+		)
+
 
 class GoldRewardState(IntEnum):
 	"TAG_GOLD_REWARD_STATE"
