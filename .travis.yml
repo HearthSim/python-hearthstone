@@ -15,7 +15,6 @@ install:
   - pip install tox
 
 script:
-  - $TRAVIS_BUILD_DIR/bootstrap.sh
   - tox
 
 notifications:
