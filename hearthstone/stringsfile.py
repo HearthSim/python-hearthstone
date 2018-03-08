@@ -6,7 +6,7 @@ Key is always `TAG`
 """
 import csv
 
-from pkg_resources import resource_filename
+import hearthstone_data
 
 
 _cache = {}
@@ -19,10 +19,9 @@ def load(fp):
 
 
 def load_globalstrings(locale="enUS"):
-	path = "Strings/%s/GLOBAL.txt" % (locale)
+	path = hearthstone_data.get_strings_file(locale, filename="GLOBAL.txt")
 	if path not in _cache:
-		full_path = resource_filename("hearthstone", path)
-		with open(full_path, "r") as f:
+		with open(path, "r") as f:
 			_cache[path] = load(f)
 
 	return _cache[path]

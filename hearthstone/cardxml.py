@@ -356,14 +356,11 @@ class CardXML:
 	kabal = prop(GameTag.KABAL, bool)
 
 
-def get_default_carddefs_path():
-	from pkg_resources import resource_filename
-	return resource_filename("hearthstone", "CardDefs.xml")
-
-
 def load(path=None, locale="enUS"):
+	from hearthstone_data import get_carddefs_path
+
 	if path is None:
-		path = get_default_carddefs_path()
+		path = get_carddefs_path()
 
 	db = {}
 	with open(path, "rb") as f:
@@ -376,8 +373,10 @@ def load(path=None, locale="enUS"):
 
 
 def load_dbf(path=None, locale="enUS"):
+	from hearthstone_data import get_carddefs_path
+
 	if path is None:
-		path = get_default_carddefs_path()
+		path = get_carddefs_path()
 
 	db = {}
 	with open(path, "rb") as f:
