@@ -874,10 +874,14 @@ class GameType(IntEnum):
 			GameType.GT_VS_FRIEND: BnetGameType.BGT_FRIENDS,
 			GameType.GT_TUTORIAL: BnetGameType.BGT_TUTORIAL,
 			GameType.GT_ARENA: BnetGameType.BGT_ARENA,
-			GameType.GT_TEST: BnetGameType.BGT_TEST1,
+			GameType.GT_TEST_AI_VS_AI: BnetGameType.BGT_TEST1,
 			GameType.GT_TAVERNBRAWL: BnetGameType.BGT_TAVERNBRAWL_PVP,
 			GameType.GT_TB_1P_VS_AI: BnetGameType.BGT_TAVERNBRAWL_1P_VERSUS_AI,
 			GameType.GT_TB_2P_COOP: BnetGameType.BGT_TAVERNBRAWL_2P_COOP,
+			GameType.GT_FSG_BRAWL_VS_FRIEND: BnetGameType.BGT_FSG_BRAWL_VS_FRIEND,
+			GameType.GT_FSG_BRAWL: BnetGameType.BGT_FSG_BRAWL_PVP,
+			GameType.GT_FSG_BRAWL_1P_VS_AI: BnetGameType.BGT_FSG_BRAWL_1P_VERSUS_AI,
+			GameType.GT_FSG_BRAWL_2P_COOP: BnetGameType.BGT_FSG_BRAWL_2P_COOP,
 			# GameType.GT_LAST: BnetGameType.BGT_LAST,
 		}[self]
 
