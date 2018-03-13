@@ -10,3 +10,27 @@ def test_zodiac_dates():
 	assert enums.ZodiacYear.as_of_date(datetime(2017, 1, 1)) == enums.ZodiacYear.KRAKEN
 	assert enums.ZodiacYear.as_of_date(datetime(2017, 5, 1)) == enums.ZodiacYear.MAMMOTH
 	assert enums.ZodiacYear.as_of_date(datetime(2018, 5, 1)) == enums.ZodiacYear.RAVEN
+
+
+def test_gametype():
+	gt = enums.GameType
+	bgt = enums.BnetGameType
+
+	assert gt.GT_RANKED.as_bnet(wild=False) == bgt.BGT_RANKED_STANDARD
+	assert gt.GT_RANKED.as_bnet(wild=True) == bgt.BGT_RANKED_WILD
+	assert gt.GT_CASUAL.as_bnet(wild=False) == bgt.BGT_CASUAL_STANDARD
+	assert gt.GT_CASUAL.as_bnet(wild=True) == bgt.BGT_CASUAL_WILD
+
+	assert gt.GT_VS_AI.as_bnet() == bgt.BGT_VS_AI
+	assert gt.GT_VS_FRIEND.as_bnet() == bgt.BGT_FRIENDS
+
+	assert gt.GT_FSG_BRAWL_VS_FRIEND.is_fireside
+	assert gt.GT_FSG_BRAWL.is_fireside
+	assert gt.GT_FSG_BRAWL_1P_VS_AI.is_fireside
+	assert gt.GT_FSG_BRAWL_2P_COOP.is_fireside
+	assert not gt.GT_RANKED.is_fireside
+
+	assert gt.GT_TAVERNBRAWL.is_tavern_brawl
+	assert gt.GT_TB_1P_VS_AI.is_tavern_brawl
+	assert gt.GT_TB_2P_COOP.is_tavern_brawl
+	assert not gt.GT_RANKED.is_tavern_brawl

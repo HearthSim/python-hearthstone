@@ -885,6 +885,14 @@ class GameType(IntEnum):
 			# GameType.GT_LAST: BnetGameType.BGT_LAST,
 		}[self]
 
+	@property
+	def is_fireside(self):
+		return self.name.startswith("GT_FSG_")
+
+	@property
+	def is_tavern_brawl(self):
+		return self.name in ("GT_TAVERNBRAWL", "GT_TB_1P_VS_AI", "GT_TB_2P_COOP")
+
 
 class BnetRegion(IntEnum):
 	"bgs.constants.BnetRegion"
@@ -912,6 +920,7 @@ class BnetRegion(IntEnum):
 		# EU: 0x200000257544347 (144115198130930503)
 		# KR: 0x200000357544347 (144115202425897799) (TW on same region)
 		# CN: 0x200000557544347 (144115211015832391)
+		# XX: 0x200000069506164 (144115189842731364) (Tutorial)
 		return cls((hi >> 32) & 0xFF)
 
 	@property
