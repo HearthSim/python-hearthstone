@@ -1321,6 +1321,7 @@ class ZodiacYear(IntEnum):
 	PRE_STANDARD = 0
 	KRAKEN = 1
 	MAMMOTH = 2
+	RAVEN = 3
 
 	@property
 	def standard_card_sets(self):
