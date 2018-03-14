@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from .enums import CardType, GameTag, State, Step, Zone
 
 
@@ -12,7 +14,7 @@ PLAYABLE_HERO_CARD_IDS = (
 
 
 class Entity:
-	_args = ()
+	_args: Iterable[str] = ()
 
 	def __init__(self, id):
 		self.id = id
