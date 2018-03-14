@@ -1369,7 +1369,7 @@ if __name__ == "__main__":
 	import sys
 
 	all_enums = {
-		k: dict(v.__members__) for k, v in globals().items() if (
+		k: dict(v.__members__) for k, v in globals().items() if (  # type:ignore
 			isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
 		)
 	}
