@@ -240,5 +240,7 @@ class Card(Entity):
 		self.revealed = False
 
 	def change(self, card_id, tags):
+		if self.initial_card_id is None:
+			self.initial_card_id = card_id
 		self.card_id = card_id
 		self.tags.update(tags)
