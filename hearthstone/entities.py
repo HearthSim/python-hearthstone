@@ -229,11 +229,11 @@ class Card(Entity):
 
 		return card_type in PLAYABLE_CARD_TYPES
 
-	def reveal(self, id, tags):
+	def reveal(self, card_id, tags):
 		self.revealed = True
-		self.card_id = id
+		self.card_id = card_id
 		if self.initial_card_id is None:
-			self.initial_card_id = id
+			self.initial_card_id = card_id
 		self.tags.update(tags)
 
 	def hide(self):
