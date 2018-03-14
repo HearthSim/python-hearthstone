@@ -6,6 +6,7 @@ python: "3.6"
 env:
   - TOXENV=py36
   - TOXENV=flake8
+  - TOXENV=mypy
 
 cache:
   directories:
