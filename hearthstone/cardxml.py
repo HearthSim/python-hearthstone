@@ -112,7 +112,7 @@ class CardXML:
 				self.hero_power = t[0].attrib.get("cardID")
 
 		e = xml.findall("MasterPower")
-		self.master_power = e and e[0].text or None
+		self.master_power = e[0] if e else None
 
 		e = xml.findall("Power")
 		for power in e:

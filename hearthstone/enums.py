@@ -1355,10 +1355,10 @@ class ZodiacYear(IntEnum):
 
 
 if __name__ == "__main__":
-	import sys
 	import json
+	import sys
 
-	enums = {
+	all_enums = {
 		k: dict(v.__members__) for k, v in globals().items() if (
 			isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
 		)
@@ -1379,8 +1379,8 @@ if __name__ == "__main__":
 		format = "--json"
 
 	if format == "--ts":
-		_print_enums(enums, "export const enum %s {\n%s\n}")
+		_print_enums(all_enums, "export const enum %s {\n%s\n}")
 	elif format == "--cs":
-		_print_enums(enums, "public enum %s {\n%s\n}")
+		_print_enums(all_enums, "public enum %s {\n%s\n}")
 	else:
-		print(json.dumps(enums, sort_keys=True))
+		print(json.dumps(all_enums, sort_keys=True))

@@ -47,15 +47,15 @@ class Dbf:
 		raise NotImplementedError("Unknown DBF Data Type: %r" % (coltype))
 
 	def populate(self, file):
-		self._xml = ElementTree.parse(file)
-		self.name = self._xml.getroot().attrib.get("name", "")
-		for fingerprint in self._xml.findall("SourceFingerprint"):
+		_xml = ElementTree.parse(file)
+		self.name = _xml.getroot().attrib.get("name", "")
+		for fingerprint in _xml.findall("SourceFingerprint"):
 			self.source_fingerprint = fingerprint.text
 
-		for column in self._xml.findall("Column"):
+		for column in _xml.findall("Column"):
 			self.columns[column.attrib["name"]] = column.attrib["type"]
 
-		self.records = [self._deserialize_record(e) for e in self._xml.findall("Record")]
+		self.records = [self._deserialize_record(e) for e in _xml.findall("Record")]
 
 	def object_to_xml_column_name(self, name):
 		if name.startswith("m_"):
