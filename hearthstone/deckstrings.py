@@ -4,6 +4,7 @@ Blizzard Deckstring format support
 
 import base64
 from io import BytesIO
+from typing import IO, List, Tuple
 
 from .enums import FormatType
 
@@ -11,7 +12,11 @@ from .enums import FormatType
 DECKSTRING_VERSION = 1
 
 
-def _read_varint(stream):
+CardList = List[int]
+CardIncludeList = List[Tuple[int, int]]
+
+
+def _read_varint(stream: IO) -> int:
 	shift = 0
 	result = 0
 	while True:
@@ -27,7 +32,7 @@ def _read_varint(stream):
 	return result
 
 
-def _write_varint(stream, i):
+def _write_varint(stream: IO, i: int) -> int:
 	buf = b""
 	while True:
 		towrite = i & 0x7f
@@ -43,26 +48,31 @@ def _write_varint(stream, i):
 
 class Deck:
 	@classmethod
-	def from_deckstring(cls, deckstring):
+	def from_deckstring(cls, deckstring: str):
 		instance = cls()
 		instance.cards, instance.heroes, instance.format = parse_deckstring(deckstring)
 		return instance
 
 	def __init__(self):
-		self.cards = []
-		self.heroes = []
-		self.format = 0
+		self.cards: CardIncludeList = []
+		self.heroes: CardList = []
+		self.format: FormatType = FormatType.FT_UNKNOWN
 
 	@property
-	def as_deckstring(self):
+	def as_deckstring(self) -> str:
 		return write_deckstring(self.cards, self.heroes, self.format)
 
-	def get_dbf_id_list(self):
+	def get_dbf_id_list(self) -> CardIncludeList:
 		return sorted(self.cards, key=lambda x: x[0])
 
 
-def trisort_cards(cards):
-	cards_x1, cards_x2, cards_xn = [], [], []
+def trisort_cards(cards: CardIncludeList) -> Tuple[
+	CardIncludeList, CardIncludeList, CardIncludeList
+]:
+	cards_x1: CardIncludeList = []
+	cards_x2: CardIncludeList = []
+	cards_xn: CardIncludeList = []
+
 	for cardid, count in cards:
 		if count == 1:
 			list = cards_x1
@@ -71,10 +81,11 @@ def trisort_cards(cards):
 		else:
 			list = cards_xn
 		list.append((cardid, count))
+
 	return cards_x1, cards_x2, cards_xn
 
 
-def parse_deckstring(deckstring):
+def parse_deckstring(deckstring) -> Tuple[CardIncludeList, CardList, FormatType]:
 	decoded = base64.b64decode(deckstring)
 	data = BytesIO(decoded)
 
@@ -91,12 +102,12 @@ def parse_deckstring(deckstring):
 	except ValueError:
 		raise ValueError("Unsupported FormatType in deckstring %r" % (format))
 
-	heroes = []
+	heroes: CardList = []
 	num_heroes = _read_varint(data)
 	for i in range(num_heroes):
 		heroes.append(_read_varint(data))
 
-	cards = []
+	cards: CardIncludeList = []
 	num_cards_x1 = _read_varint(data)
 	for i in range(num_cards_x1):
 		card_id = _read_varint(data)
@@ -116,7 +127,7 @@ def parse_deckstring(deckstring):
 	return cards, heroes, format
 
 
-def write_deckstring(cards, heroes, format):
+def write_deckstring(cards: CardIncludeList, heroes: CardList, format: FormatType) -> str:
 	data = BytesIO()
 	data.write(b"\0")
 	_write_varint(data, DECKSTRING_VERSION)
