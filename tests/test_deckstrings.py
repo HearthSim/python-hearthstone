@@ -113,6 +113,12 @@ def _decksorted(cards):
 	return sorted(cards, key=lambda x: x[0])
 
 
+def test_empty_deckstring():
+	deck = deckstrings.Deck()
+	deck.heroes = [0]
+	assert deck.as_deckstring == "AAEAAQAAAAA="
+
+
 def test_decode_deckstring():
 	deck = deckstrings.Deck.from_deckstring(TEST_DECKSTRING)
 	assert deck.get_dbf_id_list() == _decksorted(TEST_DECKSTRING_CARDLIST)

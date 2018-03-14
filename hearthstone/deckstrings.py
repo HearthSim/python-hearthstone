@@ -48,6 +48,11 @@ class Deck:
 		instance.cards, instance.heroes, instance.format = parse_deckstring(deckstring)
 		return instance
 
+	def __init__(self):
+		self.cards = []
+		self.heroes = []
+		self.format = 0
+
 	@property
 	def as_deckstring(self):
 		return write_deckstring(self.cards, self.heroes, self.format)
