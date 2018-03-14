@@ -61,7 +61,6 @@ class Game(Entity):
 		self.initial_entities = []
 		self.initial_state = State.INVALID
 		self.initial_step = Step.INVALID
-		self.initial_hero_entity_id = 0
 
 	@property
 	def current_player(self):
@@ -130,6 +129,7 @@ class Player(Entity):
 		self.account_hi = hi
 		self.account_lo = lo
 		self.name = name
+		self.initial_hero_entity_id = 0
 
 	def __str__(self):
 		return self.name or ""
