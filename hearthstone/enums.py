@@ -1174,8 +1174,18 @@ class DeckType(IntEnum):
 	HIDDEN_DECK = 1000
 
 
+class DraftSlotType(IntEnum):
+	"PegasusShared.DraftSlotType"
+
+	DRAFT_SLOT_NONE = 0
+	DRAFT_SLOT_CARD = 1
+	DRAFT_SLOT_HERO = 2
+	DRAFT_SLOT_HERO_POWER = 3
+
+
 class DungeonRewardOption(IntEnum):
 	"AdventureDungeonCrawlRewardOption.OptionData"
+
 	INVALID = 0
 	LOOT = 1
 	TREASURE = 2
