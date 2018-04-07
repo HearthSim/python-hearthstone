@@ -356,33 +356,34 @@ class CardXML:
 	kabal = prop(GameTag.KABAL, bool)
 
 
+cardid_cache: dict = {}
+dbf_cache: dict = {}
+
+
+def _load(path, locale, cache, attr):
+	if (path, locale) not in cache:
+		from hearthstone_data import get_carddefs_path
+
+		if path is None:
+			path = get_carddefs_path()
+
+		db = {}
+
+		with open(path, "rb") as f:
+			xml = ElementTree.parse(f)
+			for carddata in xml.findall("Entity"):
+				card = CardXML.from_xml(carddata)
+				card.locale = locale
+				db[getattr(card, attr)] = card
+
+		cardid_cache[(path, locale)] = (db, xml)
+
+	return cardid_cache[(path, locale)]
+
+
 def load(path=None, locale="enUS"):
-	from hearthstone_data import get_carddefs_path
-
-	if path is None:
-		path = get_carddefs_path()
-
-	db = {}
-	with open(path, "rb") as f:
-		xml = ElementTree.parse(f)
-		for carddata in xml.findall("Entity"):
-			card = CardXML.from_xml(carddata)
-			card.locale = locale
-			db[card.id] = card
-	return db, xml
+	return _load(path, locale, cardid_cache, "id")
 
 
 def load_dbf(path=None, locale="enUS"):
-	from hearthstone_data import get_carddefs_path
-
-	if path is None:
-		path = get_carddefs_path()
-
-	db = {}
-	with open(path, "rb") as f:
-		xml = ElementTree.parse(f)
-		for carddata in xml.findall("Entity"):
-			card = CardXML.from_xml(carddata)
-			card.locale = locale
-			db[card.dbf_id] = card
-	return db, xml
+	return _load(path, locale, dbf_cache, "dbf_id")
