@@ -1,16 +1,12 @@
 from typing import Iterable
 
-from .enums import CardType, GameTag, State, Step, Zone
+from .enums import CardSet, CardType, GameTag, State, Step, Zone
 
 
 PLAYABLE_CARD_TYPES = (
 	CardType.HERO, CardType.MINION, CardType.SPELL, CardType.WEAPON
 )
-PLAYABLE_HERO_CARD_IDS = (
-	"ICC_481", "ICC_827", "ICC_828",
-	"ICC_829", "ICC_830", "ICC_831",
-	"ICC_832", "ICC_833", "ICC_834",
-)
+INITIAL_HERO_SETS = (CardSet.CORE, CardSet.HERO_SKINS)
 
 
 class Entity:
@@ -219,15 +215,22 @@ class Card(Entity):
 		self.revealed = False
 
 	@property
-	def can_be_in_deck(self):
+	def base_tags(self) -> dict:
+		if not self.card_id:
+			return {}
+
+		from .cardxml import load
+		db, _ = load()
+		return db[self.card_id].tags
+
+	@property
+	def can_be_in_deck(self) -> bool:
 		card_type = self.type
 		if not card_type:
 			# If we don't know the card type, assume yes
 			return True
 		elif card_type == CardType.HERO:
-			# The card set is not available, use a hardcoded list for now...
-			return self.card_id in PLAYABLE_HERO_CARD_IDS
-			# return self.tags.get(GameTag.CARD_SET, 0) not in (CardSet.CORE, CardSet.HERO_SKINS)
+			return self.base_tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS
 
 		return card_type in PLAYABLE_CARD_TYPES
 
