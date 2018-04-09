@@ -361,7 +361,8 @@ dbf_cache: dict = {}
 
 
 def _load(path, locale, cache, attr):
-	if (path, locale) not in cache:
+	cache_key = (path, locale)
+	if cache_key not in cache:
 		from hearthstone_data import get_carddefs_path
 
 		if path is None:
@@ -376,9 +377,9 @@ def _load(path, locale, cache, attr):
 				card.locale = locale
 				db[getattr(card, attr)] = card
 
-		cardid_cache[(path, locale)] = (db, xml)
+		cache[cache_key] = (db, xml)
 
-	return cardid_cache[(path, locale)]
+	return cache[cache_key]
 
 
 def load(path=None, locale="enUS"):
