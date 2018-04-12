@@ -567,7 +567,7 @@ class CardSet(IntEnum):
 
 	@property
 	def is_standard(self):
-		return self in ZodiacYear.MAMMOTH.standard_card_sets
+		return self in ZodiacYear.RAVEN.standard_card_sets
 
 
 class CardType(IntEnum):
