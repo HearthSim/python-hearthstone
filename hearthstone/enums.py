@@ -384,8 +384,10 @@ class GameTag(IntEnum):
 	IGNORE_DAMAGE_OFF = 354
 	NUM_OPTIONS = 359
 
-	# Missing, only present in logs
+	# Missing/guessed, only present in logs
 	WEAPON = 334
+	HERO_DECK_ID = 793
+	DISCARD_CARDS = 890
 
 	CANT_BE_EXHAUSTED = 244
 	CANT_EXHAUST = 226
