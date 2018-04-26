@@ -1074,6 +1074,7 @@ class BlockType(IntEnum):
 	FATIGUE = 8
 	RITUAL = 9
 	REVEAL_CARD = 10
+	GAME_RESET = 11
 
 	# Removed
 	SCRIPT = 4
