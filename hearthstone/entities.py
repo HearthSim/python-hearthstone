@@ -230,6 +230,11 @@ class Card(Entity):
 			# If we don't know the card type, assume yes
 			return True
 		elif card_type == CardType.HERO:
+			tags = self.base_tags
+			return (
+				tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS and
+				tags.get(GameTag.COLLECTIBLE, 0)
+			)
 			return self.base_tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS
 
 		return card_type in PLAYABLE_CARD_TYPES
