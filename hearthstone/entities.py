@@ -153,14 +153,21 @@ class Player(Entity):
 	@property
 	def initial_deck(self):
 		for entity in self.game.initial_entities:
+			# Exclude entities that aren't initially owned by the player
 			if entity.initial_controller != self:
 				continue
+
+			# Exclude entities that aren't initially in the deck
+			if entity.initial_zone != Zone.DECK:
+				continue
+
 			# Exclude entity types that cannot be in the deck
 			if not entity.can_be_in_deck:
 				continue
 			# Exclude choice cards, The Coin, Malchezaar legendaries
 			if entity.tags.get(GameTag.CREATOR, 0):
 				continue
+
 			yield entity
 
 	@property
