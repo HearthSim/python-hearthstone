@@ -3,7 +3,7 @@ from enum import IntEnum
 
 
 class GameTag(IntEnum):
-	"GAME_TAG"
+	"""GAME_TAG"""
 
 	TAG_SCRIPT_DATA_NUM_1 = 2
 	TAG_SCRIPT_DATA_NUM_2 = 3
@@ -468,7 +468,7 @@ TAG_NAMES = {
 # Card enums
 
 class CardClass(IntEnum):
-	"TAG_CLASS"
+	"""TAG_CLASS"""
 
 	INVALID = 0
 	DEATHKNIGHT = 1
@@ -499,7 +499,7 @@ class CardClass(IntEnum):
 
 
 class CardSet(IntEnum):
-	"TAG_CARD_SET"
+	"""TAG_CARD_SET"""
 
 	INVALID = 0
 	TEST_TEMPORARY = 1
@@ -573,7 +573,7 @@ class CardSet(IntEnum):
 
 
 class CardType(IntEnum):
-	"TAG_CARDTYPE"
+	"""TAG_CARDTYPE"""
 
 	INVALID = 0
 	GAME = 1
@@ -606,7 +606,7 @@ class CardType(IntEnum):
 
 
 class EnchantmentVisual(IntEnum):
-	"TAG_ENCHANTMENT_VISUAL"
+	"""TAG_ENCHANTMENT_VISUAL"""
 
 	INVALID = 0
 	POSITIVE = 1
@@ -615,7 +615,7 @@ class EnchantmentVisual(IntEnum):
 
 
 class Faction(IntEnum):
-	"TAG_FACTION"
+	"""TAG_FACTION"""
 
 	INVALID = 0
 	HORDE = 1
@@ -624,7 +624,7 @@ class Faction(IntEnum):
 
 
 class PlayReq(IntEnum):
-	"PlayErrors.ErrorType"
+	"""PlayErrors.ErrorType"""
 
 	INVALID = -1
 	REQ_MINION_TARGET = 1
@@ -711,7 +711,7 @@ class PlayReq(IntEnum):
 
 
 class Race(IntEnum):
-	"TAG_RACE"
+	"""TAG_RACE"""
 
 	INVALID = 0
 	BLOODELF = 1
@@ -764,7 +764,7 @@ VISIBLE_RACES = [
 
 
 class Rarity(IntEnum):
-	"TAG_RARITY"
+	"""TAG_RARITY"""
 
 	INVALID = 0
 	COMMON = 1
@@ -801,7 +801,7 @@ class Rarity(IntEnum):
 
 
 class Zone(IntEnum):
-	"TAG_ZONE"
+	"""TAG_ZONE"""
 
 	INVALID = 0
 	PLAY = 1
@@ -817,7 +817,7 @@ class Zone(IntEnum):
 # Game enums
 
 class ChoiceType(IntEnum):
-	"CHOICE_TYPE"
+	"""CHOICE_TYPE"""
 
 	INVALID = 0
 	MULLIGAN = 1
@@ -825,7 +825,7 @@ class ChoiceType(IntEnum):
 
 
 class BnetGameType(IntEnum):
-	"PegasusShared.BnetGameType"
+	"""PegasusShared.BnetGameType"""
 	BGT_UNKNOWN = 0
 	BGT_FRIENDS = 1
 	BGT_RANKED_STANDARD = 2
@@ -865,7 +865,7 @@ WILD_GAME_TYPES = [
 
 
 class GameType(IntEnum):
-	"PegasusShared.GameType"
+	"""PegasusShared.GameType"""
 	GT_UNKNOWN = 0
 	GT_VS_AI = 1
 	GT_VS_FRIEND = 2
@@ -919,7 +919,7 @@ class GameType(IntEnum):
 
 
 class BnetRegion(IntEnum):
-	"bgs.constants.BnetRegion"
+	"""bgs.constants.BnetRegion"""
 
 	REGION_UNINITIALIZED = -1,
 	REGION_UNKNOWN = 0
@@ -958,7 +958,7 @@ class BnetRegion(IntEnum):
 
 
 class GoldRewardState(IntEnum):
-	"TAG_GOLD_REWARD_STATE"
+	"""TAG_GOLD_REWARD_STATE"""
 
 	INVALID = 0
 	ELIGIBLE = 1
@@ -973,7 +973,7 @@ class GoldRewardState(IntEnum):
 
 
 class MetaDataType(IntEnum):
-	"PegasusGame.HistoryMeta.Type"
+	"""PegasusGame.HistoryMeta.Type"""
 
 	TARGET = 0
 	DAMAGE = 1
@@ -1000,7 +1000,7 @@ class MetaDataType(IntEnum):
 
 
 class Mulligan(IntEnum):
-	"TAG_MULLIGAN"
+	"""TAG_MULLIGAN"""
 
 	INVALID = 0
 	INPUT = 1
@@ -1010,7 +1010,7 @@ class Mulligan(IntEnum):
 
 
 class MultiClassGroup(IntEnum):
-	"TAG_MULTI_CLASS_GROUP"
+	"""TAG_MULTI_CLASS_GROUP"""
 
 	INVALID = 0
 	GRIMY_GOONS = 1
@@ -1019,7 +1019,7 @@ class MultiClassGroup(IntEnum):
 
 
 class OptionType(IntEnum):
-	"PegasusGame.Option.Type"
+	"""PegasusGame.Option.Type"""
 
 	PASS = 1
 	END_TURN = 2
@@ -1027,7 +1027,7 @@ class OptionType(IntEnum):
 
 
 class PlayState(IntEnum):
-	"TAG_PLAYSTATE"
+	"""TAG_PLAYSTATE"""
 
 	INVALID = 0
 	PLAYING = 1
@@ -1044,7 +1044,7 @@ class PlayState(IntEnum):
 
 
 class PowerType(IntEnum):
-	"Network.PowerType"
+	"""Network.PowerType"""
 
 	FULL_ENTITY = 1
 	SHOW_ENTITY = 2
@@ -1063,7 +1063,7 @@ class PowerType(IntEnum):
 
 
 class BlockType(IntEnum):
-	"PegasusGame.HistoryBlock.Type"
+	"""PegasusGame.HistoryBlock.Type"""
 
 	ATTACK = 1
 	JOUST = 2
@@ -1085,7 +1085,7 @@ class BlockType(IntEnum):
 
 
 class State(IntEnum):
-	"TAG_STATE"
+	"""TAG_STATE"""
 
 	INVALID = 0
 	LOADING = 1
@@ -1094,7 +1094,7 @@ class State(IntEnum):
 
 
 class Step(IntEnum):
-	"TAG_STEP"
+	"""TAG_STEP"""
 
 	INVALID = 0
 	BEGIN_FIRST = 1
@@ -1120,7 +1120,7 @@ class Step(IntEnum):
 # Misc
 
 class Booster(IntEnum):
-	"BoosterDbId"
+	"""BoosterDbId"""
 
 	INVALID = 0
 	CLASSIC = 1
@@ -1142,7 +1142,7 @@ class Booster(IntEnum):
 
 
 class BrawlType(IntEnum):
-	"PegasusShared.BrawlType"
+	"""PegasusShared.BrawlType"""
 
 	BRAWL_TYPE_UNKNOWN = 0
 	BRAWL_TYPE_TAVERN_BRAWL = 1
@@ -1152,7 +1152,7 @@ class BrawlType(IntEnum):
 
 
 class CardTextBuilderType(IntEnum):
-	"CardTextBuilderType"
+	"""CardTextBuilderType"""
 
 	DEFAULT = 0
 	JADE_GOLEM = 1
@@ -1189,7 +1189,7 @@ class CardTextBuilderType(IntEnum):
 
 
 class DeckType(IntEnum):
-	"PegasusShared.DeckType"
+	"""PegasusShared.DeckType"""
 
 	CLIENT_ONLY_DECK = -1
 	UNKNOWN_DECK_TYPE = 0
@@ -1203,7 +1203,7 @@ class DeckType(IntEnum):
 
 
 class DraftSlotType(IntEnum):
-	"PegasusShared.DraftSlotType"
+	"""PegasusShared.DraftSlotType"""
 
 	DRAFT_SLOT_NONE = 0
 	DRAFT_SLOT_CARD = 1
@@ -1212,7 +1212,7 @@ class DraftSlotType(IntEnum):
 
 
 class DungeonRewardOption(IntEnum):
-	"AdventureDungeonCrawlRewardOption.OptionData"
+	"""AdventureDungeonCrawlRewardOption.OptionData"""
 
 	INVALID = 0
 	LOOT = 1
@@ -1220,7 +1220,7 @@ class DungeonRewardOption(IntEnum):
 
 
 class FormatType(IntEnum):
-	"PegasusShared.FormatType"
+	"""PegasusShared.FormatType"""
 
 	FT_UNKNOWN = 0
 	FT_WILD = 1
@@ -1235,14 +1235,14 @@ class FormatType(IntEnum):
 
 
 class TavernBrawlMode(IntEnum):
-	"PegasusShared.TavernBrawlMode"
+	"""PegasusShared.TavernBrawlMode"""
 
 	TB_MODE_NORMAL = 0
 	TB_MODE_HEROIC = 1
 
 
 class SwissDeckType(IntEnum):
-	"PegasusUtilTournament.SwissDeckType"
+	"""PegasusUtilTournament.SwissDeckType"""
 
 	SWISS_DECK_NONE = 0
 	SWISS_DECK_CONQUEST = 1
@@ -1250,7 +1250,7 @@ class SwissDeckType(IntEnum):
 
 
 class TournamentState(IntEnum):
-	"PegasusUtilTournament.TournamentState"
+	"""PegasusUtilTournament.TournamentState"""
 
 	STATE_OPEN = 1
 	STATE_LOCKED = 2
@@ -1259,14 +1259,14 @@ class TournamentState(IntEnum):
 
 
 class TournamentType(IntEnum):
-	"PegasusUtilTournament.TournamentType"
+	"""PegasusUtilTournament.TournamentType"""
 
 	TYPE_UNKNOWN = 0
 	TYPE_SWISS = 1
 
 
 class Type(IntEnum):
-	"TAG_TYPE"
+	"""TAG_TYPE"""
 
 	UNKNOWN = 0
 	BOOL = 1
@@ -1345,7 +1345,7 @@ LOCALIZED_TAGS = [k for k, v in TAG_TYPES.items() if v == Type.LOCSTRING]
 
 
 class Locale(IntEnum):
-	"Locale"
+	"""Locale"""
 
 	UNKNOWN = -1
 	enUS = 0

@@ -1,5 +1,5 @@
-from hearthstone.enums import GameTag
 from hearthstone.entities import Card, Game, Player
+from hearthstone.enums import GameTag
 
 
 def test_player():
