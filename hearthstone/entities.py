@@ -164,8 +164,10 @@ class Player(Entity):
 			# Exclude entity types that cannot be in the deck
 			if not entity.can_be_in_deck:
 				continue
-			# Exclude choice cards, The Coin, Malchezaar legendaries
-			if entity.tags.get(GameTag.CREATOR, 0):
+
+			# Allow CREATOR=1 because of monster hunt decks.
+			# Everything else is likely a false positive.
+			if entity.tags.get(GameTag.CREATOR, 0) > 1:
 				continue
 
 			yield entity
