@@ -16,6 +16,7 @@ class Entity:
 		self.id = id
 		self.game = None
 		self.tags = {}
+		self.initial_zone = Zone.INVALID
 		self._initial_controller = 0
 
 	def __repr__(self):
@@ -95,6 +96,8 @@ class Game(Entity):
 	def register_entity(self, entity):
 		entity.game = self
 		self.entities.append(entity)
+		entity.initial_zone = entity.zone
+
 		if isinstance(entity, Player):
 			self.players.append(entity)
 		elif not self.setup_done:
