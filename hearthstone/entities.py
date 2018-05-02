@@ -43,6 +43,9 @@ class Entity:
 	def zone(self):
 		return self.tags.get(GameTag.ZONE, Zone.INVALID)
 
+	def reset(self):
+		pass
+
 	def tag_change(self, tag, value):
 		if tag == GameTag.CONTROLLER and not self._initial_controller:
 			self._initial_controller = self.tags.get(GameTag.CONTROLLER, value)
@@ -102,6 +105,12 @@ class Game(Entity):
 			self.players.append(entity)
 		elif not self.setup_done:
 			self.initial_entities.append(entity)
+
+	def reset(self):
+		for entity in self.entities:
+			if entity is self:
+				continue
+			entity.reset()
 
 	def find_entity_by_id(self, id):
 		# int() for LazyPlayer mainly...
@@ -266,3 +275,7 @@ class Card(Entity):
 			self.initial_card_id = card_id
 		self.card_id = card_id
 		self.tags.update(tags)
+
+	def reset(self):
+		self.card_id = None
+		self.revealed = False
