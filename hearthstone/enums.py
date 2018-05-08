@@ -313,6 +313,7 @@ class GameTag(IntEnum):
 	ZOMBEAST_DEBUG_MAX_ITERATIONS = 966
 	START_OF_GAME = 968
 	ENCHANTMENT_INVISIBLE = 976
+	FAST_BATTLECRY = 998
 
 	InvisibleDeathrattle = 335
 	ImmuneToSpellpower = 349
