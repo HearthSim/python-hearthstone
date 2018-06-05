@@ -537,6 +537,9 @@ class CardSet(IntEnum):
 	LOOTAPALOOZA = 1004
 	GILNEAS = 1125
 
+	# Not actually present...
+	TAVERNS_OF_TIME = 1143
+
 	# Aliased from the original enums
 	FP1 = 12
 	PE1 = 13
