@@ -59,10 +59,14 @@ class Game(Entity):
 	def __init__(self, id):
 		super(Game, self).__init__(id)
 		self.players = []
-		self.entities = []
+		self._entities = {}
 		self.initial_entities = []
 		self.initial_state = State.INVALID
 		self.initial_step = Step.INVALID
+
+	@property
+	def entities(self):
+		yield from self._entities.values()
 
 	@property
 	def current_player(self):
@@ -98,7 +102,7 @@ class Game(Entity):
 
 	def register_entity(self, entity):
 		entity.game = self
-		self.entities.append(entity)
+		self.entities[entity.id] = entity
 		entity.initial_zone = entity.zone
 
 		if isinstance(entity, Player):
@@ -115,17 +119,7 @@ class Game(Entity):
 	def find_entity_by_id(self, id):
 		# int() for LazyPlayer mainly...
 		id = int(id)
-
-		if id <= len(self.entities):
-			entity = self.entities[id - 1]
-			if entity.id == id:
-				return entity
-
-		# Entities are ordered by ID... usually. It is NOT safe to assume
-		# that the entity is missing if we went past the ID. So this is the fallback.
-		for entity in self.entities:
-			if entity.id == id:
-				return entity
+		return self._entities[id]
 
 
 class Player(Entity):
