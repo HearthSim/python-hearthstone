@@ -102,7 +102,7 @@ class Game(Entity):
 
 	def register_entity(self, entity):
 		entity.game = self
-		self.entities[entity.id] = entity
+		self._entities[entity.id] = entity
 		entity.initial_zone = entity.zone
 
 		if isinstance(entity, Player):
@@ -116,10 +116,10 @@ class Game(Entity):
 				continue
 			entity.reset()
 
-	def find_entity_by_id(self, id):
+	def find_entity_by_id(self, id: int):
 		# int() for LazyPlayer mainly...
 		id = int(id)
-		return self._entities[id]
+		return self._entities.get(id)
 
 
 class Player(Entity):
