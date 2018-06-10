@@ -225,6 +225,7 @@ class Card(Entity):
 
 	def __init__(self, id, card_id):
 		super(Card, self).__init__(id)
+		self.is_original_entity = True
 		self.initial_card_id = card_id
 		self.card_id = card_id
 		self.revealed = False
@@ -265,6 +266,7 @@ class Card(Entity):
 		self.revealed = False
 
 	def change(self, card_id, tags):
+		self.is_original_entity = False
 		if self.initial_card_id is None:
 			self.initial_card_id = card_id
 		self.card_id = card_id

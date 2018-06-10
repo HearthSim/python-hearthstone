@@ -18,6 +18,18 @@ def test_cards():
 		assert card1.base_tags.get(GameTag.HEALTH, 0) == 2
 
 
+def test_change_entity():
+	card = Card(4, "EX1_001")
+	assert card.card_id == "EX1_001"
+	assert card.initial_card_id == "EX1_001"
+	assert card.is_original_entity
+
+	card.change("NEW1_030", {})
+	assert card.card_id == "NEW1_030"
+	assert card.initial_card_id == "EX1_001"
+	assert not card.is_original_entity
+
+
 def test_entities():
 	game = Game(1)
 	game.register_entity(game)
