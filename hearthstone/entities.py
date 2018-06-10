@@ -174,7 +174,7 @@ class Player(Entity):
 
 			# Allow CREATOR=1 because of monster hunt decks.
 			# Everything else is likely a false positive.
-			if entity.tags.get(GameTag.CREATOR, 0) > 1:
+			if entity.initial_creator > 1:
 				continue
 
 			yield entity
