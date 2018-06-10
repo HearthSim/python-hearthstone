@@ -16,6 +16,7 @@ class Entity:
 		self.id = id
 		self.game = None
 		self.tags = {}
+		self.initial_creator = 0
 		self.initial_zone = Zone.INVALID
 		self._initial_controller = 0
 
@@ -257,6 +258,13 @@ class Card(Entity):
 			return self.base_tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS
 
 		return card_type in PLAYABLE_CARD_TYPES
+
+	def _update_tags(self, tags):
+		super()._update_tags(tags)
+		if self.is_original_entity and self.initial_creator is None:
+			creator = tags.get(GameTag.CREATOR, 0)
+			if creator:
+				self.initial_creator = creator
 
 	def reveal(self, card_id, tags):
 		self.revealed = True
