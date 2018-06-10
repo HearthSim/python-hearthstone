@@ -43,13 +43,16 @@ class Entity:
 	def zone(self):
 		return self.tags.get(GameTag.ZONE, Zone.INVALID)
 
+	def _update_tags(self, tags):
+		self.tags.update(tags)
+
 	def reset(self):
 		pass
 
 	def tag_change(self, tag, value):
 		if tag == GameTag.CONTROLLER and not self._initial_controller:
 			self._initial_controller = self.tags.get(GameTag.CONTROLLER, value)
-		self.tags[tag] = value
+		self._update_tags({tag: value})
 
 
 class Game(Entity):
@@ -260,7 +263,7 @@ class Card(Entity):
 		self.card_id = card_id
 		if self.initial_card_id is None:
 			self.initial_card_id = card_id
-		self.tags.update(tags)
+		self._update_tags(tags)
 
 	def hide(self):
 		self.revealed = False
@@ -270,7 +273,7 @@ class Card(Entity):
 		if self.initial_card_id is None:
 			self.initial_card_id = card_id
 		self.card_id = card_id
-		self.tags.update(tags)
+		self._update_tags(tags)
 
 	def reset(self):
 		self.card_id = None
