@@ -1253,6 +1253,23 @@ class TavernBrawlMode(IntEnum):
 	TB_MODE_HEROIC = 1
 
 
+class RewardType(IntEnum):
+	"""Reward.Type"""
+
+	ARCANE_DUST = 0
+	BOOSTER_PACK = 1
+	CARD = 2
+	CARD_BACK = 3
+	CRAFTABLE_CARD = 4
+	FORGE_TICKET = 5
+	GOLD = 6
+	MOUNT = 7
+	CLASS_CHALLENGE = 8
+	EVENT = 9
+	RANDOM_CARD = 10
+	BONUS_CHALLENGE = 11
+
+
 class SwissDeckType(IntEnum):
 	"""PegasusUtilTournament.SwissDeckType"""
 
