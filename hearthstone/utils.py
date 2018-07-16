@@ -69,8 +69,15 @@ STANDARD_SETS = {
 }
 
 
+try:
+	_EPOCH = datetime.fromtimestamp(0)
+except OSError:
+	# https://bugs.python.org/issue29097 (Windows-only)
+	_EPOCH = datetime.fromtimestamp(86400)
+
+
 ZODIAC_ROTATION_DATES = {
-	ZodiacYear.PRE_STANDARD: datetime.fromtimestamp(0),
+	ZodiacYear.PRE_STANDARD: _EPOCH,
 	ZodiacYear.KRAKEN: datetime(2016, 4, 26),
 	ZodiacYear.MAMMOTH: datetime(2017, 4, 7),
 	ZodiacYear.RAVEN: datetime(2018, 4, 12),
