@@ -19,6 +19,7 @@ CARDCLASS_HERO_MAP = {
 	CardClass.SHAMAN: "HERO_02",
 	CardClass.WARLOCK: "HERO_07",
 	CardClass.WARRIOR: "HERO_01",
+	CardClass.WHIZBANG: "BOT_914h",
 }
 
 
