@@ -521,7 +521,7 @@ class CardClass(IntEnum):
 
 	@property
 	def is_playable(self):
-		return bool(self.default_hero)
+		return self != CardClass.WHIZBANG and bool(self.default_hero)
 
 	@property
 	def name_global(self):
