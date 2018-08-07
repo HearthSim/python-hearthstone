@@ -591,6 +591,8 @@ class CardSet(IntEnum):
 			CardSet.UNGORO,
 			CardSet.ICECROWN,
 			CardSet.LOOTAPALOOZA,
+			CardSet.GILNEAS,
+			CardSet.BOOMSDAY,
 		)
 
 	@property
