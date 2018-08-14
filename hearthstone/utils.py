@@ -116,62 +116,62 @@ SPELLSTONE_STRINGS = {
 
 UPGRADABLE_CARDS_MAP = {
 	# Fatespinner
-	43430: 42615,
-	43431: 42615,
-	# Unidentified Elixier
-	45751: 45759,
-	45753: 45759,
-	45756: 45759,
-	45757: 45759,
-	# Unidentified Shield
-	45770: 45775,
-	45771: 45775,
-	45773: 45775,
-	45774: 45775,
-	# Unidentified Maul
-	45777: 45782,
-	45778: 45782,
-	45779: 45782,
-	45780: 45782,
-	# Lesser Jasper Spellstone
-	43289: 43288,
-	43290: 43288,
-	# Lesser Pearl Spellstone
-	43380: 43382,
-	43381: 43382,
-	# Lesser Ruby Spellstone
-	43411: 43414,
-	43412: 43414,
+	"ICC_047t": "ICC_047",
+	"ICC_047t2": "ICC_047",
 	# Lesser Amethyst Spellstone
-	43275: 43272,
-	43276: 43272,
-	# Lesser Emerald Spellstone
-	43361: 43363,
-	43362: 43363,
-	# Lesser Onyx Spellstone
-	46295: 46296,
-	46297: 46296,
-	# Lesser Diamond Spellstone
-	46306: 46307,
-	46308: 46307,
-	# Lesser Mithril Spellstone
-	46063: 45519,
-	46064: 45519,
+	"LOOT_043t2": "LOOT_043",
+	"LOOT_043t3": "LOOT_043",
+	# Lesser Jasper Spellstone
+	"LOOT_051t1": "LOOT_051",
+	"LOOT_051t2": "LOOT_051",
 	# Lesser Sapphire Spellstone
-	43332: 43331,
-	43333: 43331,
+	"LOOT_064t1": "LOOT_064",
+	"LOOT_064t2": "LOOT_064",
+	# Lesser Emerald Spellstone
+	"LOOT_080t2": "LOOT_080",
+	"LOOT_080t3": "LOOT_080",
+	# Lesser Pearl Spellstone
+	"LOOT_091t1": "LOOT_091",
+	"LOOT_091t2": "LOOT_091",
+	# Lesser Ruby Spellstone
+	"LOOT_103t1": "LOOT_103",
+	"LOOT_103t2": "LOOT_103",
+	# Lesser Mithril Spellstone
+	"LOOT_203t2": "LOOT_203",
+	"LOOT_203t3": "LOOT_203",
+	# Unidentified Elixier
+	"LOOT_278t1": "LOOT_278",
+	"LOOT_278t2": "LOOT_278",
+	"LOOT_278t3": "LOOT_278",
+	"LOOT_278t4": "LOOT_278",
+	# Unidentified Shield
+	"LOOT_285t": "LOOT_285",
+	"LOOT_285t2": "LOOT_285",
+	"LOOT_285t3": "LOOT_285",
+	"LOOT_285t4": "LOOT_285",
+	# Unidentified Maul
+	"LOOT_286t1": "LOOT_286",
+	"LOOT_286t2": "LOOT_286",
+	"LOOT_286t3": "LOOT_286",
+	"LOOT_286t4": "LOOT_286",
+	# Lesser Onyx Spellstone
+	"LOOT_503t": "LOOT_503",
+	"LOOT_503t2": "LOOT_503",
+	# Lesser Diamond Spellstone
+	"LOOT_507t": "LOOT_507",
+	"LOOT_507t2": "LOOT_507",
 	# Duskhaven Hunter
-	46597: 46596,
+	"GIL_200t": "GIL_200",
 	# Pumpkin Peasant
-	46600: 46598,
-	# Swift Messenger
-	46993: 46992,
-	# Spellshifter
-	46995: 46994,
+	"GIL_201t": "GIL_201",
 	# Gilnean Royal Guard
-	46602: 46601
+	"GIL_202t": "GIL_202",
+	# Swift Messenger
+	"GIL_528t": "GIL_528",
+	# Spellshifter
+	"GIL_529t": "GIL_529",
 }
 
 
-def get_initial_dbf_id(dbf_id):
-	return UPGRADABLE_CARDS_MAP.get(dbf_id, dbf_id)
+def get_original_card_id(card_id):
+	return UPGRADABLE_CARDS_MAP.get(card_id, card_id)
