@@ -143,7 +143,6 @@ def test_deckstrings():
 
 		# Decode tests
 		deck = deckstrings.Deck.from_deckstring(deckdata["deckstring"])
-		print(deck.cards)
 		assert _decksorted(deck.cards) == _decksorted(deckdata["cards"])
 		assert deck.heroes == deckdata["heroes"]
 		assert deck.format == deckdata["format"]
