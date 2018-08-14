@@ -112,3 +112,66 @@ SPELLSTONE_STRINGS = {
 	"LOOT_507": "GAMEPLAY_DIAMOND_SPELLSTONE_%d",
 	"LOOT_526d": "GAMEPLAY_LOOT_526d_DARKNESS_%d",
 }
+
+
+UPGRADABLE_CARDS_MAP = {
+	# Fatespinner
+	43430: 42615,
+	43431: 42615,
+	# Unidentified Elixier
+	45751: 45759,
+	45753: 45759,
+	45756: 45759,
+	45757: 45759,
+	# Unidentified Shield
+	45770: 45775,
+	45771: 45775,
+	45773: 45775,
+	45774: 45775,
+	# Unidentified Maul
+	45777: 45782,
+	45778: 45782,
+	45779: 45782,
+	45780: 45782,
+	# Lesser Jasper Spellstone
+	43289: 43288,
+	43290: 43288,
+	# Lesser Pearl Spellstone
+	43380: 43382,
+	43381: 43382,
+	# Lesser Ruby Spellstone
+	43411: 43414,
+	43412: 43414,
+	# Lesser Amethyst Spellstone
+	43275: 43272,
+	43276: 43272,
+	# Lesser Emerald Spellstone
+	43361: 43363,
+	43362: 43363,
+	# Lesser Onyx Spellstone
+	46295: 46296,
+	46297: 46296,
+	# Lesser Diamond Spellstone
+	46306: 46307,
+	46308: 46307,
+	# Lesser Mithril Spellstone
+	46063: 45519,
+	46064: 45519,
+	# Lesser Sapphire Spellstone
+	43332: 43331,
+	43333: 43331,
+	# Duskhaven Hunter
+	46597: 46596,
+	# Pumpkin Peasant
+	46600: 46598,
+	# Swift Messenger
+	46993: 46992,
+	# Spellshifter
+	46995: 46994,
+	# Gilnean Royal Guard
+	46602: 46601
+}
+
+
+def get_initial_dbf_id(dbf_id):
+	return UPGRADABLE_CARDS_MAP.get(dbf_id, dbf_id)
