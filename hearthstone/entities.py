@@ -45,14 +45,15 @@ class Entity:
 		return self.tags.get(GameTag.ZONE, Zone.INVALID)
 
 	def _update_tags(self, tags):
+		for tag, value in tags.items():
+			if tag == GameTag.CONTROLLER and not self._initial_controller:
+				self._initial_controller = self.tags.get(GameTag.CONTROLLER, value)
 		self.tags.update(tags)
 
 	def reset(self):
 		pass
 
 	def tag_change(self, tag, value):
-		if tag == GameTag.CONTROLLER and not self._initial_controller:
-			self._initial_controller = self.tags.get(GameTag.CONTROLLER, value)
 		self._update_tags({tag: value})
 
 
