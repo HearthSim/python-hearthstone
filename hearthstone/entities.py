@@ -256,7 +256,6 @@ class Card(Entity):
 				tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS and
 				tags.get(GameTag.COLLECTIBLE, 0)
 			)
-			return self.base_tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS
 
 		return card_type in PLAYABLE_CARD_TYPES
 
