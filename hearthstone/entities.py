@@ -259,6 +259,20 @@ class Card(Entity):
 
 		return card_type in PLAYABLE_CARD_TYPES
 
+	def _capture_card_id(self, card_id, tags):
+		if self.initial_card_id:
+			return
+
+		if GameTag.TRANSFORMED_FROM_CARD in tags:
+			from .cardxml import load_dbf
+			db, _ = load_dbf()
+			card = db.get(tags.get(GameTag.TRANSFORMED_FROM_CARD, 0))
+			if card:
+				self.initial_card_id = card.card_id
+				return
+
+		self.initial_card_id = card_id
+
 	def _update_tags(self, tags):
 		super()._update_tags(tags)
 		if self.is_original_entity and self.initial_creator is None:
@@ -269,8 +283,7 @@ class Card(Entity):
 	def reveal(self, card_id, tags):
 		self.revealed = True
 		self.card_id = card_id
-		if self.initial_card_id is None:
-			self.initial_card_id = card_id
+		self._capture_card_id(card_id, tags)
 		self._update_tags(tags)
 
 	def hide(self):
@@ -278,8 +291,7 @@ class Card(Entity):
 
 	def change(self, card_id, tags):
 		self.is_original_entity = False
-		if self.initial_card_id is None:
-			self.initial_card_id = card_id
+		self._capture_card_id(card_id, tags)
 		self.card_id = card_id
 		self._update_tags(tags)
 

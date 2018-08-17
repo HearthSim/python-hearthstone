@@ -29,6 +29,13 @@ def test_change_entity():
 	assert card.initial_card_id == "EX1_001"
 	assert not card.is_original_entity
 
+	weapon = Card(4, None)
+	assert not weapon.initial_card_id
+
+	weapon.reveal("CS2_091", {GameTag.TRANSFORMED_FROM_CARD: 41420})
+	assert weapon.card_id == "CS2_091"
+	assert weapon.initial_card_id == "UNG_929"
+
 
 def test_entities():
 	game = Game(1)
