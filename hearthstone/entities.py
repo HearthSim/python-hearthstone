@@ -284,6 +284,8 @@ class Card(Entity):
 		self.revealed = True
 		self.card_id = card_id
 		self._capture_card_id(card_id, tags)
+		if GameTag.TRANSFORMED_FROM_CARD in tags:
+			self.is_original_entity = False
 		self._update_tags(tags)
 
 	def hide(self):
