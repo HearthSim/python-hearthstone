@@ -629,6 +629,7 @@ class CardType(IntEnum):
 	@property
 	def craftable(self):
 		return self in (
+			CardType.HERO,
 			CardType.MINION,
 			CardType.SPELL,
 			CardType.WEAPON,
