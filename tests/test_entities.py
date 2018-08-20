@@ -45,3 +45,9 @@ def test_entities():
 
 	assert game.find_entity_by_id(1) is game
 	assert game.find_entity_by_id(2) is None
+
+
+def test_invalid_transformed_from_card():
+	card = Card(4, None)
+	card.reveal("EX1_001", {GameTag.TRANSFORMED_FROM_CARD: 0})
+	assert card.initial_card_id == "EX1_001"

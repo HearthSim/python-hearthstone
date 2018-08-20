@@ -263,10 +263,11 @@ class Card(Entity):
 		if self.initial_card_id:
 			return
 
-		if GameTag.TRANSFORMED_FROM_CARD in tags:
+		transformed_from_card = tags.get(GameTag.TRANSFORMED_FROM_CARD, 0)
+		if transformed_from_card:
 			from .cardxml import load_dbf
 			db, _ = load_dbf()
-			card = db.get(tags.get(GameTag.TRANSFORMED_FROM_CARD, 0))
+			card = db.get(transformed_from_card)
 			if card:
 				self.initial_card_id = card.card_id
 				return
@@ -284,7 +285,7 @@ class Card(Entity):
 		self.revealed = True
 		self.card_id = card_id
 		self._capture_card_id(card_id, tags)
-		if GameTag.TRANSFORMED_FROM_CARD in tags:
+		if tags.get(GameTag.TRANSFORMED_FROM_CARD, 0):
 			self.is_original_entity = False
 		self._update_tags(tags)
 
