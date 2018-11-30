@@ -1,5 +1,7 @@
 # python-hearthstone
+
 [![Build Status](https://api.travis-ci.org/HearthSim/python-hearthstone.svg?branch=master)](https://travis-ci.org/HearthSim/python-hearthstone)
+[![PyPI](https://img.shields.io/pypi/v/hearthstone.svg)](https://pypi.org/project/hearthstone/)
 
 A Hearthstone Python library containing:
 
