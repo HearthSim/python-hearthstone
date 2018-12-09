@@ -66,7 +66,7 @@ STANDARD_SETS = {
 	ZodiacYear.RAVEN: [
 		CardSet.CORE, CardSet.EXPERT1,
 		CardSet.UNGORO, CardSet.ICECROWN, CardSet.LOOTAPALOOZA, CardSet.GILNEAS,
-		CardSet.BOOMSDAY,
+		CardSet.BOOMSDAY, CardSet.TROLL,
 	]
 }
 

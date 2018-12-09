@@ -626,6 +626,7 @@ class CardSet(IntEnum):
 			CardSet.LOOTAPALOOZA,
 			CardSet.GILNEAS,
 			CardSet.BOOMSDAY,
+			CardSet.TROLL,
 		)
 
 	@property
