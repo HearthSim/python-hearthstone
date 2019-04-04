@@ -67,6 +67,10 @@ STANDARD_SETS = {
 		CardSet.CORE, CardSet.EXPERT1,
 		CardSet.UNGORO, CardSet.ICECROWN, CardSet.LOOTAPALOOZA, CardSet.GILNEAS,
 		CardSet.BOOMSDAY, CardSet.TROLL,
+	],
+	ZodiacYear.DRAGON: [
+		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.GILNEAS, CardSet.BOOMSDAY, CardSet.TROLL, CardSet.DALARAN
 	]
 }
 
@@ -83,6 +87,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.KRAKEN: datetime(2016, 4, 26),
 	ZodiacYear.MAMMOTH: datetime(2017, 4, 7),
 	ZodiacYear.RAVEN: datetime(2018, 4, 12),
+	ZodiacYear.DRAGON: datetime(2019, 4, 9),
 }
 
 
