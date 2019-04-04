@@ -175,6 +175,11 @@ UPGRADABLE_CARDS_MAP = {
 	"GIL_528t": "GIL_528",
 	# Spellshifter
 	"GIL_529t": "GIL_529",
+	# Unidentified Contract
+	"DAL_366t1": "DAL_366",
+	"DAL_366t2": "DAL_366",
+	"DAL_366t3": "DAL_366",
+	"DAL_366t4": "DAL_366",
 }
 
 
