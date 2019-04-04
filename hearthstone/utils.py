@@ -180,3 +180,12 @@ UPGRADABLE_CARDS_MAP = {
 
 def get_original_card_id(card_id):
 	return UPGRADABLE_CARDS_MAP.get(card_id, card_id)
+
+
+SCHEME_CARDS = [
+	"DAL_007",  # Rafaam's Scheme
+	"DAL_008",  # Dr. Boom's Scheme
+	"DAL_009",  # Hagatha's Scheme
+	"DAL_010",  # Tagwaggle's Scheme
+	"DAL_011",  # Lazul's Scheme
+]
