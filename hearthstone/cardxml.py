@@ -330,6 +330,7 @@ class CardXML:
 	spare_part = prop(GameTag.SPARE_PART, bool)
 	taunt = prop(GameTag.TAUNT, bool)
 	topdeck = prop(GameTag.TOPDECK, bool)
+	twinspell = prop(GameTag.TWINSPELL, bool)
 	untouchable = prop(GameTag.UNTOUCHABLE, bool)
 
 	##
