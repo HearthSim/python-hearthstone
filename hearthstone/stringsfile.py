@@ -17,7 +17,10 @@ _cache: Dict[str, StringsDict] = {}
 
 
 def load(fp) -> StringsDict:
-	reader = csv.DictReader(filter(lambda row: not row.startswith("#"), fp), delimiter="\t")
+	reader = csv.DictReader(
+		filter(lambda row: row.strip() and not row.startswith("#"), fp),
+		delimiter="\t"
+	)
 	stripped_rows = [{k: v for k, v in row.items() if v} for row in reader]
 	return {stripped_row.pop("TAG"): stripped_row for stripped_row in stripped_rows}
 
