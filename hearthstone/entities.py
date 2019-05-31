@@ -263,6 +263,23 @@ class Card(Entity):
 		if self.initial_card_id:
 			return
 
+		if tags.get(GameTag.CREATOR_DBID, 0) in (
+			2993,  # Golden Monkey
+			45727,  # Golden Kobold
+			52119,  # Arch-Villain Rafaam
+		):
+			# Cards that are revealed (no initial_card_id) after certain cards created them
+			# randomly most likely have an incorrect card id. We want to ensure we never
+			# report an initial_card_id for these cards, as it is simply unknown.
+			self.is_original_entity = False
+			return
+
+		if not self.is_original_entity:
+			# If we know this card was transformed and we don't have an initial_card_id by
+			# now, it is too late - any card_id we'd capture now would not reflect the
+			# original and be misleading.
+			return
+
 		transformed_from_card = tags.get(GameTag.TRANSFORMED_FROM_CARD, 0)
 		if transformed_from_card:
 			from .cardxml import load_dbf

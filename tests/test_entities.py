@@ -51,3 +51,21 @@ def test_invalid_transformed_from_card():
 	card = Card(4, None)
 	card.reveal("EX1_001", {GameTag.TRANSFORMED_FROM_CARD: 0})
 	assert card.initial_card_id == "EX1_001"
+
+
+def test_archthief_rafaam():
+	card = Card(4, None)
+	assert not card.initial_card_id
+	assert card.is_original_entity
+
+	card.reveal("CS2_091", {
+		GameTag.CREATOR_DBID: 52119
+	})
+	assert card.card_id == "CS2_091"
+	assert not card.initial_card_id
+	assert not card.is_original_entity
+
+	card.change("EX1_001", {})
+	assert card.card_id == "EX1_001"
+	assert not card.initial_card_id
+	assert not card.is_original_entity
