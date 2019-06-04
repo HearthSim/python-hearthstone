@@ -69,3 +69,39 @@ def test_archthief_rafaam():
 	assert card.card_id == "EX1_001"
 	assert not card.initial_card_id
 	assert not card.is_original_entity
+
+
+def test_unidentified_contract():
+	card = Card(4, None)
+	assert not card.initial_card_id
+	assert card.is_original_entity
+
+	card.reveal("DAL_366", {})
+	assert card.card_id == "DAL_366"
+	assert card.initial_card_id == "DAL_366"
+
+	card.change("DAL_366t3", {})
+	assert card.card_id == "DAL_366t3"
+	assert card.initial_card_id == "DAL_366"
+
+
+def test_shifter_zerus():
+	card = Card(4, None)
+	assert not card.initial_card_id
+	assert card.is_original_entity
+
+	card.reveal("GIL_650", {
+		GameTag.TRANSFORMED_FROM_CARD: 38475
+	})
+	assert card.card_id == "GIL_650"
+	assert card.initial_card_id == "OG_123"
+
+
+def test_swift_messenger():
+	card = Card(4, None)
+	assert not card.initial_card_id
+	assert card.is_original_entity
+
+	card.reveal("GIL_528t", {})
+	assert card.card_id == "GIL_528t"
+	assert card.initial_card_id == "GIL_528t"

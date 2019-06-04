@@ -259,25 +259,9 @@ class Card(Entity):
 
 		return card_type in PLAYABLE_CARD_TYPES
 
-	def _capture_card_id(self, card_id, tags):
+	def _capture_initial_card_id(self, card_id, tags):
 		if self.initial_card_id:
-			return
-
-		if tags.get(GameTag.CREATOR_DBID, 0) in (
-			2993,  # Golden Monkey
-			45727,  # Golden Kobold
-			52119,  # Arch-Villain Rafaam
-		):
-			# Cards that are revealed (no initial_card_id) after certain cards created them
-			# randomly most likely have an incorrect card id. We want to ensure we never
-			# report an initial_card_id for these cards, as it is simply unknown.
-			self.is_original_entity = False
-			return
-
-		if not self.is_original_entity:
-			# If we know this card was transformed and we don't have an initial_card_id by
-			# now, it is too late - any card_id we'd capture now would not reflect the
-			# original and be misleading.
+			# If we already know a previous card id, we do not want to change it.
 			return
 
 		transformed_from_card = tags.get(GameTag.TRANSFORMED_FROM_CARD, 0)
@@ -288,6 +272,12 @@ class Card(Entity):
 			if card:
 				self.initial_card_id = card.card_id
 				return
+
+		if not self.is_original_entity:
+			# If we know this card was transformed and we don't have an initial_card_id by
+			# now, it is too late - any card_id we'd capture now would not reflect initial
+			# one and be wrong.
+			return
 
 		self.initial_card_id = card_id
 
@@ -301,17 +291,24 @@ class Card(Entity):
 	def reveal(self, card_id, tags):
 		self.revealed = True
 		self.card_id = card_id
-		self._capture_card_id(card_id, tags)
-		if tags.get(GameTag.TRANSFORMED_FROM_CARD, 0):
+
+		if (
+			tags.get(GameTag.CREATOR_DBID, 0) or
+			tags.get(GameTag.DISPLAYED_CREATOR, 0) or
+			tags.get(GameTag.TRANSFORMED_FROM_CARD, 0)
+		):
+			# Cards that are revealed with a creator most likely have been transformed.
 			self.is_original_entity = False
+
+		self._capture_initial_card_id(card_id, tags)
 		self._update_tags(tags)
 
 	def hide(self):
 		self.revealed = False
 
 	def change(self, card_id, tags):
+		self._capture_initial_card_id(card_id, tags)
 		self.is_original_entity = False
-		self._capture_card_id(card_id, tags)
 		self.card_id = card_id
 		self._update_tags(tags)
 
