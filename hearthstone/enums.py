@@ -358,6 +358,11 @@ class GameTag(IntEnum):
 	PUZZLE_MODE = 1073
 	CARD_DOES_NOTHING = 1075
 	CASTSWHENDRAWN = 1077
+	DISPLAY_CARD_ON_MOUSEOVER = 1078
+	DECK_POWER_UP = 1080
+	SIDEKICK = 1081
+	SIDEKICK_HERO_POWER = 1082
+	REBORN = 1085
 	SQUELCH_NON_GAME_TRIGGERS_AND_MODIFIERS = 1087
 	QUEST_REWARD_DATABASE_ID = 1089
 	DORMANT = 1090
@@ -402,8 +407,17 @@ class GameTag(IntEnum):
 	UI_BUFF_COST_UP = 1298
 	DEBUG_DISPLAY_TAG_BOTTOM_RIGHT = 1313
 	DEBUG_DISPLAY_TAG_TOP_RIGHT = 1314
+	SMART_DISCOVER_DEBUG_ENTITY_1 = 1318
+	SMART_DISCOVER_DEBUG_ENTITY_2 = 1319
+	SMART_DISCOVER_DEBUG_ENTITY_3 = 1320
+	SMART_DISCOVER_DEBUG_TEST_COMPLETE = 1324
+	SMART_DISCOVER_DEBUG_PASSIVE_EVAL_RESULT_1 = 1328
+	SMART_DISCOVER_DEBUG_PASSIVE_EVAL_RESULT_2 = 1329
+	SMART_DISCOVER_DEBUG_PASSIVE_EVAL_RESULT_3 = 1330
 	COPIED_BY_KHADGAR = 1326
 	ALTERNATE_CHAPTER_VO = 1334
+	HAS_BEEN_REBORN = 1336
+	USE_DISCOVER_VISUALS = 1342
 	EXTRA_SPELL_CASTS_ADDITIONAL = 1348
 	SQUELCH_LIFETIME_EFFECTS = 1350
 	TAG_TB_RANDOM_DECK_TIME_ID = 1358
@@ -632,6 +646,7 @@ class CardSet(IntEnum):
 	BOOMSDAY = 1127
 	TROLL = 1129
 	DALARAN = 1130
+	ULDUM = 1158
 
 	# Not actually present...
 	TAVERNS_OF_TIME = 1143
@@ -663,7 +678,8 @@ class CardSet(IntEnum):
 			CardSet.GILNEAS,
 			CardSet.BOOMSDAY,
 			CardSet.TROLL,
-			CardSet.DALARAN
+			CardSet.DALARAN,
+			CardSet.ULDUM
 		)
 
 	@property
@@ -1189,6 +1205,8 @@ class PowerType(IntEnum):
 	META_DATA = 8
 	CHANGE_ENTITY = 9
 	RESET_GAME = 10
+	SUB_SPELL_START = 11
+	SUB_SPELL_END = 12
 
 	# Renamed in 12574
 	ACTION_START = BLOCK_START
@@ -1275,6 +1293,7 @@ class Booster(IntEnum):
 	MAMMOTH_BUNDLE = 41
 	DALARAN = 49
 	FIRST_PURCHASE = 181
+	ULDUM = 128
 
 	# Renamed
 	KOBOLDS_CATACOMBS = KOBOLDS_AND_CATACOMBS
@@ -1360,15 +1379,15 @@ class DraftSlotType(IntEnum):
 	DRAFT_SLOT_HERO_POWER = 3
 
 
-# Deleted in 30795
-
 class DungeonRewardOption(IntEnum):
-	"""AdventureDungeonCrawlRewardOption.OptionData"""
+	"""AdventureDungeonCrawlPlayMat.OptionType"""
 
 	INVALID = 0
 	LOOT = 1
 	TREASURE = 2
 	SHRINE_TREASURE = 3
+	HERO_POWER = 4
+	DECK = 5
 
 
 class FormatType(IntEnum):
@@ -1413,6 +1432,8 @@ class RewardType(IntEnum):
 	ADVENTURE_HERO_POWER = 13
 
 
+# Deleted
+
 class SwissDeckType(IntEnum):
 	"""PegasusUtilTournament.SwissDeckType"""
 
@@ -1420,6 +1441,8 @@ class SwissDeckType(IntEnum):
 	SWISS_DECK_CONQUEST = 1
 	SWISS_DECK_LAST_STAND = 2
 
+
+# Deleted
 
 class TournamentState(IntEnum):
 	"""PegasusUtilTournament.TournamentState"""
@@ -1429,6 +1452,8 @@ class TournamentState(IntEnum):
 	STATE_STARTED = 3
 	STATE_CLOSED = 4
 
+
+# Deleted
 
 class TournamentType(IntEnum):
 	"""PegasusUtilTournament.TournamentType"""
