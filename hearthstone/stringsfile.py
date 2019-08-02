@@ -28,7 +28,7 @@ def load(fp) -> StringsDict:
 def load_globalstrings(locale="enUS") -> StringsDict:
 	path: str = hearthstone_data.get_strings_file(locale, filename="GLOBAL.txt")
 	if path not in _cache:
-		with open(path, "r") as f:
+		with open(path, "r", encoding="utf-8-sig") as f:
 			_cache[path] = load(f)
 
 	return _cache[path]
