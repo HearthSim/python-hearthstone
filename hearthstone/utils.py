@@ -70,7 +70,7 @@ STANDARD_SETS = {
 	],
 	ZodiacYear.DRAGON: [
 		CardSet.CORE, CardSet.EXPERT1,
-		CardSet.GILNEAS, CardSet.BOOMSDAY, CardSet.TROLL, CardSet.DALARAN
+		CardSet.GILNEAS, CardSet.BOOMSDAY, CardSet.TROLL, CardSet.DALARAN, CardSet.ULDUM
 	]
 }
 
