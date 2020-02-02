@@ -48,7 +48,7 @@ def _write_varint(stream: IO, i: int) -> int:
 
 class Deck:
 	@classmethod
-	def from_deckstring(cls, deckstring: str):
+	def from_deckstring(cls, deckstring: str) -> "Deck":
 		instance = cls()
 		instance.cards, instance.heroes, instance.format = parse_deckstring(deckstring)
 		return instance

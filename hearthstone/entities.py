@@ -1,6 +1,7 @@
-from typing import Iterable
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union, cast
 
 from .enums import CardSet, CardType, GameTag, State, Step, Zone
+from .types import GameTagsDict
 
 
 PLAYABLE_CARD_TYPES = (
@@ -15,9 +16,9 @@ class Entity:
 	def __init__(self, id):
 		self.id = id
 		self.game = None
-		self.tags = {}
+		self.tags: GameTagsDict = {}
 		self.initial_creator = 0
-		self.initial_zone = Zone.INVALID
+		self.initial_zone: Zone = Zone.INVALID
 		self._initial_controller = 0
 
 	def __repr__(self):
@@ -63,49 +64,52 @@ class Game(Entity):
 
 	def __init__(self, id):
 		super(Game, self).__init__(id)
-		self.players = []
-		self._entities = {}
-		self.initial_entities = []
-		self.initial_state = State.INVALID
-		self.initial_step = Step.INVALID
+		self.players: List[Player] = []
+		self._entities: Dict[int, Entity] = {}
+		self.initial_entities: List[Entity] = []
+		self.initial_state: State = State.INVALID
+		self.initial_step: Step = Step.INVALID
 
 	@property
-	def entities(self):
+	def entities(self) -> Iterator[Entity]:
 		yield from self._entities.values()
 
 	@property
-	def current_player(self):
+	def current_player(self) -> Optional["Player"]:
 		for player in self.players:
 			if player.tags.get(GameTag.CURRENT_PLAYER):
 				return player
+		return None
 
 	@property
-	def first_player(self):
+	def first_player(self) -> Optional["Player"]:
 		for player in self.players:
 			if player.tags.get(GameTag.FIRST_PLAYER):
 				return player
+		return None
 
 	@property
-	def setup_done(self):
+	def setup_done(self) -> bool:
 		return self.tags.get(GameTag.NEXT_STEP, 0) > Step.BEGIN_MULLIGAN
 
-	def get_player(self, value):
+	def get_player(self, value: Union[int, str]) -> Optional["Player"]:
 		for player in self.players:
 			if value in (player.player_id, player.name):
 				return player
+		return None
 
-	def in_zone(self, zone):
+	def in_zone(self, zone: Zone) -> Iterator[Entity]:
 		for entity in self.entities:
 			if entity.zone == zone:
 				yield entity
 
-	def create(self, tags):
+	def create(self, tags: GameTagsDict) -> None:
 		self.tags = dict(tags)
-		self.initial_state = self.tags.get(GameTag.STATE, State.INVALID)
-		self.initial_step = self.tags.get(GameTag.STEP, Step.INVALID)
+		self.initial_state = cast(State, self.tags.get(GameTag.STATE, State.INVALID))
+		self.initial_step = cast(Step, self.tags.get(GameTag.STEP, Step.INVALID))
 		self.register_entity(self)
 
-	def register_entity(self, entity):
+	def register_entity(self, entity: Entity) -> None:
 		entity.game = self
 		self._entities[entity.id] = entity
 		entity.initial_zone = entity.zone
@@ -115,13 +119,13 @@ class Game(Entity):
 		elif not self.setup_done:
 			self.initial_entities.append(entity)
 
-	def reset(self):
+	def reset(self) -> None:
 		for entity in self.entities:
 			if entity is self:
 				continue
 			entity.reset()
 
-	def find_entity_by_id(self, id: int):
+	def find_entity_by_id(self, id: int) -> Optional[Entity]:
 		# int() for LazyPlayer mainly...
 		id = int(id)
 		return self._entities.get(id)
@@ -140,11 +144,11 @@ class Player(Entity):
 		self.name = name
 		self.initial_hero_entity_id = 0
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return self.name or ""
 
 	@property
-	def names(self):
+	def names(self) -> Tuple[str, str]:
 		"""
 		Returns the player's name and real name.
 		Returns two empty strings if the player is unknown.
@@ -159,7 +163,7 @@ class Player(Entity):
 		return self.name, ""
 
 	@property
-	def initial_deck(self):
+	def initial_deck(self) -> Iterator["Card"]:
 		for entity in self.game.initial_entities:
 			# Exclude entities that aren't initially owned by the player
 			if entity.initial_controller != self:
@@ -181,13 +185,13 @@ class Player(Entity):
 			yield entity
 
 	@property
-	def entities(self):
+	def entities(self) -> Iterator[Entity]:
 		for entity in self.game.entities:
 			if entity.controller == self:
 				yield entity
 
 	@property
-	def hero(self):
+	def hero(self) -> Optional["Card"]:
 		entity_id = self.tags.get(GameTag.HERO_ENTITY, 0)
 		if entity_id:
 			return self.game.find_entity_by_id(entity_id)
@@ -195,31 +199,32 @@ class Player(Entity):
 			# Fallback that should never trigger
 			for entity in self.in_zone(Zone.PLAY):
 				if entity.type == CardType.HERO:
-					return entity
+					return cast(Card, entity)
+		return None
 
 	@property
-	def heroes(self):
+	def heroes(self) -> Iterator["Card"]:
 		for entity in self.entities:
 			if entity.type == CardType.HERO:
-				yield entity
+				yield cast(Card, entity)
 
 	@property
-	def starting_hero(self):
+	def starting_hero(self) -> Optional["Card"]:
 		if self.initial_hero_entity_id:
-			return self.game.find_entity_by_id(self.initial_hero_entity_id)
+			return cast(Card, self.game.find_entity_by_id(self.initial_hero_entity_id))
 
 		# Fallback
 		heroes = list(self.heroes)
 		if not heroes:
-			return
+			return None
 
 		return heroes[0]
 
 	@property
-	def is_ai(self):
+	def is_ai(self) -> bool:
 		return self.account_lo == 0
 
-	def in_zone(self, zone):
+	def in_zone(self, zone) -> Iterator["Entity"]:
 		for entity in self.entities:
 			if entity.zone == zone:
 				yield entity
@@ -236,7 +241,7 @@ class Card(Entity):
 		self.revealed = False
 
 	@property
-	def base_tags(self) -> dict:
+	def base_tags(self) -> GameTagsDict:
 		if not self.card_id:
 			return {}
 
@@ -254,12 +259,12 @@ class Card(Entity):
 			tags = self.base_tags
 			return (
 				tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS and
-				tags.get(GameTag.COLLECTIBLE, 0)
+				bool(tags.get(GameTag.COLLECTIBLE, 0))
 			)
 
 		return card_type in PLAYABLE_CARD_TYPES
 
-	def _capture_initial_card_id(self, card_id, tags):
+	def _capture_initial_card_id(self, card_id: str, tags: GameTagsDict) -> None:
 		if self.initial_card_id:
 			# If we already know a previous card id, we do not want to change it.
 			return
@@ -281,14 +286,14 @@ class Card(Entity):
 
 		self.initial_card_id = card_id
 
-	def _update_tags(self, tags):
+	def _update_tags(self, tags: GameTagsDict) -> None:
 		super()._update_tags(tags)
 		if self.is_original_entity and self.initial_creator is None:
 			creator = tags.get(GameTag.CREATOR, 0)
 			if creator:
 				self.initial_creator = creator
 
-	def reveal(self, card_id, tags):
+	def reveal(self, card_id: str, tags: GameTagsDict) -> None:
 		self.revealed = True
 		self.card_id = card_id
 
@@ -303,15 +308,15 @@ class Card(Entity):
 		self._capture_initial_card_id(card_id, tags)
 		self._update_tags(tags)
 
-	def hide(self):
+	def hide(self) -> None:
 		self.revealed = False
 
-	def change(self, card_id, tags):
+	def change(self, card_id: str, tags) -> None:
 		self._capture_initial_card_id(card_id, tags)
 		self.is_original_entity = False
 		self.card_id = card_id
 		self._update_tags(tags)
 
-	def reset(self):
+	def reset(self) -> None:
 		self.card_id = None
 		self.revealed = False
