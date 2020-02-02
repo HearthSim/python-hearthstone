@@ -1,7 +1,7 @@
 import pytest
 
 from hearthstone.entities import Card, Game, Player
-from hearthstone.enums import GameTag
+from hearthstone.enums import CardType, GameTag
 
 
 class TestGame:
@@ -20,11 +20,31 @@ class TestPlayer:
 		game.register_entity(game)
 		return game
 
-	def test_player(self, game):
+	@pytest.fixture
+	def player(self, game):
 		player = Player(2, 1, 0, 0, "Test Player")
-		player.game = game
+		game.register_entity(player)
+		return player
 
+	def test_starting_hero_does_not_exist(self, player):
 		assert player.starting_hero is None
+
+	def test_starting_hero_from_initial_hero_entity_id(self, game, player):
+		hero = Card(4, "HERO_02")
+		game.register_entity(hero)
+		player.initial_hero_entity_id = hero.id
+
+		assert player.starting_hero == hero
+
+	def test_starting_hero_from_hero_entity(self, game, player):
+		hero = Card(4, "HERO_02")
+		game.register_entity(hero)
+		hero.tags.update({
+			GameTag.CARDTYPE: CardType.HERO,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		assert player.starting_hero == hero
 
 
 class TestCard:
