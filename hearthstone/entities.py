@@ -1,5 +1,7 @@
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union, cast
 
+from hearthstone.utils import get_original_card_id
+
 from .enums import CardSet, CardType, GameTag, State, Step, Zone
 from .types import GameTagsDict
 
@@ -183,6 +185,20 @@ class Player(Entity):
 				continue
 
 			yield entity
+
+	@property
+	def known_starting_deck_list(self) -> List[str]:
+		"""
+		Returns a list of card ids that were present in the player's deck at the start of
+		game (before Mulligan). May contain duplicates if same card is present multiple
+		times in the deck. This attempts to reverse revealed transforms (e.g. Zerus, Molten
+		Blade) and well-known transforms (e.g. Spellstones, Unidentified Objects, Worgens)
+		so that the initial card id is included rather than the final card id.
+		"""
+		return [
+			get_original_card_id(entity.initial_card_id)
+			for entity in self.initial_deck if entity.initial_card_id
+		]
 
 	@property
 	def entities(self) -> Iterator[Entity]:

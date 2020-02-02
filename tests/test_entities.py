@@ -1,7 +1,7 @@
 import pytest
 
 from hearthstone.entities import Card, Game, Player
-from hearthstone.enums import CardType, GameTag
+from hearthstone.enums import CardType, GameTag, Zone
 
 
 class TestGame:
@@ -45,6 +45,95 @@ class TestPlayer:
 		})
 
 		assert player.starting_hero == hero
+
+	def test_initial_entities(self, game, player):
+		WISP = "CS2_231"
+
+		wisp = Card(5, None)
+		wisp.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(wisp)
+		wisp.reveal(WISP, {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		assert list(player.initial_deck) == [wisp]
+
+	def test_known_starting_deck_list(self, game, player):
+		WISP = "CS2_231"
+
+		wisp = Card(5, None)
+		wisp.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(wisp)
+		wisp.reveal(WISP, {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		assert player.known_starting_deck_list == [WISP]
+
+	def test_known_starting_deck_list_duplicates(self, game, player):
+		WISP = "CS2_231"
+
+		wisp1 = Card(5, None)
+		wisp1.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(wisp1)
+		wisp1.reveal(WISP, {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		wisp2 = Card(5, None)
+		wisp2.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(wisp2)
+		wisp2.reveal(WISP, {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		assert player.known_starting_deck_list == [WISP, WISP]
+
+	def test_known_starting_deck_list_with_zerus(self, game, player):
+		ZERUS = "OG_123"
+		ZERUS_DBF = 38475
+		WISP = "CS2_231"
+
+		zerus = Card(5, None)
+		zerus.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(zerus)
+		zerus.reveal(WISP, {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CONTROLLER: player.player_id,
+			GameTag.TRANSFORMED_FROM_CARD: ZERUS_DBF,
+		})
+
+		assert player.known_starting_deck_list == [ZERUS]
+
+	def test_known_starting_deck_list_with_unidentified_cards(self, game, player):
+		UNIDENTIFIED_CONTRACT = "DAL_366"
+		RECRUITMENT_CONTRACT = "DAL_366t2"
+
+		contract = Card(5, None)
+		contract.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(contract)
+		contract.reveal(RECRUITMENT_CONTRACT, {
+			GameTag.CARDTYPE: CardType.SPELL,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		assert player.known_starting_deck_list == [UNIDENTIFIED_CONTRACT]
 
 
 class TestCard:
