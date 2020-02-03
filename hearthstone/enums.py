@@ -1280,6 +1280,7 @@ class PowerType(IntEnum):
 class BlockType(IntEnum):
 	"""PegasusGame.HistoryBlock.Type"""
 
+	INVALID = 0
 	ATTACK = 1
 	JOUST = 2
 	POWER = 3
