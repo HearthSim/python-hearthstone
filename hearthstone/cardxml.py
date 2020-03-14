@@ -318,6 +318,7 @@ class CardXML:
 	ghostly = prop(GameTag.GHOSTLY, bool)
 	hide_health = prop(GameTag.HIDE_HEALTH, bool)
 	hide_stats = prop(GameTag.HIDE_STATS, bool)
+	hide_cost = prop(GameTag.HIDE_COST, bool)
 	immune = prop(GameTag.IMMUNE, bool)
 	inspire = prop(GameTag.INSPIRE, bool)
 	jade_golem = prop(GameTag.JADE_GOLEM, bool)
