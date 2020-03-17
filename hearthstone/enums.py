@@ -465,6 +465,7 @@ class GameTag(IntEnum):
 	POISONOUS_INSTANT = 1528
 	FORCE_NO_CUSTOM_SPELLS = 1529
 	START_OF_COMBAT = 1531
+	SPAWN_TIME_COUNT = 1556
 
 	InvisibleDeathrattle = 335
 	ImmuneToSpellpower = 349
@@ -700,6 +701,7 @@ class CardSet(IntEnum):
 	ULDUM = 1158
 	DRAGONS = 1347
 	YEAR_OF_THE_DRAGON = 1403
+	BLACK_TEMPLE = 1414
 	WILD_EVENT = 1439
 	BATTLEGROUNDS = 1453
 
@@ -735,7 +737,8 @@ class CardSet(IntEnum):
 			CardSet.TROLL,
 			CardSet.DALARAN,
 			CardSet.ULDUM,
-			CardSet.DRAGONS
+			CardSet.DRAGONS,
+			CardSet.BLACK_TEMPLE
 		)
 
 	@property
@@ -1206,6 +1209,7 @@ class MetaDataType(IntEnum):
 	HOLD_DRAWN_CARD = 17
 	CONTROLLER_AND_ZONE_CHANGE = 18
 	ARTIFICIAL_PAUSE = 19
+	SLUSH_TIME = 20
 
 	# Renamed in 9786 from PowerHistoryMetaData.Type
 	META_TARGET = TARGET
@@ -1368,6 +1372,10 @@ class Booster(IntEnum):
 	FIRST_PURCHASE = 181
 	ULDUM = 128
 	DRAGONS = 347
+	BLACK_TEMPLE = 423
+	STANDARD_HUNTER = 470
+	YEAR_OF_DRAGON = 498
+	STANDARD_MAGE = 545
 
 	# Renamed
 	KOBOLDS_CATACOMBS = KOBOLDS_AND_CATACOMBS
