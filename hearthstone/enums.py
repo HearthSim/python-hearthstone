@@ -646,6 +646,7 @@ class CardClass(IntEnum):
 	DREAM = 11
 	NEUTRAL = 12
 	WHIZBANG = 13
+	DEMON_HUNTER = 14
 
 	@property
 	def default_hero(self):

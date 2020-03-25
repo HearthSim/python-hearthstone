@@ -14,6 +14,7 @@ def test_zodiac_dates():
 
 def test_cardclass():
 	playable_cards = [
+		enums.CardClass.DEMON_HUNTER,
 		enums.CardClass.DRUID,
 		enums.CardClass.HUNTER,
 		enums.CardClass.MAGE,
