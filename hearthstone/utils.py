@@ -10,7 +10,7 @@ except ImportError:
 
 
 CARDCLASS_HERO_MAP = {
-	CardClass.DEMON_HUNTER: "HERO_10",
+	CardClass.DEMONHUNTER: "HERO_10",
 	CardClass.DRUID: "HERO_06",
 	CardClass.HUNTER: "HERO_05",
 	CardClass.MAGE: "HERO_08",
@@ -73,7 +73,12 @@ STANDARD_SETS = {
 		CardSet.CORE, CardSet.EXPERT1,
 		CardSet.GILNEAS, CardSet.BOOMSDAY, CardSet.TROLL, CardSet.DALARAN, CardSet.ULDUM,
 		CardSet.WILD_EVENT, CardSet.DRAGONS, CardSet.YEAR_OF_THE_DRAGON,
-		CardSet.BLACK_TEMPLE
+		CardSet.BLACK_TEMPLE, CardSet.DEMON_HUNTER_INITIATE
+	],
+	ZodiacYear.PHOENIX: [
+		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.DALARAN, CardSet.ULDUM, CardSet.WILD_EVENT, CardSet.DRAGONS,
+		CardSet.YEAR_OF_THE_DRAGON, CardSet.BLACK_TEMPLE, CardSet.DEMON_HUNTER_INITIATE
 	]
 }
 
@@ -91,6 +96,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.MAMMOTH: datetime(2017, 4, 7),
 	ZodiacYear.RAVEN: datetime(2018, 4, 12),
 	ZodiacYear.DRAGON: datetime(2019, 4, 9),
+	ZodiacYear.PHOENIX: datetime(2020, 4, 7),
 }
 
 
