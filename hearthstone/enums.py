@@ -763,7 +763,7 @@ class CardSet(IntEnum):
 
 	@property
 	def is_standard(self):
-		return self in ZodiacYear.DRAGON.standard_card_sets
+		return self in ZodiacYear.PHOENIX.standard_card_sets
 
 
 class CardType(IntEnum):
