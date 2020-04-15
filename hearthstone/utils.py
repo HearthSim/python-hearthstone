@@ -189,6 +189,17 @@ UPGRADABLE_CARDS_MAP = {
 	"DAL_366t2": "DAL_366",
 	"DAL_366t3": "DAL_366",
 	"DAL_366t4": "DAL_366",
+	# Galakrond
+	"DRG_600t2": "DRG_600",
+	"DRG_600t3": "DRG_600",
+	"DRG_610t2": "DRG_610",
+	"DRG_610t3": "DRG_610",
+	"DRG_620t2": "DRG_620",
+	"DRG_620t3": "DRG_620",
+	"DRG_650t2": "DRG_650",
+	"DRG_650t3": "DRG_650",
+	"DRG_660t2": "DRG_660",
+	"DRG_660t3": "DRG_660",
 }
 
 
