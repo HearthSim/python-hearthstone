@@ -265,6 +265,14 @@ class Card(Entity):
 		db, _ = load()
 		return db[self.card_id].tags
 
+	def _get_initial_base_tags(self) -> GameTagsDict:
+		if not self.initial_card_id:
+			return {}
+
+		from .cardxml import load
+		db, _ = load()
+		return db[self.initial_card_id].tags
+
 	@property
 	def can_be_in_deck(self) -> bool:
 		card_type = self.type
@@ -272,7 +280,7 @@ class Card(Entity):
 			# If we don't know the card type, assume yes
 			return True
 		elif card_type == CardType.HERO:
-			tags = self.base_tags
+			tags = self._get_initial_base_tags()
 			return (
 				tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS and
 				bool(tags.get(GameTag.COLLECTIBLE, 0))

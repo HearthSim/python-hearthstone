@@ -135,6 +135,44 @@ class TestPlayer:
 
 		assert player.known_starting_deck_list == [UNIDENTIFIED_CONTRACT]
 
+	def test_known_starting_deck_list_with_galakrond(self, game, player):
+		GALAKROND = "DRG_600"
+		GALAKROND_UPGRADE_1 = "DRG_600t2"
+		GALAKROND_UPGRADE_2 = "DRG_600t3"
+
+		galakrond = Card(13, None)
+		galakrond.tags.update({
+			GameTag.ZONE: Zone.DECK,
+		})
+		game.register_entity(galakrond)
+
+		galakrond.reveal(GALAKROND, {
+			GameTag.CARDTYPE: CardType.HERO,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		galakrond.change(GALAKROND_UPGRADE_1, {})
+		galakrond.hide()
+
+		assert player.known_starting_deck_list == [GALAKROND], \
+			"Galakrond should be known after it was upgraded, even if not played"
+
+		galakrond.reveal(GALAKROND_UPGRADE_1, {
+			GameTag.CARDTYPE: CardType.HERO,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		galakrond.change(GALAKROND_UPGRADE_2, {})
+		galakrond.hide()
+
+		galakrond.tags.update({
+			GameTag.ZONE: Zone.HAND,
+		})
+		galakrond.reveal(GALAKROND_UPGRADE_2, {
+			GameTag.CARDTYPE: CardType.HERO,
+			GameTag.CONTROLLER: player.player_id,
+		})
+
+		assert player.known_starting_deck_list == [GALAKROND]
+
 
 class TestCard:
 	def test_card(self):
