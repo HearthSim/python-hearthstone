@@ -200,6 +200,33 @@ UPGRADABLE_CARDS_MAP = {
 	"DRG_650t3": "DRG_650",
 	"DRG_660t2": "DRG_660",
 	"DRG_660t3": "DRG_660",
+	# Transfer Student
+	"SCH_199t": "SCH_199",
+	"SCH_199t10": "SCH_199",
+	"SCH_199t11": "SCH_199",
+	"SCH_199t12": "SCH_199",
+	"SCH_199t13": "SCH_199",
+	"SCH_199t14": "SCH_199",
+	"SCH_199t15": "SCH_199",
+	"SCH_199t16": "SCH_199",
+	"SCH_199t17": "SCH_199",
+	"SCH_199t18": "SCH_199",
+	"SCH_199t19": "SCH_199",
+	"SCH_199t2": "SCH_199",
+	"SCH_199t20": "SCH_199",
+	"SCH_199t21": "SCH_199",
+	"SCH_199t22": "SCH_199",
+	"SCH_199t23": "SCH_199",
+	"SCH_199t24": "SCH_199",
+	"SCH_199t25": "SCH_199",
+	"SCH_199t3": "SCH_199",
+	"SCH_199t4": "SCH_199",
+	"SCH_199t5": "SCH_199",
+	"SCH_199t6": "SCH_199",
+	"SCH_199t7": "SCH_199",
+	"SCH_199t8": "SCH_199",
+	"SCH_199t9": "SCH_199",
+
 }
 
 
