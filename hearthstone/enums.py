@@ -765,7 +765,8 @@ class CardSet(IntEnum):
 			CardSet.ULDUM,
 			CardSet.DRAGONS,
 			CardSet.BLACK_TEMPLE,
-			CardSet.DEMON_HUNTER_INITIATE
+			CardSet.DEMON_HUNTER_INITIATE,
+			CardSet.SCHOLOMANCE,
 		)
 
 	@property
