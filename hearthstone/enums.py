@@ -1279,6 +1279,19 @@ class MultiClassGroup(IntEnum):
 	JADE_LOTUS = 2
 	KABAL = 3
 
+	# The values below are synthesized from the card classes metadata in the client
+
+	PALADIN_PRIEST = 4
+	PRIEST_WARLOCK = 5
+	WARLOCK_DEMONHUNTER = 6
+	HUNTER_DEMONHUNTER = 7
+	DRUID_HUNTER = 8
+	DRUID_SHAMAN = 9
+	MAGE_SHAMAN = 10
+	MAGE_ROGUE = 11
+	ROGUE_WARRIOR = 12
+	PALADIN_WARRIOR = 13
+
 
 class OptionType(IntEnum):
 	"""PegasusGame.Option.Type"""
