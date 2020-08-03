@@ -300,6 +300,7 @@ class CardXML:
 	##
 	# Bools
 
+	adapt = prop(GameTag.ADAPT, bool)
 	appear_functionally_dead = prop(GameTag.APPEAR_FUNCTIONALLY_DEAD, bool)
 	autoattack = prop(GameTag.AUTOATTACK, bool)
 	can_summon_maxplusone_minion = prop(GameTag.CAN_SUMMON_MAXPLUSONE_MINION, bool)
@@ -322,8 +323,11 @@ class CardXML:
 	immune = prop(GameTag.IMMUNE, bool)
 	inspire = prop(GameTag.INSPIRE, bool)
 	jade_golem = prop(GameTag.JADE_GOLEM, bool)
+	lifesteal = prop(GameTag.LIFESTEAL, bool)
+	magnetic = prop(GameTag.MODULAR, bool)
 	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
 	outcast = prop(GameTag.OUTCAST, bool)
+	overkill = prop(GameTag.OVERKILL, bool)
 	poisonous = prop(GameTag.POISONOUS, bool)
 	quest = prop(GameTag.QUEST, bool)
 	reborn = prop(GameTag.REBORN, bool)
