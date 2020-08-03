@@ -323,12 +323,17 @@ class CardXML:
 	inspire = prop(GameTag.INSPIRE, bool)
 	jade_golem = prop(GameTag.JADE_GOLEM, bool)
 	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
+	outcast = prop(GameTag.OUTCAST, bool)
 	poisonous = prop(GameTag.POISONOUS, bool)
 	quest = prop(GameTag.QUEST, bool)
+	reborn = prop(GameTag.REBORN, bool)
 	ritual = prop(GameTag.RITUAL, bool)
 	rush = prop(GameTag.RUSH, bool)
 	secret = prop(GameTag.SECRET, bool)
+	sidequest = prop(GameTag.SIDEQUEST, bool)
 	spare_part = prop(GameTag.SPARE_PART, bool)
+	spellburst = prop(GameTag.SPELLBURST, bool)
+	start_of_game = prop(GameTag.START_OF_GAME, bool)
 	taunt = prop(GameTag.TAUNT, bool)
 	topdeck = prop(GameTag.TOPDECK, bool)
 	twinspell = prop(GameTag.TWINSPELL, bool)
@@ -358,7 +363,7 @@ class CardXML:
 	multiple_classes = prop(GameTag.MULTIPLE_CLASSES)
 	script_data_num_1 = prop(GameTag.TAG_SCRIPT_DATA_NUM_1)
 
-	# Faction bools
+	# Faction bools - deprecated, use multi_class_group instead
 	grimy_goons = prop(GameTag.GRIMY_GOONS, bool)
 	jade_lotus = prop(GameTag.JADE_LOTUS, bool)
 	kabal = prop(GameTag.KABAL, bool)
