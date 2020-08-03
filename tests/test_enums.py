@@ -56,3 +56,13 @@ def test_gametype():
 	assert gt.GT_TB_1P_VS_AI.is_tavern_brawl
 	assert gt.GT_TB_2P_COOP.is_tavern_brawl
 	assert not gt.GT_RANKED.is_tavern_brawl
+
+
+class TestMultiClassGroup:
+	def test_card_classes(self):
+		assert enums.MultiClassGroup.GRIMY_GOONS.card_classes == [
+			enums.CardClass.HUNTER,
+			enums.CardClass.WARRIOR,
+			enums.CardClass.PALADIN,
+		]
+		assert enums.MultiClassGroup.INVALID.card_classes == []

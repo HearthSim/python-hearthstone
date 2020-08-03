@@ -1292,6 +1292,40 @@ class MultiClassGroup(IntEnum):
 	ROGUE_WARRIOR = 12
 	PALADIN_WARRIOR = 13
 
+	@property
+	def card_classes(self):
+		# Gadgetzan
+		if self == MultiClassGroup.GRIMY_GOONS:
+			return [CardClass.HUNTER, CardClass.WARRIOR, CardClass.PALADIN]
+		elif self == MultiClassGroup.JADE_LOTUS:
+			return [CardClass.ROGUE, CardClass.SHAMAN, CardClass.DRUID]
+		elif self == MultiClassGroup.KABAL:
+			return [CardClass.PRIEST, CardClass.WARLOCK, CardClass.MAGE]
+
+		# Scholomance
+		if self == MultiClassGroup.PALADIN_PRIEST:
+			return [CardClass.PALADIN, CardClass.PRIEST]
+		elif self == MultiClassGroup.PRIEST_WARLOCK:
+			return [CardClass.PRIEST, CardClass.WARRIOR]
+		elif self == MultiClassGroup.WARLOCK_DEMONHUNTER:
+			return [CardClass.WARLOCK, CardClass.DEMONHUNTER]
+		elif self == MultiClassGroup.HUNTER_DEMONHUNTER:
+			return [CardClass.HUNTER, CardClass.DEMONHUNTER]
+		elif self == MultiClassGroup.DRUID_HUNTER:
+			return [CardClass.DRUID, CardClass.HUNTER]
+		elif self == MultiClassGroup.DRUID_SHAMAN:
+			return [CardClass.DRUID, CardClass.SHAMAN]
+		elif self == MultiClassGroup.MAGE_SHAMAN:
+			return [CardClass.MAGE, CardClass.SHAMAN]
+		elif self == MultiClassGroup.MAGE_ROGUE:
+			return [CardClass.MAGE, CardClass.ROGUE]
+		elif self == MultiClassGroup.ROGUE_WARRIOR:
+			return [CardClass.ROGUE, CardClass.WARRIOR]
+		elif self == MultiClassGroup.PALADIN_WARRIOR:
+			return [CardClass.PALADIN, CardClass.WARRIOR]
+
+		return []
+
 
 class OptionType(IntEnum):
 	"""PegasusGame.Option.Type"""
