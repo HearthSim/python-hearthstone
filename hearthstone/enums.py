@@ -1306,7 +1306,7 @@ class MultiClassGroup(IntEnum):
 		if self == MultiClassGroup.PALADIN_PRIEST:
 			return [CardClass.PALADIN, CardClass.PRIEST]
 		elif self == MultiClassGroup.PRIEST_WARLOCK:
-			return [CardClass.PRIEST, CardClass.WARRIOR]
+			return [CardClass.PRIEST, CardClass.WARLOCK]
 		elif self == MultiClassGroup.WARLOCK_DEMONHUNTER:
 			return [CardClass.WARLOCK, CardClass.DEMONHUNTER]
 		elif self == MultiClassGroup.HUNTER_DEMONHUNTER:
