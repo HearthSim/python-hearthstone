@@ -1001,10 +1001,23 @@ class Race(IntEnum):
 		# XXX: Mech is only a visible tribe since GVG
 		return self in VISIBLE_RACES
 
+	@property
+	def is_battlegrounds_pool(self):
+		"""Whether this Race appears as a minion pool in Battlegrounds matches."""
+		return self in BATTLEGROUNDS_RACES
+
 
 VISIBLE_RACES = [
 	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.ELEMENTAL, Race.BEAST,
 	Race.TOTEM, Race.PIRATE, Race.DRAGON, Race.ALL,
+]
+
+# All minion types that may appear as a minion pool in Battlegrounds matches.
+# As of mid 2020 matches will always contain five of these. Some are guaranteed to appear
+# in every match.
+BATTLEGROUNDS_RACES = [
+	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.BEAST, Race.DRAGON,
+	Race.PIRATE, Race.ELEMENTAL,
 ]
 
 
