@@ -773,6 +773,7 @@ class CardSet(IntEnum):
 			CardSet.BLACK_TEMPLE,
 			CardSet.DEMON_HUNTER_INITIATE,
 			CardSet.SCHOLOMANCE,
+			CardSet.DARKMOON_FAIRE,
 		)
 
 	@property
