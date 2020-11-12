@@ -308,6 +308,7 @@ class CardXML:
 	cant_be_fatigued = prop(GameTag.CANT_BE_FATIGUED, bool)
 	collectible = prop(GameTag.COLLECTIBLE, bool)
 	battlecry = prop(GameTag.BATTLECRY, bool)
+	corrupt = prop(GameTag.CORRUPT, bool)
 	deathrattle = prop(GameTag.DEATHRATTLE, bool)
 	discover = prop(GameTag.DISCOVER, bool)
 	divine_shield = prop(GameTag.DIVINE_SHIELD, bool)
