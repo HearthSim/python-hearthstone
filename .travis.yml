@@ -1,10 +1,10 @@
 # https://travis-ci.org/HearthSim/python-hearthstone
 language: python
 
-python: "3.6"
+python: "3.8"
 
 env:
-  - TOXENV=py36
+  - TOXENV=py38
   - TOXENV=flake8
   - TOXENV=mypy
 
