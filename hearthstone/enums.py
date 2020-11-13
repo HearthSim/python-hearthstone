@@ -5,7 +5,7 @@ from enum import IntEnum
 class GameTag(IntEnum):
 	"""GAME_TAG"""
 
-	TAG_NOT_SET = 1
+	TAG_NOT_SET = 0
 	TAG_SCRIPT_DATA_NUM_1 = 2
 	TAG_SCRIPT_DATA_NUM_2 = 3
 	TAG_SCRIPT_DATA_ENT_1 = 4
