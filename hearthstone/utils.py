@@ -201,37 +201,42 @@ UPGRADABLE_CARDS_MAP = {
 	"DRG_650t3": "DRG_650",
 	"DRG_660t2": "DRG_660",
 	"DRG_660t3": "DRG_660",
-	# Transfer Student
-	"SCH_199t": "SCH_199",
-	"SCH_199t10": "SCH_199",
-	"SCH_199t11": "SCH_199",
-	"SCH_199t12": "SCH_199",
-	"SCH_199t13": "SCH_199",
-	"SCH_199t14": "SCH_199",
-	"SCH_199t15": "SCH_199",
-	"SCH_199t16": "SCH_199",
-	"SCH_199t17": "SCH_199",
-	"SCH_199t18": "SCH_199",
-	"SCH_199t19": "SCH_199",
-	"SCH_199t2": "SCH_199",
-	"SCH_199t20": "SCH_199",
-	"SCH_199t21": "SCH_199",
-	"SCH_199t22": "SCH_199",
-	"SCH_199t23": "SCH_199",
-	"SCH_199t24": "SCH_199",
-	"SCH_199t25": "SCH_199",
-	"SCH_199t3": "SCH_199",
-	"SCH_199t4": "SCH_199",
-	"SCH_199t5": "SCH_199",
-	"SCH_199t6": "SCH_199",
-	"SCH_199t7": "SCH_199",
-	"SCH_199t8": "SCH_199",
-	"SCH_199t9": "SCH_199",
-
+	# Corrupted Card
+	"DMF_061t": "DMF_061",  # Faire Arborist
+	"DMF_730t": "DMF_730",  # Moontouched Amulet
+	"DMF_083t": "DMF_083",  # Dancing Cobra
+	"DMF_101t": "DMF_101",  # Firework Elemental
+	"DMF_054t": "DMF_054",  # Insight
+	"DMF_184t": "DMF_184",  # Fairground Fool
+	"DMF_517a": "DMF_517",  # Sweet Tooth
+	"DMF_703t": "DMF_703",  # Pit Master
+	"DMF_526a": "DMF_526",  # Stage Dive
+	"DMF_073t": "DMF_073",  # Darkmoon Dirigible
+	"DMF_082t": "DMF_082",  # Darkmoon Statue
+	"DMF_174t": "DMF_174",  # Circus Medic
+	"DMF_163t": "DMF_163",  # Carnival Clown
+	# Cascading Disaster
+	"DMF_117t2": "DMF_117",
+	"DMF_117t": "DMF_117",
+	"DMF_078t": "DMF_078",  # Strongman
+	"DMF_186a": "DMF_186",  # Auspicious Spirits
+	"DMF_118t": "DMF_118",  # Tickatus
+	"DMF_247t": "DMF_247",  # Insatiable Felhound
+	"DMF_248t": "DMF_248",  # Felsteel Executioner
+	"DMF_064t": "DMF_064",  # Carousel Gryphon
+	"DMF_124t": "DMF_124",  # Horrendous Growth
+	"DMF_090t": "DMF_090",  # Don't Feed the Animals
+	"DMF_105t": "DMF_105",  # Ring Toss
+	"DMF_701t": "DMF_701",  # Dunk Tank
+	"DMF_080t": "DMF_080",  # Fleethoof Pearltusk
+	"DMF_244t": "DMF_244",  # Day at the Faire
 }
 
 
 def get_original_card_id(card_id):
+	# Transfer Student
+	if str(card_id).startswith("SCH_199t"):
+		return "SCH_199"
 	return UPGRADABLE_CARDS_MAP.get(card_id, card_id)
 
 
