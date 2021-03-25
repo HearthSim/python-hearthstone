@@ -1199,6 +1199,24 @@ WILD_GAME_TYPES = [
 ]
 
 
+class FormatType(IntEnum):
+	"""PegasusShared.FormatType"""
+
+	FT_UNKNOWN = 0
+	FT_WILD = 1
+	FT_STANDARD = 2
+	FT_CLASSIC = 3
+
+	@property
+	def name_global(self):
+		if self.name == "FT_WILD":
+			return "GLOBAL_WILD"
+		elif self.name == "FT_STANDARD":
+			return "GLOBAL_STANDARD"
+		elif self.name == "FT_CLASSIC":
+			return "GLOBAL_CLASSIC"
+
+
 class GameType(IntEnum):
 	"""PegasusShared.GameType"""
 	GT_UNKNOWN = 0
@@ -1230,11 +1248,25 @@ class GameType(IntEnum):
 	# Removed
 	# GT_TOURNAMENT = 23
 
-	def as_bnet(self, wild=False):
+	def as_bnet(self, format: FormatType = FormatType.FT_STANDARD):
 		if self == GameType.GT_RANKED:
-			return BnetGameType.BGT_RANKED_WILD if wild else BnetGameType.BGT_RANKED_STANDARD
+			if format == FormatType.FT_WILD:
+				return BnetGameType.BGT_RANKED_WILD
+			elif format == FormatType.FT_STANDARD:
+				return BnetGameType.BGT_RANKED_STANDARD
+			elif format == FormatType.FT_CLASSIC:
+				return BnetGameType.BGT_RANKED_CLASSIC
+			else:
+				raise ValueError()
 		if self == GameType.GT_CASUAL:
-			return BnetGameType.BGT_CASUAL_WILD if wild else BnetGameType.BGT_CASUAL_STANDARD
+			if format == FormatType.FT_WILD:
+				return BnetGameType.BGT_CASUAL_WILD
+			elif format == FormatType.FT_STANDARD:
+				return BnetGameType.BGT_CASUAL_STANDARD
+			elif format == FormatType.FT_CLASSIC:
+				return BnetGameType.BGT_CASUAL_CLASSIC
+			else:
+				raise ValueError()
 
 		return {
 			GameType.GT_UNKNOWN: BnetGameType.BGT_UNKNOWN,
@@ -1680,24 +1712,6 @@ class DungeonRewardOption(IntEnum):
 	SHRINE_TREASURE = 3
 	HERO_POWER = 4
 	DECK = 5
-
-
-class FormatType(IntEnum):
-	"""PegasusShared.FormatType"""
-
-	FT_UNKNOWN = 0
-	FT_WILD = 1
-	FT_STANDARD = 2
-	FT_CLASSIC = 3
-
-	@property
-	def name_global(self):
-		if self.name == "FT_WILD":
-			return "GLOBAL_WILD"
-		elif self.name == "FT_STANDARD":
-			return "GLOBAL_STANDARD"
-		elif self.name == "FT_CLASSIC":
-			return "GLOBAL_CLASSIC"
 
 
 class TavernBrawlMode(IntEnum):

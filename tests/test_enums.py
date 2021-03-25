@@ -38,10 +38,12 @@ def test_gametype():
 	gt = enums.GameType
 	bgt = enums.BnetGameType
 
-	assert gt.GT_RANKED.as_bnet(wild=False) == bgt.BGT_RANKED_STANDARD
-	assert gt.GT_RANKED.as_bnet(wild=True) == bgt.BGT_RANKED_WILD
-	assert gt.GT_CASUAL.as_bnet(wild=False) == bgt.BGT_CASUAL_STANDARD
-	assert gt.GT_CASUAL.as_bnet(wild=True) == bgt.BGT_CASUAL_WILD
+	assert gt.GT_RANKED.as_bnet(format=enums.FormatType.FT_CLASSIC) == bgt.BGT_RANKED_CLASSIC
+	assert gt.GT_RANKED.as_bnet(format=enums.FormatType.FT_STANDARD) == bgt.BGT_RANKED_STANDARD
+	assert gt.GT_RANKED.as_bnet(format=enums.FormatType.FT_WILD) == bgt.BGT_RANKED_WILD
+	assert gt.GT_CASUAL.as_bnet(format=enums.FormatType.FT_CLASSIC) == bgt.BGT_CASUAL_CLASSIC
+	assert gt.GT_CASUAL.as_bnet(format=enums.FormatType.FT_STANDARD) == bgt.BGT_CASUAL_STANDARD
+	assert gt.GT_CASUAL.as_bnet(format=enums.FormatType.FT_WILD) == bgt.BGT_CASUAL_WILD
 
 	assert gt.GT_VS_AI.as_bnet() == bgt.BGT_VS_AI
 	assert gt.GT_VS_FRIEND.as_bnet() == bgt.BGT_FRIENDS
