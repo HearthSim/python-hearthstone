@@ -1,5 +1,6 @@
 from .enums import (
-	CardClass, CardSet, CardType, Faction, GameTag, MultiClassGroup, PlayReq, Race, Rarity
+	CardClass, CardSet, CardType, Faction, GameTag,
+	MultiClassGroup, PlayReq, Race, Rarity, SpellSchool
 )
 from .utils import ElementTree
 
@@ -296,6 +297,7 @@ class CardXML:
 	rarity = prop(GameTag.RARITY, Rarity)
 	type = prop(GameTag.CARDTYPE, CardType)
 	multi_class_group = prop(GameTag.MULTI_CLASS_GROUP, MultiClassGroup)
+	spell_school = prop(GameTag.SPELL_SCHOOL, SpellSchool)
 
 	##
 	# Bools
