@@ -1,7 +1,7 @@
 import pytest
 
 from hearthstone.entities import Card, Game, Player
-from hearthstone.enums import CardType, GameTag, Zone
+from hearthstone.enums import CardSet, CardType, GameTag, Zone
 
 
 class TestGame:
@@ -201,6 +201,13 @@ class TestCard:
 		assert weapon.card_id == "CS2_091"
 		assert weapon.initial_card_id == "UNG_929"
 		assert not weapon.is_original_entity
+
+	def test_can_be_in_deck(self):
+		card = Card(31, "HERO_05")
+		card.tags.update({
+			GameTag.CARD_SET: CardSet.HERO_SKINS,
+		})
+		assert card.can_be_in_deck
 
 	def test_archthief_rafaam(self):
 		card = Card(4, None)

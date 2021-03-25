@@ -9,7 +9,7 @@ from .types import GameTagsDict
 PLAYABLE_CARD_TYPES = (
 	CardType.HERO, CardType.MINION, CardType.SPELL, CardType.WEAPON
 )
-INITIAL_HERO_SETS = (CardSet.CORE, CardSet.HERO_SKINS)
+STARTING_HERO_SETS = (CardSet.HERO_SKINS, )
 
 
 class Entity:
@@ -282,7 +282,7 @@ class Card(Entity):
 		elif card_type == CardType.HERO:
 			tags = self._get_initial_base_tags()
 			return (
-				tags.get(GameTag.CARD_SET, 0) not in INITIAL_HERO_SETS and
+				tags.get(GameTag.CARD_SET, 0) not in STARTING_HERO_SETS and
 				bool(tags.get(GameTag.COLLECTIBLE, 0))
 			)
 
