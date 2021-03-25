@@ -50,36 +50,41 @@ DISENCHANT_COSTS = {
 
 STANDARD_SETS = {
 	ZodiacYear.PRE_STANDARD: [
-		CardSet.CORE, CardSet.EXPERT1, CardSet.REWARD, CardSet.PROMO,
+		CardSet.BASIC, CardSet.EXPERT1, CardSet.REWARD, CardSet.PROMO,
 		CardSet.NAXX, CardSet.GVG, CardSet.BRM, CardSet.TGT, CardSet.LOE,
 	],
 	ZodiacYear.KRAKEN: [
-		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.BASIC, CardSet.EXPERT1,
 		CardSet.BRM, CardSet.TGT, CardSet.LOE, CardSet.OG, CardSet.OG_RESERVE,
 		CardSet.KARA, CardSet.KARA_RESERVE, CardSet.GANGS, CardSet.GANGS_RESERVE,
 	],
 	ZodiacYear.MAMMOTH: [
-		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.BASIC, CardSet.EXPERT1,
 		CardSet.OG, CardSet.OG_RESERVE, CardSet.KARA, CardSet.KARA_RESERVE,
 		CardSet.GANGS, CardSet.GANGS_RESERVE, CardSet.UNGORO, CardSet.ICECROWN,
 		CardSet.LOOTAPALOOZA,
 	],
 	ZodiacYear.RAVEN: [
-		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.BASIC, CardSet.EXPERT1,
 		CardSet.UNGORO, CardSet.ICECROWN, CardSet.LOOTAPALOOZA, CardSet.GILNEAS,
 		CardSet.BOOMSDAY, CardSet.TROLL,
 	],
 	ZodiacYear.DRAGON: [
-		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.BASIC, CardSet.EXPERT1,
 		CardSet.GILNEAS, CardSet.BOOMSDAY, CardSet.TROLL, CardSet.DALARAN, CardSet.ULDUM,
 		CardSet.WILD_EVENT, CardSet.DRAGONS, CardSet.YEAR_OF_THE_DRAGON,
 		CardSet.BLACK_TEMPLE, CardSet.DEMON_HUNTER_INITIATE,
 	],
 	ZodiacYear.PHOENIX: [
-		CardSet.CORE, CardSet.EXPERT1,
+		CardSet.BASIC, CardSet.EXPERT1,
 		CardSet.DALARAN, CardSet.ULDUM, CardSet.WILD_EVENT, CardSet.DRAGONS,
 		CardSet.YEAR_OF_THE_DRAGON, CardSet.BLACK_TEMPLE, CardSet.DEMON_HUNTER_INITIATE,
 		CardSet.SCHOLOMANCE, CardSet.DARKMOON_FAIRE,
+	],
+	ZodiacYear.GRYPHON: [
+		CardSet.CORE,
+		CardSet.BLACK_TEMPLE, CardSet.SCHOLOMANCE, CardSet.DARKMOON_FAIRE,
+		CardSet.THE_BARRENS
 	]
 }
 
@@ -98,6 +103,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.RAVEN: datetime(2018, 4, 12),
 	ZodiacYear.DRAGON: datetime(2019, 4, 9),
 	ZodiacYear.PHOENIX: datetime(2020, 4, 7),
+	ZodiacYear.GRYPHON: datetime(2021, 3, 30),
 }
 
 
