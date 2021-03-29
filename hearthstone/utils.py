@@ -236,6 +236,36 @@ UPGRADABLE_CARDS_MAP = {
 	"DMF_701t": "DMF_701",  # Dunk Tank
 	"DMF_080t": "DMF_080",  # Fleethoof Pearltusk
 	"DMF_244t": "DMF_244",  # Day at the Faire
+	# Tame Beast
+	"BAR_034t": "BAR_034",
+	"BAR_034t2": "BAR_034",
+	# Chain Lightning
+	"BAR_044t": "BAR_044",
+	"BAR_044t2": "BAR_044",
+	# Flurry
+	"BAR_305t": "BAR_305",
+	"BAR_305t2": "BAR_305",
+	# Condemn
+	"BAR_314t": "BAR_314",
+	"BAR_314t2": "BAR_314",
+	# Wicked Stab
+	"BAR_319t": "BAR_319",
+	"BAR_319t2": "BAR_319",
+	# Living Seed
+	"BAR_536t": "BAR_536",
+	"BAR_536t2": "BAR_536",
+	# Conviction
+	"BAR_880t": "BAR_880",
+	"BAR_880t2": "BAR_880",
+	# Conditioning
+	"BAR_842t": "BAR_842",
+	"BAR_842t2": "BAR_842",
+	# Fury
+	"BAR_891t": "BAR_891",
+	"BAR_891t2": "BAR_891",
+	# Imp Swarm
+	"BAR_914t": "BAR_914",
+	"BAR_914t2": "BAR_914",
 }
 
 
