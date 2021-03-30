@@ -807,7 +807,6 @@ class CardSet(IntEnum):
 	@property
 	def craftable(self):
 		return self in (
-			CardSet.EXPERT1,
 			CardSet.NAXX,
 			CardSet.GVG,
 			CardSet.BRM,
@@ -830,6 +829,7 @@ class CardSet(IntEnum):
 			CardSet.SCHOLOMANCE,
 			CardSet.DARKMOON_FAIRE,
 			CardSet.THE_BARRENS,
+			CardSet.LEGACY
 		)
 
 	@property
@@ -842,7 +842,7 @@ class CardSet(IntEnum):
 
 	@property
 	def is_standard(self):
-		return self in ZodiacYear.PHOENIX.standard_card_sets
+		return self in ZodiacYear.GRYPHON.standard_card_sets
 
 
 class CardType(IntEnum):
