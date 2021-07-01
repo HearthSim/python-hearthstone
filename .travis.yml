@@ -9,7 +9,7 @@ env:
   - TOXENV=mypy
 
 install:
-  - pip install --upgrade pip setuptools wheel
+  - pip install --upgrade pip setuptools types-setuptools wheel
   - pip install tox
 
 script:
