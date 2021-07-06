@@ -631,6 +631,7 @@ class GameTag(IntEnum):
 	# Missing/guessed, only present in logs
 	WEAPON = 334
 	DISCARD_CARDS = 890
+	BATTLEGROUNDS_DARKMOON_PRIZE_TURN = 1735
 
 	CANT_BE_EXHAUSTED = 244
 	CANT_EXHAUST = 226
