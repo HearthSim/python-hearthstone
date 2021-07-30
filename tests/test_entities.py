@@ -203,6 +203,21 @@ class TestPlayer:
 
 		assert player.known_starting_deck_list == [GALAKROND]
 
+	def test_known_starting_deck_list_with_maestra(self, game, player):
+		MAESTRA = "SW_050"
+
+		game.tag_change(GameTag.STEP, Step.MAIN_READY)
+
+		real_hero = Card(4, "HERO_03")
+		real_hero.tags = {
+			GameTag.CONTROLLER: 1,
+			GameTag.CARDTYPE: CardType.HERO,
+			GameTag.CREATOR_DBID: 64674,
+		}
+		game.register_entity(real_hero)
+
+		assert player.known_starting_deck_list == [MAESTRA]
+
 
 class TestCard:
 	def test_card(self):

@@ -135,6 +135,11 @@ class Game(Entity):
 				# one.
 				player.initial_hero_entity_id = entity.id
 
+				# At this point we know that Maestra must be in the starting of the player,
+				# because otherwise the reveal would not happen. Manually add it to the list
+				# of starting cards
+				player._known_starting_card_ids.add("SW_050")
+
 	def reset(self) -> None:
 		for entity in self.entities:
 			if entity is self:
@@ -159,6 +164,7 @@ class Player(Entity):
 		self.account_lo = lo
 		self.name = name
 		self.initial_hero_entity_id = 0
+		self._known_starting_card_ids = set()
 
 	def __str__(self) -> str:
 		return self.name or ""
@@ -209,10 +215,15 @@ class Player(Entity):
 		Blade) and well-known transforms (e.g. Spellstones, Unidentified Objects, Worgens)
 		so that the initial card id is included rather than the final card id.
 		"""
-		return [
+		ret = list(self._known_starting_card_ids)
+
+		original_card_ids = [
 			get_original_card_id(entity.initial_card_id)
 			for entity in self.initial_deck if entity.initial_card_id
 		]
+		ret = ret + [card_id for card_id in original_card_ids if card_id not in ret]
+
+		return ret
 
 	@property
 	def entities(self) -> Iterator[Entity]:
