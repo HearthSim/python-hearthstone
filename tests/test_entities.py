@@ -12,43 +12,6 @@ class TestGame:
 		assert game.find_entity_by_id(1) is game
 		assert game.find_entity_by_id(2) is None
 
-	def test_register_entity_maestra_disguise(self):
-		# Game Setup
-		game = Game(1)
-		game.register_entity(game)
-
-		player = Player(2, 1, 0, 0)
-		game.register_entity(player)
-
-		# Set by the exporter
-		player.initial_hero_entity_id = 3
-
-		# Create original hero
-		fake_hero = Card(3, "HERO_07")
-		fake_hero.tags = {
-			GameTag.CONTROLLER: 1,
-			GameTag.CARDTYPE: CardType.HERO,
-		}
-		game.register_entity(fake_hero)
-
-		# At this point, the starting hero is the fake one (but we don't know that yet!)
-		assert player.starting_hero == fake_hero
-
-		# Start the game
-		game.tag_change(GameTag.STEP, Step.MAIN_READY)
-
-		# ...we play a Rogue card, which creates the real hero:
-		real_hero = Card(4, "HERO_03")
-		real_hero.tags = {
-			GameTag.CONTROLLER: 1,
-			GameTag.CARDTYPE: CardType.HERO,
-			GameTag.CREATOR_DBID: 64674,
-		}
-		game.register_entity(real_hero)
-
-		# At this point, we should have a new starting_hero
-		assert player.starting_hero == real_hero
-
 
 class TestPlayer:
 	@pytest.fixture
@@ -82,6 +45,36 @@ class TestPlayer:
 		})
 
 		assert player.starting_hero == hero
+
+	def test_starting_hero_maestra(self, game, player):
+		# Set by the exporter
+		player.initial_hero_entity_id = 3
+
+		# Create original hero
+		fake_hero = Card(3, "HERO_07")
+		fake_hero.tags = {
+			GameTag.CONTROLLER: 1,
+			GameTag.CARDTYPE: CardType.HERO,
+		}
+		game.register_entity(fake_hero)
+
+		# At this point, the starting hero is the fake one (but we don't know that yet!)
+		assert player.starting_hero == fake_hero
+
+		# Start the game
+		game.tag_change(GameTag.STEP, Step.MAIN_READY)
+
+		# ...we play a Rogue card, which creates the real hero:
+		real_hero = Card(4, "HERO_03")
+		real_hero.tags = {
+			GameTag.CONTROLLER: 1,
+			GameTag.CARDTYPE: CardType.HERO,
+			GameTag.CREATOR_DBID: 64674,
+		}
+		game.register_entity(real_hero)
+
+		# At this point, we should have a new starting_hero
+		assert player.starting_hero == real_hero
 
 	def test_initial_entities(self, game, player):
 		WISP = "CS2_231"
