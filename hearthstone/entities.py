@@ -1,6 +1,6 @@
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union, cast
 
-from hearthstone.utils import get_original_card_id
+from hearthstone.utils import MAESTRA_DISGUISE_DBF_ID, get_original_card_id
 
 from .enums import CardSet, CardType, GameTag, State, Step, Zone
 from .types import GameTagsDict
@@ -30,7 +30,7 @@ class Entity:
 		)
 
 	@property
-	def controller(self):
+	def controller(self) -> Optional["Player"]:
 		return self.game.get_player(self.tags.get(GameTag.CONTROLLER, 0))
 
 	@property
@@ -120,6 +120,20 @@ class Game(Entity):
 			self.players.append(entity)
 		elif not self.setup_done:
 			self.initial_entities.append(entity)
+
+		# Update player.starting_hero for Maestra of the Masquerade
+		if (
+			entity.type == CardType.HERO and
+			entity.tags.get(GameTag.CREATOR_DBID) == MAESTRA_DISGUISE_DBF_ID
+		):
+			player = entity.controller
+			if player is not None:
+				# The player was playing Maestra, which created a fake hero at the start of
+				# the game. After playing a Rogue card, the real hero is revealed, which
+				# creates a new hero entity. To ensure that player.starting_hero returns the
+				# "correct" Rogue hero, we overwrite the initial_hero_entity_id with the new
+				# one.
+				player.initial_hero_entity_id = entity.id
 
 	def reset(self) -> None:
 		for entity in self.entities:

@@ -283,3 +283,5 @@ SCHEME_CARDS = [
 	"DAL_010",  # Tagwaggle's Scheme
 	"DAL_011",  # Lazul's Scheme
 ]
+
+MAESTRA_DISGUISE_DBF_ID = 64674
