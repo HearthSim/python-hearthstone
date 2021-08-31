@@ -343,6 +343,7 @@ class CardXML:
 	start_of_game = prop(GameTag.START_OF_GAME, bool)
 	taunt = prop(GameTag.TAUNT, bool)
 	topdeck = prop(GameTag.TOPDECK, bool)
+	tradeable = prop(GameTag.TRADEABLE, bool)
 	twinspell = prop(GameTag.TWINSPELL, bool)
 	untouchable = prop(GameTag.UNTOUCHABLE, bool)
 
@@ -351,6 +352,7 @@ class CardXML:
 
 	armor = prop(GameTag.ARMOR)
 	atk = prop(GameTag.ATK)
+	avenge = prop(GameTag.AVENGE)
 	durability = prop(GameTag.DURABILITY)
 	cost = prop(GameTag.COST)
 	health = prop(GameTag.HEALTH)
