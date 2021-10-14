@@ -1249,6 +1249,18 @@ class Zone(IntEnum):
 	STUB_ZONE_8 = LETTUCE_ABILITY
 
 
+# While the Role enum has a generic name, as of October 2021 it is exclusive to the
+# Mercenaries/Lettuce game mode.
+class Role(IntEnum):
+	"""TAG_ROLE"""
+
+	INVALID = 0
+	CASTER = 1
+	FIGHTER = 2
+	TANK = 3
+	NEUTRAL = 4
+
+
 ##
 # Game enums
 
@@ -2020,6 +2032,7 @@ TAG_TYPES = {
 	GameTag.STATE: State,
 	GameTag.MULLIGAN_STATE: Mulligan,
 	GameTag.AUTOATTACK: Type.BOOL,
+	GameTag.LETTUCE_ROLE: Role,
 }
 
 
