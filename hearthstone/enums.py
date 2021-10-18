@@ -2027,11 +2027,13 @@ TAG_TYPES = {
 	GameTag.SPARE_PART: Type.BOOL,
 	GameTag.PLAYSTATE: PlayState,
 	GameTag.ZONE: Zone,
+	GameTag.FAKE_ZONE: Zone,
 	GameTag.STEP: Step,
 	GameTag.NEXT_STEP: Step,
 	GameTag.STATE: State,
 	GameTag.MULLIGAN_STATE: Mulligan,
 	GameTag.AUTOATTACK: Type.BOOL,
+	GameTag.SPELL_SCHOOL: SpellSchool,
 	GameTag.LETTUCE_ROLE: Role,
 }
 
