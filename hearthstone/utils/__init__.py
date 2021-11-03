@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from ..enums import CardClass, CardSet, Rarity, ZodiacYear
-from .mercenaries import MERCENARIES  # noqa
 
 
 try:
