@@ -359,6 +359,7 @@ class CardXML:
 	health = prop(GameTag.HEALTH)
 	windfury = prop(GameTag.WINDFURY)
 	quest_progress_total = prop(GameTag.QUEST_PROGRESS_TOTAL)
+	cooldown = prop(GameTag.LETTUCE_COOLDOWN_CONFIG)
 
 	##
 	# Auto-guessed extras
