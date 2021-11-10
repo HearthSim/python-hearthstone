@@ -89,6 +89,8 @@ class MercenaryXML:
 		self.equipment = []
 		self.specializations = []
 
+		self.short_names = {}
+
 		self.locale = locale
 
 	def to_xml(self):
@@ -106,6 +108,13 @@ class MercenaryXML:
 			skin_elt = ElementTree.SubElement(skins_elt, "Skin", CardID=str(skin_dbf_id))
 			if skin_dbf_id == self.default_skin_dbf_id:
 				skin_elt.attrib["default"] = str(True)
+
+		if len(self.short_names):
+			short_names_elt = ElementTree.SubElement(ret, "ShortNames")
+			for locale, localized_value in sorted(self.short_names.items()):
+					if localized_value:
+						loc_element = ElementTree.SubElement(short_names_elt, locale)
+						loc_element.text = str(localized_value)
 
 		specializations_elt = ElementTree.SubElement(ret, "Specializations")
 		for specialization in self.specializations:
