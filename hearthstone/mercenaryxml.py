@@ -110,7 +110,7 @@ class MercenaryXML:
 				skin_elt.attrib["default"] = str(True)
 
 		if len(self.short_names):
-			short_names_elt = ElementTree.SubElement(ret, "ShortNames")
+			short_names_elt = ElementTree.SubElement(ret, "ShortName")
 			for locale, localized_value in sorted(self.short_names.items()):
 					if localized_value:
 						loc_element = ElementTree.SubElement(short_names_elt, locale)
