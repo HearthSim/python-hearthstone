@@ -15,6 +15,14 @@ class MercenaryXML:
 		self.name = xml.attrib["name"]
 		self.rarity = Rarity(int(xml.attrib["rarity"]))
 
+		short_name_elt = xml.find("ShortName")
+		if short_name_elt:
+			short_name_dict = {}
+			for loc_element in short_name_elt:
+				short_name_dict[loc_element.tag] = loc_element.text
+
+			self.short_names = short_name_dict
+
 		skins = xml.find("Skins")
 		for skin_elt in skins:
 			skin_dbf_id = int(skin_elt.attrib["CardID"])
