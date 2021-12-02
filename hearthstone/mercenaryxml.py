@@ -139,7 +139,7 @@ class MercenaryXML:
 					loc_element.text = str(localized_value)
 
 			abilities_elt = ElementTree.SubElement(spec_elt, "Abilities")
-			for ability in sorted(specialization["abilities"], key=lambda a: a["id"]):
+			for ability in specialization["abilities"]:
 				ability_elt = ElementTree.SubElement(
 					abilities_elt,
 					"Ability",
@@ -163,7 +163,7 @@ class MercenaryXML:
 					)
 
 		equipments_elt = ElementTree.SubElement(ret, "Equipments")
-		for equipment in sorted(self.equipment, key=lambda e: e["id"]):
+		for equipment in self.equipment:
 			equipment_elt = ElementTree.SubElement(
 				equipments_elt,
 				"Equipment",
