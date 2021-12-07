@@ -949,6 +949,7 @@ class CardSet(IntEnum):
 			CardSet.SCHOLOMANCE,
 			CardSet.DARKMOON_FAIRE,
 			CardSet.THE_BARRENS,
+			CardSet.ALTERAC_VALLEY,
 			CardSet.LEGACY
 		)
 
