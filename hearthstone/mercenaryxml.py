@@ -26,7 +26,7 @@ class MercenaryXML:
 		skins = xml.find("Skins")
 		for skin_elt in skins:
 			skin_dbf_id = int(skin_elt.attrib["CardID"])
-			self.skin_dbf_ids.add(skin_dbf_id)
+			self.skin_dbf_ids.append(skin_dbf_id)
 			if "default" in skin_elt.attrib and skin_elt.attrib["default"].lower() == "true":
 				self.default_skin_dbf_id = skin_dbf_id
 
@@ -92,7 +92,7 @@ class MercenaryXML:
 		self.rarity = Rarity.INVALID
 
 		self.default_skin_dbf_id = 0
-		self.skin_dbf_ids = set()
+		self.skin_dbf_ids = []
 
 		self.equipment = []
 		self.specializations = []
@@ -112,7 +112,7 @@ class MercenaryXML:
 		)
 
 		skins_elt = ElementTree.SubElement(ret, "Skins")
-		for skin_dbf_id in sorted(self.skin_dbf_ids):
+		for skin_dbf_id in self.skin_dbf_ids:
 			skin_elt = ElementTree.SubElement(skins_elt, "Skin", CardID=str(skin_dbf_id))
 			if skin_dbf_id == self.default_skin_dbf_id:
 				skin_elt.attrib["default"] = str(True)
