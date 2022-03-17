@@ -21,8 +21,11 @@ def load(fp) -> StringsDict:
 		filter(lambda row: row.strip() and not row.startswith("#"), fp),
 		delimiter="\t"
 	)
-	stripped_rows = [{k: v for k, v in row.items() if v} for row in reader]
-	return {stripped_row.pop("TAG"): stripped_row for stripped_row in stripped_rows}
+	stripped_rows = [{k: v for k, v in row.items() if k and v} for row in reader]
+	return {
+		stripped_row.pop("TAG"): stripped_row for stripped_row in stripped_rows
+		if stripped_row
+	}
 
 
 def load_globalstrings(locale="enUS") -> StringsDict:
