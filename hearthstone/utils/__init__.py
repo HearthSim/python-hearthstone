@@ -86,7 +86,12 @@ STANDARD_SETS = {
 		CardSet.BLACK_TEMPLE, CardSet.SCHOLOMANCE, CardSet.DARKMOON_FAIRE,
 		CardSet.THE_BARRENS, CardSet.WAILING_CAVERNS, CardSet.STORMWIND,
 		CardSet.ALTERAC_VALLEY,
-	]
+	],
+	ZodiacYear.HYDRA: [
+		CardSet.CORE,
+		CardSet.THE_BARRENS, CardSet.WAILING_CAVERNS, CardSet.STORMWIND,
+		CardSet.ALTERAC_VALLEY, CardSet.THE_SUNKEN_CITY,
+	],
 }
 
 
@@ -105,6 +110,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.DRAGON: datetime(2019, 4, 9),
 	ZodiacYear.PHOENIX: datetime(2020, 4, 7),
 	ZodiacYear.GRYPHON: datetime(2021, 3, 30),
+	ZodiacYear.HYDRA: datetime(2022, 4, 12),
 }
 
 
