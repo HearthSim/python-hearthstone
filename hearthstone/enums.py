@@ -936,6 +936,7 @@ class CardSet(IntEnum):
 
 	# Not actually present...
 	TAVERNS_OF_TIME = 1143
+	PLACEHOLDER_202204 = 1810
 
 	# Aliased from the original enums
 	FP1 = 12
