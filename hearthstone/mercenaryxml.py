@@ -16,7 +16,7 @@ class MercenaryXML:
 		self.rarity = Rarity(int(xml.attrib["rarity"]))
 
 		short_name_elt = xml.find("ShortName")
-		if short_name_elt:
+		if len(short_name_elt):
 			short_name_dict = {}
 			for loc_element in short_name_elt:
 				short_name_dict[loc_element.tag] = loc_element.text
