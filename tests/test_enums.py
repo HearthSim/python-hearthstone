@@ -60,6 +60,12 @@ def test_gametype():
 	assert not gt.GT_RANKED.is_tavern_brawl
 
 
+class TestCardSet:
+	def test_name_global(self):
+		assert enums.CardSet.NAXX.name_global == "GLOBAL_CARD_SET_NAXX"
+		assert enums.CardSet.THE_SUNKEN_CITY.name_global == "GLOBAL_CARD_SET_TSC"
+
+
 class TestMultiClassGroup:
 	def test_card_classes(self):
 		assert enums.MultiClassGroup.GRIMY_GOONS.card_classes == [

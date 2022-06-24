@@ -991,6 +991,13 @@ class CardSet(IntEnum):
 
 	@property
 	def name_global(self):
+		# Newer sets use a 2-3 letter set code
+		from .utils import CARDSET_GLOBAL_STRING_MAP
+		custom = CARDSET_GLOBAL_STRING_MAP.get(self)
+		if custom:
+			return custom
+
+		# Older sets used the enum name
 		return "GLOBAL_CARD_SET_%s" % (self.name)
 
 	@property
