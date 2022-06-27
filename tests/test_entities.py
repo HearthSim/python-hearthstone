@@ -76,7 +76,7 @@ class TestPlayer:
 		# At this point, we should have a new starting_hero
 		assert player.starting_hero == real_hero
 
-	def test_initial_entities(self, game, player):
+	def test_initial_deck(self, game, player):
 		WISP = "CS2_231"
 
 		wisp = Card(5, None)
@@ -90,6 +90,28 @@ class TestPlayer:
 		})
 
 		assert list(player.initial_deck) == [wisp]
+
+	def test_initial_deck_unknown(self, game, player):
+		WISP = "CS2_231"
+
+		wisp = Card(5, None)
+		wisp.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(wisp)
+		wisp.reveal(WISP, {
+			GameTag.CARDTYPE: CardType.MINION,
+		})
+
+		hidden = Card(6, None)
+		hidden.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(hidden)
+
+		assert list(player.initial_deck) == [wisp, hidden]
 
 	def test_known_starting_deck_list(self, game, player):
 		WISP = "CS2_231"
