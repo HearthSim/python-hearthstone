@@ -7,7 +7,11 @@ from .types import GameTagsDict
 
 
 PLAYABLE_CARD_TYPES = (
-	CardType.HERO, CardType.MINION, CardType.SPELL, CardType.WEAPON
+	CardType.HERO,
+	CardType.MINION,
+	CardType.SPELL,
+	CardType.WEAPON,
+	CardType.LOCATION,
 )
 STARTING_HERO_SETS = (CardSet.HERO_SKINS, )
 
