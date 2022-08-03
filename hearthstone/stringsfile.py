@@ -7,7 +7,6 @@ Key is always `TAG`
 import csv
 from typing import Dict, Optional, Tuple
 
-import hearthstone_data
 import requests
 
 
@@ -51,6 +50,8 @@ def _load_globalstrings_from_web(locale="enUS") -> Optional[StringsDict]:
 
 
 def _load_globalstrings_from_library(locale="enUS") -> StringsDict:
+	import hearthstone_data
+
 	path: str = hearthstone_data.get_strings_file(locale, filename="GLOBAL.txt")
 	with open(path, "r", encoding="utf-8-sig") as f:
 		return load_txt(f)
