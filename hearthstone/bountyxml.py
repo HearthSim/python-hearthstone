@@ -1,4 +1,6 @@
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
+
+import requests
 
 from .enums import Role
 from .utils import ElementTree
@@ -57,22 +59,46 @@ class BountyXML:
 bounty_cache: Dict[Tuple[str, str], Tuple[Dict[int, BountyXML], Any]] = {}
 
 
+def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+	response = requests.get(
+		"https://api.hearthstonejson.com/v1/latest/BountyDefs.xml",
+		stream=True
+	)
+
+	try:
+		if response.ok:
+			response.raw.decode_content = True
+			return ElementTree.parse(response.raw)
+		else:
+			return None
+	except requests.exceptions.RequestException:
+		return None
+
+
+def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
+	from hearthstone_data import get_bountydefs_path
+
+	if path is None:
+		path = get_bountydefs_path()
+
+	with open(path, "rb") as f:
+		return ElementTree.parse(f)
+
+
 def load(path=None, locale="enUS"):
 	cache_key = (path, locale)
 	if cache_key not in bounty_cache:
-		from hearthstone_data import get_bountydefs_path
+		xml = _bootstrap_from_web()
 
-		if path is None:
-			path = get_bountydefs_path()
+		# if not xml:
+		# 	xml = _bootstrap_from_library(path=path)
 
 		db = {}
 
-		with open(path, "rb") as f:
-			xml = ElementTree.parse(f)
-			for bountydata in xml.findall("Bounty"):
-				bounty = BountyXML.from_xml(bountydata)
-				bounty.locale = locale
-				db[bounty.id] = bounty
+		for bountydata in xml.findall("Bounty"):
+			bounty = BountyXML.from_xml(bountydata)
+			bounty.locale = locale
+			db[bounty.id] = bounty
 
 		bounty_cache[cache_key] = (db, xml)
 
