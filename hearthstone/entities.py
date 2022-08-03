@@ -6,13 +6,6 @@ from .enums import CardSet, CardType, GameTag, State, Step, Zone
 from .types import GameTagsDict
 
 
-PLAYABLE_CARD_TYPES = (
-	CardType.HERO,
-	CardType.MINION,
-	CardType.SPELL,
-	CardType.WEAPON,
-	CardType.LOCATION,
-)
 STARTING_HERO_SETS = (CardSet.HERO_SKINS, )
 
 
@@ -315,7 +308,7 @@ class Card(Entity):
 				bool(tags.get(GameTag.COLLECTIBLE, 0))
 			)
 
-		return card_type in PLAYABLE_CARD_TYPES
+		return card_type.playable
 
 	def _capture_initial_card_id(self, card_id: str, tags: GameTagsDict) -> None:
 		if self.initial_card_id:

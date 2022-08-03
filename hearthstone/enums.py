@@ -1048,13 +1048,23 @@ class CardType(IntEnum):
 	ABILITY = SPELL
 
 	@property
-	def craftable(self):
+	def playable(self):
 		return self in (
 			CardType.HERO,
-			CardType.LOCATION,
 			CardType.MINION,
 			CardType.SPELL,
 			CardType.WEAPON,
+			CardType.LOCATION,
+		)
+
+	@property
+	def craftable(self):
+		return self in (
+			CardType.HERO,
+			CardType.MINION,
+			CardType.SPELL,
+			CardType.WEAPON,
+			CardType.LOCATION,
 		)
 
 	@property
