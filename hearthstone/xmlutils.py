@@ -31,3 +31,5 @@ def download_to_tempfile_retry(url: str, fp, retries: int = 3) -> bool:
 	except RetryException:
 		if retries:
 			return download_to_tempfile_retry(url, fp, retries - 1)
+
+		return False
