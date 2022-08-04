@@ -308,7 +308,7 @@ class Card(Entity):
 				bool(tags.get(GameTag.COLLECTIBLE, 0))
 			)
 
-		return card_type.playable
+		return CardType(card_type).playable
 
 	def _capture_initial_card_id(self, card_id: str, tags: GameTagsDict) -> None:
 		if self.initial_card_id:
