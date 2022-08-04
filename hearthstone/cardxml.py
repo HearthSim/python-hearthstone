@@ -394,7 +394,7 @@ XML_URL = "https://api.hearthstonejson.com/v1/latest/CardDefs.xml"
 
 
 def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	with tempfile.TemporaryFile(mode="wb") as fp:
+	with tempfile.TemporaryFile(mode="rb+") as fp:
 		if download_to_tempfile_retry(XML_URL, fp):
 			fp.flush()
 			fp.seek(0)
