@@ -1,6 +1,6 @@
 from io import StringIO
 
-from hearthstone.stringsfile import load
+from hearthstone.stringsfile import load_txt
 
 
 TEST_STRINGS = """TAG	TEXT	COMMENT	AUDIOFILE
@@ -12,7 +12,7 @@ VO_ICC06_Marrowgar_Male_BoneWraith_Bonespike_01	The only escape is death!"""  # 
 
 
 def test_load_blank_line():
-	assert load(StringIO(TEST_STRINGS)) == {
+	assert load_txt(StringIO(TEST_STRINGS)) == {
 		"VO_ICC09_Saurfang_Male_Orc_CursedBlade_01": {
 			"TEXT": "Who’s idea was this?"
 		},

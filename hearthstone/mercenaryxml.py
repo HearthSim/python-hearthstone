@@ -1,4 +1,6 @@
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
+
+import requests
 
 from hearthstone.enums import Rarity
 
@@ -186,22 +188,46 @@ class MercenaryXML:
 mercenary_cache: Dict[Tuple[str, str], Tuple[Dict[int, MercenaryXML], Any]] = {}
 
 
+def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+	try:
+		response = requests.get(
+			"https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml",
+			stream=True
+		)
+
+		if response.ok:
+			response.raw.decode_content = True
+			return ElementTree.parse(response.raw)
+		else:
+			return None
+	except requests.exceptions.RequestException:
+		return None
+
+
+def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
+	from hearthstone_data import get_mercenarydefs_path
+
+	if path is None:
+		path = get_mercenarydefs_path()
+
+	with open(path, "rb") as f:
+		return ElementTree.parse(f)
+
+
 def load(path=None, locale="enUS"):
 	cache_key = (path, locale)
 	if cache_key not in mercenary_cache:
-		from hearthstone_data import get_mercenarydefs_path
+		xml = _bootstrap_from_web()
 
-		if path is None:
-			path = get_mercenarydefs_path()
+		# if not xml:
+		# 	xml = _bootstrap_from_library(path=path)
 
 		db = {}
 
-		with open(path, "rb") as f:
-			xml = ElementTree.parse(f)
-			for mercenarydata in xml.findall("Mercenary"):
-				bounty = MercenaryXML.from_xml(mercenarydata)
-				bounty.locale = locale
-				db[bounty.id] = bounty
+		for mercenarydata in xml.findall("Mercenary"):
+			bounty = MercenaryXML.from_xml(mercenarydata)
+			bounty.locale = locale
+			db[bounty.id] = bounty
 
 		mercenary_cache[cache_key] = (db, xml)
 
