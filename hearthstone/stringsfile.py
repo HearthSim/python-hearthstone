@@ -5,6 +5,8 @@ File format: TSV. Lines starting with `#` are ignored.
 Key is always `TAG`
 """
 import csv
+import json
+import sys
 from typing import Dict, Optional, Tuple
 
 import requests
@@ -50,9 +52,9 @@ def _load_globalstrings_from_web(locale="enUS") -> Optional[StringsDict]:
 
 
 def _load_globalstrings_from_library(locale="enUS") -> StringsDict:
-	import hearthstone_data
+	from hearthstone_data import get_strings_file
 
-	path: str = hearthstone_data.get_strings_file(locale, filename="GLOBAL.txt")
+	path: str = get_strings_file(locale, filename="GLOBAL.txt")
 	with open(path, "r", encoding="utf-8-sig") as f:
 		return load_txt(f)
 
@@ -71,9 +73,6 @@ def load_globalstrings(locale="enUS") -> StringsDict:
 
 
 if __name__ == "__main__":
-	import json
-	import sys
-
 	for path in sys.argv[1:]:
 		with open(path, "r") as f:
 			print(json.dumps(load_txt(f)))
