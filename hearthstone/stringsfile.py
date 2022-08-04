@@ -36,17 +36,12 @@ def load_txt(fp) -> StringsDict:
 
 
 def _load_globalstrings_from_web(locale="enUS") -> Optional[StringsDict]:
-	response = requests.get(
-		"https://api.hearthstonejson.com/v1/strings/%s/GLOBAL.json" % locale,
-		stream=True
-	)
-
 	try:
-		if response.ok:
-			response.raw.decode_content = True
-			return load_json(response.raw)
-		else:
-			return None
+		response = requests.get(
+			"https://api.hearthstonejson.com/v1/strings/%s/GLOBAL.json" % locale,
+		)
+
+		return load_json(response.content) if response.ok else None
 	except requests.exceptions.RequestException:
 		return None
 
