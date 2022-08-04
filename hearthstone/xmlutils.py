@@ -7,7 +7,7 @@ class RetryException(Exception):
 	pass
 
 
-def download_to_tempfile(url: str, fp: TemporaryFile) -> bool:
+def download_to_tempfile(url: str, fp) -> bool:
 	try:
 		with requests.get(url, stream=True) as r:
 			if r.ok:
@@ -23,7 +23,7 @@ def download_to_tempfile(url: str, fp: TemporaryFile) -> bool:
 		raise RetryException()
 
 
-def download_to_tempfile_retry(url: str, fp: TemporaryFile, retries: int = 3) -> bool:
+def download_to_tempfile_retry(url: str, fp, retries: int = 3) -> bool:
 	assert retries >= 0
 
 	try:
