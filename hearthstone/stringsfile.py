@@ -7,9 +7,12 @@ Key is always `TAG`
 import csv
 import json
 import sys
+import tempfile
 from typing import Dict, Optional, Tuple
 
 import requests
+
+from hearthstone.xmlutils import download_to_tempfile_retry
 
 
 StringsRow = Dict[str, str]
@@ -19,7 +22,7 @@ _cache: Dict[Tuple[str, str], StringsDict] = {}
 
 
 def load_json(fp) -> StringsDict:
-	hsjson_strings = json.loads(fp)
+	hsjson_strings = json.loads(fp.read())
 	return {k: {"TEXT": v} for k, v in hsjson_strings.items()}
 
 
@@ -36,14 +39,15 @@ def load_txt(fp) -> StringsDict:
 
 
 def _load_globalstrings_from_web(locale="enUS") -> Optional[StringsDict]:
-	try:
-		response = requests.get(
-			"https://api.hearthstonejson.com/v1/strings/%s/GLOBAL.json" % locale,
-		)
+	with tempfile.TemporaryFile() as fp:
+		json_url = "https://api.hearthstonejson.com/v1/strings/%s/GLOBAL.json" % locale
+		if download_to_tempfile_retry(json_url, fp):
+			fp.flush()
+			fp.seek(0)
 
-		return load_json(response.content) if response.ok else None
-	except requests.exceptions.RequestException:
-		return None
+			return load_json(fp)
+		else:
+			return None
 
 
 def _load_globalstrings_from_library(locale="enUS") -> StringsDict:
@@ -57,7 +61,7 @@ def _load_globalstrings_from_library(locale="enUS") -> StringsDict:
 def load_globalstrings(locale="enUS") -> StringsDict:
 	key = (locale, "GLOBAL.txt")
 	if key not in _cache:
-		sd = _load_globalstrings_from_web()
+		sd = _load_globalstrings_from_web(locale=locale)
 
 		if not sd:
 			sd = _load_globalstrings_from_library(locale=locale)

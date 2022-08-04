@@ -8,6 +8,7 @@ from .enums import (
 from .utils import ElementTree
 from .xmlutils import download_to_tempfile_retry
 
+
 LOCALIZED_TAGS = [
 	GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
 	GameTag.HOW_TO_EARN, GameTag.HOW_TO_EARN_GOLDEN,
