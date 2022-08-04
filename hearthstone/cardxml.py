@@ -1,7 +1,3 @@
-from typing import Optional
-
-import requests
-
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
 	MultiClassGroup, PlayReq, Race, Rarity, Role, SpellSchool
@@ -390,46 +386,22 @@ cardid_cache: dict = {}
 dbf_cache: dict = {}
 
 
-def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	try:
-		response = requests.get(
-			"https://api.hearthstonejson.com/v1/latest/CardDefs.xml",
-			stream=True
-		)
-
-		if response.ok:
-			response.raw.decode_content = True
-			return ElementTree.parse(response.raw)
-		else:
-			return None
-	except requests.exceptions.RequestException:
-		return None
-
-
-def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
-	from hearthstone_data import get_carddefs_path
-
-	if path is None:
-		path = get_carddefs_path()
-
-	with open(path, "rb") as f:
-		return ElementTree.parse(f)
-
-
 def _load(path, locale, cache, attr):
 	cache_key = (path, locale)
 	if cache_key not in cache:
-		xml = _bootstrap_from_web()
+		from hearthstone_data import get_carddefs_path
 
-		# if not xml:
-		# 	xml = _bootstrap_from_library(path=path)
+		if path is None:
+			path = get_carddefs_path()
 
 		db = {}
 
-		for carddata in xml.findall("Entity"):
-			card = CardXML.from_xml(carddata)
-			card.locale = locale
-			db[getattr(card, attr)] = card
+		with open(path, "rb") as f:
+			xml = ElementTree.parse(f)
+			for carddata in xml.findall("Entity"):
+				card = CardXML.from_xml(carddata)
+				card.locale = locale
+				db[getattr(card, attr)] = card
 
 		cache[cache_key] = (db, xml)
 

@@ -5,25 +5,18 @@ File format: TSV. Lines starting with `#` are ignored.
 Key is always `TAG`
 """
 import csv
-import json
-import sys
-from typing import Dict, Optional, Tuple
+from typing import Dict
 
-import requests
+import hearthstone_data
 
 
 StringsRow = Dict[str, str]
 StringsDict = Dict[str, StringsRow]
 
-_cache: Dict[Tuple[str, str], StringsDict] = {}
+_cache: Dict[str, StringsDict] = {}
 
 
-def load_json(fp) -> StringsDict:
-	hsjson_strings = json.loads(fp)
-	return {k: {"TEXT": v} for k, v in hsjson_strings.items()}
-
-
-def load_txt(fp) -> StringsDict:
+def load(fp) -> StringsDict:
 	reader = csv.DictReader(
 		filter(lambda row: row.strip() and not row.startswith("#"), fp),
 		delimiter="\t"
@@ -35,39 +28,19 @@ def load_txt(fp) -> StringsDict:
 	}
 
 
-def _load_globalstrings_from_web(locale="enUS") -> Optional[StringsDict]:
-	try:
-		response = requests.get(
-			"https://api.hearthstonejson.com/v1/strings/%s/GLOBAL.json" % locale,
-		)
-
-		return load_json(response.content) if response.ok else None
-	except requests.exceptions.RequestException:
-		return None
-
-
-def _load_globalstrings_from_library(locale="enUS") -> StringsDict:
-	from hearthstone_data import get_strings_file
-
-	path: str = get_strings_file(locale, filename="GLOBAL.txt")
-	with open(path, "r", encoding="utf-8-sig") as f:
-		return load_txt(f)
-
-
 def load_globalstrings(locale="enUS") -> StringsDict:
-	key = (locale, "GLOBAL.txt")
-	if key not in _cache:
-		sd = _load_globalstrings_from_web()
+	path: str = hearthstone_data.get_strings_file(locale, filename="GLOBAL.txt")
+	if path not in _cache:
+		with open(path, "r", encoding="utf-8-sig") as f:
+			_cache[path] = load(f)
 
-		if not sd:
-			sd = _load_globalstrings_from_library(locale=locale)
-
-		_cache[key] = sd
-
-	return _cache[key]
+	return _cache[path]
 
 
 if __name__ == "__main__":
+	import json
+	import sys
+
 	for path in sys.argv[1:]:
 		with open(path, "r") as f:
-			print(json.dumps(load_txt(f)))
+			print(json.dumps(load(f)))
