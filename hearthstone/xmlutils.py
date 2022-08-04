@@ -1,5 +1,3 @@
-from tempfile import TemporaryFile
-
 import requests
 
 

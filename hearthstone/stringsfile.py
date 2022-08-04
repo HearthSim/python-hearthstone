@@ -10,8 +10,6 @@ import sys
 import tempfile
 from typing import Dict, Optional, Tuple
 
-import requests
-
 from hearthstone.xmlutils import download_to_tempfile_retry
 
 
