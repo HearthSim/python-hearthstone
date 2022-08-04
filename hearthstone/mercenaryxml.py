@@ -1,10 +1,10 @@
+import tempfile
 from typing import Any, Dict, Optional, Tuple
-
-import requests
 
 from hearthstone.enums import Rarity
 
 from .utils import ElementTree
+from .xmlutils import download_to_tempfile_retry
 
 
 class MercenaryXML:
@@ -188,20 +188,18 @@ class MercenaryXML:
 mercenary_cache: Dict[Tuple[str, str], Tuple[Dict[int, MercenaryXML], Any]] = {}
 
 
-def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	try:
-		response = requests.get(
-			"https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml",
-			stream=True
-		)
+XML_URL = "https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml"
 
-		if response.ok:
-			response.raw.decode_content = True
-			return ElementTree.parse(response.raw)
+
+def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+	with tempfile.TemporaryFile() as fp:
+		if download_to_tempfile_retry(XML_URL, fp):
+			fp.flush()
+			fp.seek(0)
+
+			return ElementTree.parse(fp)
 		else:
 			return None
-	except requests.exceptions.RequestException:
-		return None
 
 
 def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:

@@ -1,13 +1,12 @@
+import tempfile
 from typing import Optional
-
-import requests
 
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
 	MultiClassGroup, PlayReq, Race, Rarity, Role, SpellSchool
 )
 from .utils import ElementTree
-
+from .xmlutils import download_to_tempfile_retry
 
 LOCALIZED_TAGS = [
 	GameTag.CARDNAME, GameTag.CARDTEXT_INHAND, GameTag.FLAVORTEXT,
@@ -390,20 +389,18 @@ cardid_cache: dict = {}
 dbf_cache: dict = {}
 
 
-def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	try:
-		response = requests.get(
-			"https://api.hearthstonejson.com/v1/latest/CardDefs.xml",
-			stream=True
-		)
+XML_URL = "https://api.hearthstonejson.com/v1/latest/CardDefs.xml"
 
-		if response.ok:
-			response.raw.decode_content = True
-			return ElementTree.parse(response.raw)
+
+def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+	with tempfile.TemporaryFile() as fp:
+		if download_to_tempfile_retry(XML_URL, fp):
+			fp.flush()
+			fp.seek(0)
+
+			return ElementTree.parse(fp)
 		else:
 			return None
-	except requests.exceptions.RequestException:
-		return None
 
 
 def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
@@ -421,8 +418,8 @@ def _load(path, locale, cache, attr):
 	if cache_key not in cache:
 		xml = _bootstrap_from_web()
 
-		# if not xml:
-		# 	xml = _bootstrap_from_library(path=path)
+		if not xml:
+			xml = _bootstrap_from_library(path=path)
 
 		db = {}
 

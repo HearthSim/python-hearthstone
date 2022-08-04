@@ -1,9 +1,9 @@
+import tempfile
 from typing import Any, Dict, Optional, Tuple
-
-import requests
 
 from .enums import Role
 from .utils import ElementTree
+from .xmlutils import download_to_tempfile_retry
 
 
 class BountyXML:
@@ -59,20 +59,18 @@ class BountyXML:
 bounty_cache: Dict[Tuple[str, str], Tuple[Dict[int, BountyXML], Any]] = {}
 
 
-def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	try:
-		response = requests.get(
-			"https://api.hearthstonejson.com/v1/latest/BountyDefs.xml",
-			stream=True
-		)
+XML_URL = "https://api.hearthstonejson.com/v1/latest/BountyDefs.xml"
 
-		if response.ok:
-			response.raw.decode_content = True
-			return ElementTree.parse(response.raw)
+
+def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+	with tempfile.TemporaryFile() as fp:
+		if download_to_tempfile_retry(XML_URL, fp):
+			fp.flush()
+			fp.seek(0)
+
+			return ElementTree.parse(fp)
 		else:
 			return None
-	except requests.exceptions.RequestException:
-		return None
 
 
 def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
@@ -90,8 +88,8 @@ def load(path=None, locale="enUS"):
 	if cache_key not in bounty_cache:
 		xml = _bootstrap_from_web()
 
-		# if not xml:
-		# 	xml = _bootstrap_from_library(path=path)
+		if not xml:
+			xml = _bootstrap_from_library(path=path)
 
 		db = {}
 
