@@ -189,12 +189,12 @@ mercenary_cache: Dict[Tuple[str, str], Tuple[Dict[int, MercenaryXML], Any]] = {}
 
 
 def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	response = requests.get(
-		"https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml",
-		stream=True
-	)
-
 	try:
+		response = requests.get(
+			"https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml",
+			stream=True
+		)
+
 		if response.ok:
 			response.raw.decode_content = True
 			return ElementTree.parse(response.raw)

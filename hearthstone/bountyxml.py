@@ -60,12 +60,12 @@ bounty_cache: Dict[Tuple[str, str], Tuple[Dict[int, BountyXML], Any]] = {}
 
 
 def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
-	response = requests.get(
-		"https://api.hearthstonejson.com/v1/latest/BountyDefs.xml",
-		stream=True
-	)
-
 	try:
+		response = requests.get(
+			"https://api.hearthstonejson.com/v1/latest/BountyDefs.xml",
+			stream=True
+		)
+
 		if response.ok:
 			response.raw.decode_content = True
 			return ElementTree.parse(response.raw)
