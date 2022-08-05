@@ -5,18 +5,26 @@ File format: TSV. Lines starting with `#` are ignored.
 Key is always `TAG`
 """
 import csv
-from typing import Dict
+import json
+import sys
+import tempfile
+from typing import Dict, Optional, Tuple
 
-import hearthstone_data
+from hearthstone.xmlutils import download_to_tempfile_retry
 
 
 StringsRow = Dict[str, str]
 StringsDict = Dict[str, StringsRow]
 
-_cache: Dict[str, StringsDict] = {}
+_cache: Dict[Tuple[str, str], StringsDict] = {}
 
 
-def load(fp) -> StringsDict:
+def load_json(fp) -> StringsDict:
+	hsjson_strings = json.loads(fp.read())
+	return {k: {"TEXT": v} for k, v in hsjson_strings.items()}
+
+
+def load_txt(fp) -> StringsDict:
 	reader = csv.DictReader(
 		filter(lambda row: row.strip() and not row.startswith("#"), fp),
 		delimiter="\t"
@@ -28,19 +36,40 @@ def load(fp) -> StringsDict:
 	}
 
 
-def load_globalstrings(locale="enUS") -> StringsDict:
-	path: str = hearthstone_data.get_strings_file(locale, filename="GLOBAL.txt")
-	if path not in _cache:
-		with open(path, "r", encoding="utf-8-sig") as f:
-			_cache[path] = load(f)
+def _load_globalstrings_from_web(locale="enUS") -> Optional[StringsDict]:
+	with tempfile.TemporaryFile() as fp:
+		json_url = "https://api.hearthstonejson.com/v1/strings/%s/GLOBAL.json" % locale
+		if download_to_tempfile_retry(json_url, fp):
+			fp.flush()
+			fp.seek(0)
 
-	return _cache[path]
+			return load_json(fp)
+		else:
+			return None
+
+
+def _load_globalstrings_from_library(locale="enUS") -> StringsDict:
+	from hearthstone_data import get_strings_file
+
+	path: str = get_strings_file(locale, filename="GLOBAL.txt")
+	with open(path, "r", encoding="utf-8-sig") as f:
+		return load_txt(f)
+
+
+def load_globalstrings(locale="enUS") -> StringsDict:
+	key = (locale, "GLOBAL.txt")
+	if key not in _cache:
+		sd = _load_globalstrings_from_web(locale=locale)
+
+		if not sd:
+			sd = _load_globalstrings_from_library(locale=locale)
+
+		_cache[key] = sd
+
+	return _cache[key]
 
 
 if __name__ == "__main__":
-	import json
-	import sys
-
 	for path in sys.argv[1:]:
 		with open(path, "r") as f:
-			print(json.dumps(load(f)))
+			print(json.dumps(load_txt(f)))

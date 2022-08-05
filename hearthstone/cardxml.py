@@ -1,8 +1,12 @@
+import tempfile
+from typing import Optional
+
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
 	MultiClassGroup, PlayReq, Race, Rarity, Role, SpellSchool
 )
 from .utils import ElementTree
+from .xmlutils import download_to_tempfile_retry
 
 
 LOCALIZED_TAGS = [
@@ -386,22 +390,44 @@ cardid_cache: dict = {}
 dbf_cache: dict = {}
 
 
+XML_URL = "https://api.hearthstonejson.com/v1/latest/CardDefs.xml"
+
+
+def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+	with tempfile.TemporaryFile(mode="rb+") as fp:
+		if download_to_tempfile_retry(XML_URL, fp):
+			fp.flush()
+			fp.seek(0)
+
+			return ElementTree.parse(fp)
+		else:
+			return None
+
+
+def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
+	from hearthstone_data import get_carddefs_path
+
+	if path is None:
+		path = get_carddefs_path()
+
+	with open(path, "rb") as f:
+		return ElementTree.parse(f)
+
+
 def _load(path, locale, cache, attr):
 	cache_key = (path, locale)
 	if cache_key not in cache:
-		from hearthstone_data import get_carddefs_path
+		xml = _bootstrap_from_web()
 
-		if path is None:
-			path = get_carddefs_path()
+		if not xml:
+			xml = _bootstrap_from_library(path=path)
 
 		db = {}
 
-		with open(path, "rb") as f:
-			xml = ElementTree.parse(f)
-			for carddata in xml.findall("Entity"):
-				card = CardXML.from_xml(carddata)
-				card.locale = locale
-				db[getattr(card, attr)] = card
+		for carddata in xml.findall("Entity"):
+			card = CardXML.from_xml(carddata)
+			card.locale = locale
+			db[getattr(card, attr)] = card
 
 		cache[cache_key] = (db, xml)
 

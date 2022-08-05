@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from hearthstone import enums
+from hearthstone.enums import CardClass, Locale, get_localized_name
 
 
 def test_zodiac_dates():
@@ -74,3 +75,27 @@ class TestMultiClassGroup:
 			enums.CardClass.PALADIN,
 		]
 		assert enums.MultiClassGroup.INVALID.card_classes == []
+
+
+def test_get_localized_name():
+	d = {
+		locale.name: get_localized_name(CardClass.DRUID, locale.name) for locale in Locale
+		if not locale.unused
+	}
+
+	assert d == {
+		"deDE": "Druide",
+		"enUS": "Druid",
+		"esES": "Druida",
+		"esMX": "Druida",
+		"frFR": "Druide",
+		"itIT": "Druido",
+		"jaJP": "ドルイド",
+		"koKR": "드루이드",
+		"plPL": "Druid",
+		"ptBR": "Druida",
+		"ruRU": "Друид",
+		"thTH": "ดรูอิด",
+		"zhCN": "德鲁伊",
+		"zhTW": "德魯伊"
+	}
