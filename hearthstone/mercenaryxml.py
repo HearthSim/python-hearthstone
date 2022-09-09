@@ -215,10 +215,12 @@ def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
 def load(path=None, locale="enUS"):
 	cache_key = (path, locale)
 	if cache_key not in mercenary_cache:
-		xml = _bootstrap_from_web()
+		xml = None
+		if path is None:
+			xml = _bootstrap_from_web()
 
-		# if not xml:
-		# 	xml = _bootstrap_from_library(path=path)
+		if not xml:
+			xml = _bootstrap_from_library(path=path)
 
 		db = {}
 

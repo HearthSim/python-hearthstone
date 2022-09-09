@@ -417,7 +417,9 @@ def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
 def _load(path, locale, cache, attr):
 	cache_key = (path, locale)
 	if cache_key not in cache:
-		xml = _bootstrap_from_web()
+		xml = None
+		if path is None:
+			xml = _bootstrap_from_web()
 
 		if not xml:
 			xml = _bootstrap_from_library(path=path)
