@@ -10,6 +10,7 @@ except ImportError:
 
 
 CARDCLASS_HERO_MAP = {
+	CardClass.DEATHKNIGHT: "HERO_11",
 	CardClass.DEMONHUNTER: "HERO_10",
 	CardClass.DRUID: "HERO_06",
 	CardClass.HUNTER: "HERO_05",
