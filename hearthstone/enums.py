@@ -1070,6 +1070,8 @@ class CardSet(IntEnum):
 			CardSet.ALTERAC_VALLEY,
 			CardSet.LEGACY,
 			CardSet.THE_SUNKEN_CITY,
+			CardSet.RETURN_OF_THE_LICH_KING,
+			CardSet.PATH_OF_ARTHAS,
 		)
 
 	@property
