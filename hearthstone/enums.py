@@ -1364,6 +1364,31 @@ class Race(IntEnum):
 		"""Whether this Race appears as a minion pool in Battlegrounds matches."""
 		return self in BATTLEGROUNDS_RACES
 
+	@property
+	def order(self):
+		"""
+		Returns the priority of this Race for the purpose of multi class sorting, with 0
+		being the highest priority.
+		"""
+		if self in RACE_ORDER:
+			return RACE_ORDER.index(self)
+		return len(RACE_ORDER) + int(self)
+
+
+RACE_ORDER = [
+	Race.UNDEAD,
+	Race.ELEMENTAL,
+	Race.MECHANICAL,
+	Race.DEMON,
+	Race.MURLOC,
+	Race.QUILBOAR,
+	Race.NAGA,
+	Race.PET,
+	Race.DRAGON,
+	Race.TOTEM,
+	Race.PIRATE,
+]
+
 
 VISIBLE_RACES = [
 	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.ELEMENTAL, Race.BEAST,

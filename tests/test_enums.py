@@ -78,6 +78,17 @@ class TestMultiClassGroup:
 		assert enums.MultiClassGroup.INVALID.card_classes == []
 
 
+class TestRace:
+	def test_order(self):
+		assert enums.Race.UNDEAD.order == 0  # First item
+		assert enums.Race.HALFORC.order > 30  # No order specified
+
+		assert sorted(
+			[enums.Race.PIRATE, enums.Race.UNDEAD],
+			key=lambda x: x.order
+		) == [enums.Race.UNDEAD, enums.Race.PIRATE]
+
+
 def test_get_localized_name():
 	d = {
 		locale.name: get_localized_name(CardClass.DRUID, locale.name) for locale in Locale
