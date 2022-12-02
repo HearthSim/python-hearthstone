@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from ..enums import CardClass, CardSet, Race, Rarity, ZodiacYear
+from ..enums import CardClass, CardSet, Rarity, ZodiacYear
 
 
 try:
