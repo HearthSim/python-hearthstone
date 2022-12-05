@@ -419,8 +419,17 @@ def _load(path, locale, cache, attr):
 	cache_key = (path, locale)
 	if cache_key not in cache:
 		xml = None
+
 		if path is None:
-			xml = _bootstrap_from_web()
+			# Check if the hearthstone_data package exists locally
+			has_lib = True
+			try:
+				import hearthstone_data  # noqa: F401
+			except ImportError:
+				has_lib = False
+
+			if not has_lib:
+				xml = _bootstrap_from_web()
 
 		if not xml:
 			xml = _bootstrap_from_library(path=path)
