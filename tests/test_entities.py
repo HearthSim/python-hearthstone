@@ -113,6 +113,23 @@ class TestPlayer:
 
 		assert list(player.initial_deck) == [wisp, hidden]
 
+	def test_initial_deck_with_souleathers_scythe(self, game, player):
+		wisp = Card(5, None)
+		wisp.tags.update({
+			GameTag.ZONE: Zone.GRAVEYARD,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(wisp)
+
+		scythe = Card(6, None)
+		scythe.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(scythe)
+
+		assert list(player.initial_deck) == [wisp, scythe]
+
 	def test_known_starting_deck_list(self, game, player):
 		WISP = "CS2_231"
 
@@ -239,6 +256,57 @@ class TestPlayer:
 		game.register_entity(real_hero)
 
 		assert player.known_starting_deck_list == [MAESTRA]
+
+	def test_known_starting_deck_list_with_souleaters_scythe(self, game, player):
+		WISP = "CS2_231"
+		SOULEATERS_SCYTHE = "RLK_214"
+		BOUND_SOUL = "RLK_214t"
+
+		wisp = Card(5, WISP)
+		wisp.tags.update({
+			GameTag.ZONE: Zone.GRAVEYARD,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(wisp)
+
+		scythe = Card(6, None)
+		scythe.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(scythe)
+
+		game.tag_change(GameTag.NEXT_STEP, Step.MAIN_READY)
+
+		# Start of game: create souls
+		game.tag_change(GameTag.NEXT_STEP, Step.MAIN_READY)
+
+		soul = Card(7, None)
+		soul.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(scythe)
+		soul.reveal(BOUND_SOUL, {})
+		soul.hide()
+
+		game.tag_change(GameTag.STEP, Step.MAIN_READY)
+
+		# Draw the Scythe
+		scythe.reveal(SOULEATERS_SCYTHE, {
+			GameTag.CARDTYPE: CardType.SPELL,
+			GameTag.CONTROLLER: player.player_id,
+			GameTag.ZONE: Zone.HAND,
+		})
+
+		# Draw the Soul
+		soul.reveal(BOUND_SOUL, {
+			GameTag.CARDTYPE: CardType.SPELL,
+			GameTag.CONTROLLER: player.player_id,
+			GameTag.ZONE: Zone.HAND,
+		})
+
+		assert player.known_starting_deck_list == [WISP, SOULEATERS_SCYTHE]
 
 
 class TestCard:
