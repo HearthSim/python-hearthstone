@@ -291,6 +291,17 @@ class CardXML:
 
 		return ret
 
+	@property
+	def races(self):
+		ret = []
+
+		# TODO
+
+		if len(ret) > 1:
+			ret = sorted(ret, key=lambda race: race.order)
+
+		return ret
+
 	##
 	# Enums
 
