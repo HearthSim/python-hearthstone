@@ -373,3 +373,32 @@ SCHEME_CARDS = [
 ]
 
 MAESTRA_DISGUISE_DBF_ID = 64674
+
+
+if __name__ == "__main__":
+	def _print_cs_dicts(dicts_and_names, tl_format, format):
+		ret = []
+		linefmt = "\t\t{ %d, %s }"
+		for name, dict in dicts_and_names:
+			keytype = int
+			valtype = list(dict.values())[0].__class__
+
+			lines = ",\n".join(
+				linefmt % (keytype(key), valtype(value))
+				for key, value in dict.items()
+				if key is not None
+			)
+			ret.append(format % (name, lines))
+
+		lines = "\n\n".join(ret)
+		print(tl_format % (lines))
+
+	print("using System.Collections.Generic;\n")
+
+	_print_cs_dicts(
+		[
+			("TagRaceMap", REVERSE_CARDRACE_TAG_MAP)
+		],
+		"public static class RaceUtils {\n%s\n}",
+		"\tpublic static Dictionary<int, Race> %s = new Dictionary<int, Race>() {\n%s\n\t};",
+	)
