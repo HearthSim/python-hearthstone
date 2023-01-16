@@ -1,6 +1,6 @@
 # python-hearthstone
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/hearthsim/python-hearthstone/CI)](https://github.com/HearthSim/python-hearthstone/actions/workflows/ci.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/hearthsim/python-hearthstone/ci.yml?branch=master)](https://github.com/HearthSim/python-hearthstone/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/hearthstone.svg)](https://pypi.org/project/hearthstone/)
 
 A Hearthstone Python library containing:
