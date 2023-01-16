@@ -1,4 +1,5 @@
 from hearthstone import cardxml
+from hearthstone.enums import GameTag, Race
 
 
 def test_cardxml_load():
@@ -16,3 +17,13 @@ def test_cardxml_load():
 
 	assert cardid_db["EX1_001"].quest_reward == ""
 	assert cardid_db["UNG_940"].quest_reward == "UNG_940t8"
+
+
+def test_races():
+	card = cardxml.CardXML("EX1_001")
+	card.tags[GameTag.CARDRACE] = Race.UNDEAD
+	card.tags[Race.DRAGON.race_tag] = 1
+	assert card.races == [
+		Race.UNDEAD,
+		Race.DRAGON,
+	]

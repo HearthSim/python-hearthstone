@@ -1344,6 +1344,7 @@ class Race(IntEnum):
 	GOLEM = 98
 	HARPY = 99
 	VULPERA = 100
+	# When adding a new race, ensure you also update utils.RACE_TAG_MAP
 
 	# Aliased
 	PET = 20
@@ -1363,6 +1364,16 @@ class Race(IntEnum):
 	def is_battlegrounds_pool(self):
 		"""Whether this Race appears as a minion pool in Battlegrounds matches."""
 		return self in BATTLEGROUNDS_RACES
+
+	@property
+	def race_tag(self):
+		from .utils import CARDRACE_TAG_MAP
+		return CARDRACE_TAG_MAP.get(self)
+
+	@staticmethod
+	def get_race_for_game_tag(game_tag):
+		from .utils import REVERSE_CARDRACE_TAG_MAP
+		return REVERSE_CARDRACE_TAG_MAP.get(game_tag)
 
 
 VISIBLE_RACES = [

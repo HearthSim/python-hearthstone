@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from ..enums import CardClass, CardSet, Rarity, ZodiacYear
+from ..enums import CardClass, CardSet, Race, Rarity, ZodiacYear
 
 
 try:
@@ -39,6 +39,69 @@ CARDSET_GLOBAL_STRING_MAP = {
 	CardSet.ALTERAC_VALLEY: "GLOBAL_CARD_SET_AV",
 	CardSet.THE_SUNKEN_CITY: "GLOBAL_CARD_SET_TSC",
 }
+
+
+# The following dictionary is a consequence of Hearthstone adding multi-race cards.
+#
+# Before patch 25.0 Hearthstone only supported a single Race tag per card. However, in order
+# to support an arbitrary number of Races per card the game developer has introduced a set
+# of flag tags, that only exist to signify cards belonging to a specific race.
+#
+# For example, a card Wisp would be an "Undead Dragon" if it had the tags
+# 2534 and 2523 set. However, in practice, one of these is still encoded using the Race tag,
+# so likely such a card would have RACE = 11 (UNDEAD) and 2523 = 1 (DRAGON).
+#
+# If a new race is introduced, you're expected to add the tag here. You can find out the
+# mapping by running patch processing and looking at the RaceTagMap.xml in the output
+# directory.
+CARDRACE_TAG_MAP = {
+	Race.BLOODELF: 2524,
+	Race.DRAENEI: None,
+	Race.DWARF: 2526,
+	Race.GNOME: 2527,
+	Race.GOBLIN: 2528,
+	Race.HUMAN: 2529,
+	Race.NIGHTELF: 2530,
+	Race.ORC: 2531,
+	Race.TAUREN: 2532,
+	Race.TROLL: 2533,
+	Race.UNDEAD: 2534,
+	Race.WORGEN: 2535,
+	Race.GOBLIN2: None,
+	Race.MURLOC: 2536,
+	Race.DEMON: 2537,
+	Race.SCOURGE: 2538,
+	Race.MECHANICAL: 2539,
+	Race.ELEMENTAL: 2540,
+	Race.OGRE: 2541,
+	Race.BEAST: 2542,
+	Race.TOTEM: 2543,
+	Race.NERUBIAN: 2544,
+	Race.PIRATE: 2522,
+	Race.DRAGON: 2523,
+	Race.BLANK: None,
+	Race.ALL: None,
+	Race.EGG: 2545,
+	Race.QUILBOAR: 2546,
+	Race.CENTAUR: 2547,
+	Race.FURBOLG: 2548,
+	Race.HIGHELF: 2549,
+	Race.TREANT: 2550,
+	Race.OWLKIN: 2551,
+	Race.HALFORC: 2552,
+	Race.LOCK: None,
+	Race.NAGA: 2553,
+	Race.OLDGOD: 2554,
+	Race.PANDAREN: 2555,
+	Race.GRONN: 2556,
+	Race.CELESTIAL: 2584,
+	Race.GNOLL: 2585,
+	Race.GOLEM: 2586,
+	Race.HARPY: 2587,
+	Race.VULPERA: 2588,
+	# See comment at start of dictionary for how to identify the value for newly added races
+}
+REVERSE_CARDRACE_TAG_MAP = {v: k for k, v in CARDRACE_TAG_MAP.items()}
 
 
 SECRET_COSTS = {
