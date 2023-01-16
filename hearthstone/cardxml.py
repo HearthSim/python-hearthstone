@@ -295,16 +295,16 @@ class CardXML:
 	def races(self):
 		ret = []
 
-		tag_race = self.tags.get(GameTag.CARDRACE, 0)
-		if tag_race:
-			ret.append(Race(tag_race))
-
 		for tag, value in self.tags.items():
+			if tag == GameTag.CARDRACE:
+				ret.append(Race(value))
+				continue
+
 			potential_race_tag = Race.get_race_for_game_tag(tag)
 			if potential_race_tag is not None:
 				ret.append(Race(potential_race_tag))
 
-		return sorted(ret)
+		return sorted(ret, key=lambda r: r.text_order)
 
 	##
 	# Enums

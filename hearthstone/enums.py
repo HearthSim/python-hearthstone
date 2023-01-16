@@ -1375,10 +1375,24 @@ class Race(IntEnum):
 		from .utils import REVERSE_CARDRACE_TAG_MAP
 		return REVERSE_CARDRACE_TAG_MAP.get(game_tag)
 
+	@property
+	def text_order(self):
+		return (
+			RACE_TEXT_ORDER.index(self) if self in RACE_TEXT_ORDER
+			# Sort the others to the end, but keep enum order
+			else len(RACE_TEXT_ORDER) + int(self)
+		)
+
 
 VISIBLE_RACES = [
 	Race.MURLOC, Race.DEMON, Race.MECHANICAL, Race.ELEMENTAL, Race.BEAST,
 	Race.TOTEM, Race.PIRATE, Race.DRAGON, Race.ALL,
+]
+
+# The order in which the races appear on cards
+RACE_TEXT_ORDER = [
+	Race.UNDEAD, Race.ELEMENTAL, Race.MECHANICAL, Race.DEMON, Race.MURLOC, Race.QUILBOAR,
+	Race.NAGA, Race.PET, Race.DRAGON, Race.TOTEM, Race.PIRATE
 ]
 
 # All minion types that may appear as a minion pool in Battlegrounds matches.
