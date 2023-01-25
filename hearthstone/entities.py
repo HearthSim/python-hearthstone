@@ -189,7 +189,7 @@ class Player(Entity):
 				continue
 
 			# Exclude entities that aren't initially in the deck
-			# We include the graveyard because of Souleater's Scythe, that moves the game
+			# We include the graveyard because of Souleater's Scythe, that moves
 			# into the graveyard before the mulligan.
 			if entity.initial_zone not in (Zone.DECK, Zone.GRAVEYARD):
 				continue
