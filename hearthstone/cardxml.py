@@ -446,8 +446,8 @@ def _load(path, locale, cache, attr):
 					card.locale = locale
 					db[getattr(card, attr)] = card
 
-					elem.clear()
-					root.clear()
+					elem.clear()  # type: ignore
+					root.clear()  # type: ignore
 
 		if path is None:
 			# Check if the hearthstone_data package exists locally

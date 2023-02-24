@@ -99,8 +99,8 @@ def load(path=None, locale="enUS"):
 					bounty.locale = locale
 					db[bounty.id] = bounty
 
-					elem.clear()
-					root.clear()
+					elem.clear()  # type: ignore
+					root.clear()  # type: ignore
 
 		if path is None:
 			# Check if the hearthstone_data package exists locally

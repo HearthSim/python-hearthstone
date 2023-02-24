@@ -228,8 +228,8 @@ def load(path=None, locale="enUS"):
 					merc.locale = locale
 					db[merc.id] = merc
 
-					elem.clear()
-					root.clear()
+					elem.clear()  # type: ignore
+					root.clear()  # type: ignore
 
 		if path is None:
 			_bootstrap_from_web(parse)
