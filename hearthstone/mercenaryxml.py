@@ -1,5 +1,5 @@
 import tempfile
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Iterator, Tuple
 
 from hearthstone.enums import Rarity
 
@@ -191,44 +191,52 @@ mercenary_cache: Dict[Tuple[str, str], Tuple[Dict[int, MercenaryXML], Any]] = {}
 XML_URL = "https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml"
 
 
-def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+def _bootstrap_from_web(parse: Callable[[Iterator[tuple[str, Any]]], None]):
 	with tempfile.TemporaryFile(mode="rb+") as fp:
 		if download_to_tempfile_retry(XML_URL, fp):
 			fp.flush()
 			fp.seek(0)
 
-			return ElementTree.parse(fp)
-		else:
-			return None
+			parse(ElementTree.iterparse(fp, events=("start", "end",)))
 
 
-def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
+def _bootstrap_from_library(parse: Callable[[Iterator[tuple[str, Any]]], None], path=None):
 	from hearthstone_data import get_mercenarydefs_path
 
 	if path is None:
 		path = get_mercenarydefs_path()
 
 	with open(path, "rb") as f:
-		return ElementTree.parse(f)
+		parse(ElementTree.iterparse(f, events=("start", "end",)))
 
 
 def load(path=None, locale="enUS"):
 	cache_key = (path, locale)
 	if cache_key not in mercenary_cache:
-		xml = None
-		if path is None:
-			xml = _bootstrap_from_web()
-
-		if not xml:
-			xml = _bootstrap_from_library(path=path)
-
 		db = {}
 
-		for mercenarydata in xml.findall("Mercenary"):
-			bounty = MercenaryXML.from_xml(mercenarydata)
-			bounty.locale = locale
-			db[bounty.id] = bounty
+		def parse(context: Iterator[tuple[str, Any]]):
+			nonlocal db
+			root = None
+			for action, elem in context:
+				if action == "start" and elem.tag == "MercenaryDefs":
+					root = elem
+					continue
 
-		mercenary_cache[cache_key] = (db, xml)
+				if action == "end" and elem.tag == "Mercenary":
+					merc = MercenaryXML.from_xml(elem)
+					merc.locale = locale
+					db[merc.id] = merc
+
+					elem.clear()
+					root.clear()
+
+		if path is None:
+			_bootstrap_from_web(parse)
+
+		if not db:
+			_bootstrap_from_library(parse, path=path)
+
+		mercenary_cache[cache_key] = (db, None)
 
 	return mercenary_cache[cache_key]

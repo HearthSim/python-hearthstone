@@ -1,5 +1,5 @@
 import tempfile
-from typing import Optional
+from typing import Any, Callable, Iterator
 
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
@@ -409,31 +409,45 @@ dbf_cache: dict = {}
 XML_URL = "https://api.hearthstonejson.com/v1/latest/CardDefs.xml"
 
 
-def _bootstrap_from_web() -> Optional[ElementTree.ElementTree]:
+def _bootstrap_from_web(parse: Callable[[Iterator[tuple[str, Any]]], None]):
 	with tempfile.TemporaryFile(mode="rb+") as fp:
 		if download_to_tempfile_retry(XML_URL, fp):
 			fp.flush()
 			fp.seek(0)
 
-			return ElementTree.parse(fp)
-		else:
-			return None
+			parse(ElementTree.iterparse(fp, events=("start", "end",)))
 
 
-def _bootstrap_from_library(path=None) -> ElementTree.ElementTree:
+def _bootstrap_from_library(parse: Callable[[Iterator[tuple[str, Any]]], None], path=None):
 	from hearthstone_data import get_carddefs_path
 
 	if path is None:
 		path = get_carddefs_path()
 
 	with open(path, "rb") as f:
-		return ElementTree.parse(f)
+		parse(ElementTree.iterparse(f, events=("start", "end",)))
 
 
 def _load(path, locale, cache, attr):
 	cache_key = (path, locale)
 	if cache_key not in cache:
-		xml = None
+		db = {}
+
+		def parse(context: Iterator[tuple[str, Any]]):
+			nonlocal db
+			root = None
+			for action, elem in context:
+				if action == "start" and elem.tag == "CardDefs":
+					root = elem
+					continue
+
+				if action == "end" and elem.tag == "Entity":
+					card = CardXML.from_xml(elem)
+					card.locale = locale
+					db[getattr(card, attr)] = card
+
+					elem.clear()
+					root.clear()
 
 		if path is None:
 			# Check if the hearthstone_data package exists locally
@@ -444,19 +458,12 @@ def _load(path, locale, cache, attr):
 				has_lib = False
 
 			if not has_lib:
-				xml = _bootstrap_from_web()
+				_bootstrap_from_web(parse)
 
-		if not xml:
-			xml = _bootstrap_from_library(path=path)
+		if not db:
+			_bootstrap_from_library(parse, path=path)
 
-		db = {}
-
-		for carddata in xml.findall("Entity"):
-			card = CardXML.from_xml(carddata)
-			card.locale = locale
-			db[getattr(card, attr)] = card
-
-		cache[cache_key] = (db, xml)
+		cache[cache_key] = (db, None)
 
 	return cache[cache_key]
 
