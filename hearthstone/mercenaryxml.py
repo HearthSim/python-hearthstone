@@ -1,5 +1,11 @@
+import os
+import pickle
+import sqlite3
 import tempfile
+import uuid
 from typing import Any, Callable, Dict, Iterator, Tuple
+
+from sqlitedict import SqliteDict
 
 from hearthstone.enums import Rarity
 
@@ -213,10 +219,17 @@ def _bootstrap_from_library(parse: Callable[[Iterator[tuple[str, Any]]], None], 
 def load(path=None, locale="enUS"):
 	cache_key = (path, locale)
 	if cache_key not in mercenary_cache:
-		db = {}
+		card_count = 0
+		filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid4()))
+		conn = sqlite3.connect(filename)
+		conn.execute(
+			'CREATE TABLE IF NOT EXISTS "unnamed" (key INT PRIMARY KEY, value BLOB)'
+		)
 
 		def parse(context: Iterator[tuple[str, Any]]):
-			nonlocal db
+			nonlocal card_count
+			nonlocal conn
+
 			root = None
 			for action, elem in context:
 				if action == "start" and elem.tag == "MercenaryDefs":
@@ -226,7 +239,18 @@ def load(path=None, locale="enUS"):
 				if action == "end" and elem.tag == "Mercenary":
 					merc = MercenaryXML.from_xml(elem)
 					merc.locale = locale
-					db[merc.id] = merc
+
+					conn.execute(
+						'REPLACE INTO "unnamed" (key, value) VALUES (?,?)',
+						(
+							merc.id,
+							sqlite3.Binary(
+								pickle.dumps(merc, protocol=pickle.HIGHEST_PROTOCOL)
+							)
+						)
+					)
+
+					card_count += 1
 
 					elem.clear()  # type: ignore
 					root.clear()  # type: ignore
@@ -234,9 +258,13 @@ def load(path=None, locale="enUS"):
 		if path is None:
 			_bootstrap_from_web(parse)
 
-		if not db:
+		if not card_count:
 			_bootstrap_from_library(parse, path=path)
 
-		mercenary_cache[cache_key] = (db, None)
+		conn.commit()
+		conn.close()
+
+		db = SqliteDict(filename)
+		mercenary_cache[cache_key] = (db, None)  # type: ignore
 
 	return mercenary_cache[cache_key]

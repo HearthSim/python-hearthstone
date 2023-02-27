@@ -1,5 +1,11 @@
+import os
+import pickle
+import sqlite3
 import tempfile
+import uuid
 from typing import Any, Callable, Iterator
+
+from sqlitedict import SqliteDict, identity
 
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
@@ -428,13 +434,20 @@ def _bootstrap_from_library(parse: Callable[[Iterator[tuple[str, Any]]], None], 
 		parse(ElementTree.iterparse(f, events=("start", "end",)))
 
 
-def _load(path, locale, cache, attr):
+def _load(path, locale, cache, attr, encode_key=identity, decode_key=identity):
 	cache_key = (path, locale)
 	if cache_key not in cache:
-		db = {}
+		card_count = 0
+		filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid4()))
+		conn = sqlite3.connect(filename)
+		conn.execute(
+			'CREATE TABLE IF NOT EXISTS "unnamed" (key TEXT PRIMARY KEY, value BLOB)'
+		)
 
 		def parse(context: Iterator[tuple[str, Any]]):
-			nonlocal db
+			nonlocal card_count
+			nonlocal conn
+
 			root = None
 			for action, elem in context:
 				if action == "start" and elem.tag == "CardDefs":
@@ -444,7 +457,18 @@ def _load(path, locale, cache, attr):
 				if action == "end" and elem.tag == "Entity":
 					card = CardXML.from_xml(elem)
 					card.locale = locale
-					db[getattr(card, attr)] = card
+
+					conn.execute(
+						'REPLACE INTO "unnamed" (key, value) VALUES (?,?)',
+						(
+							encode_key(getattr(card, attr)),
+							sqlite3.Binary(
+								pickle.dumps(card, protocol=pickle.HIGHEST_PROTOCOL)
+							)
+						)
+					)
+
+					card_count += 1
 
 					elem.clear()  # type: ignore
 					root.clear()  # type: ignore
@@ -460,9 +484,13 @@ def _load(path, locale, cache, attr):
 			if not has_lib:
 				_bootstrap_from_web(parse)
 
-		if not db:
+		if not card_count:
 			_bootstrap_from_library(parse, path=path)
 
+		conn.commit()
+		conn.close()
+
+		db = SqliteDict(filename, encode_key=encode_key, decode_key=decode_key)
 		cache[cache_key] = (db, None)
 
 	return cache[cache_key]
@@ -473,4 +501,4 @@ def load(path=None, locale="enUS"):
 
 
 def load_dbf(path=None, locale="enUS"):
-	return _load(path, locale, dbf_cache, "dbf_id")
+	return _load(path, locale, dbf_cache, "dbf_id", decode_key=int)
