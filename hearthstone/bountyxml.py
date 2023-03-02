@@ -62,7 +62,7 @@ bounty_cache: Dict[Tuple[str, str], Tuple[Dict[int, BountyXML], Any]] = {}
 XML_URL = "https://api.hearthstonejson.com/v1/latest/BountyDefs.xml"
 
 
-def _bootstrap_from_web(parse: Callable[[Iterator[tuple[str, Any]]], None]):
+def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None]):
 	with tempfile.TemporaryFile(mode="rb+") as fp:
 		if download_to_tempfile_retry(XML_URL, fp):
 			fp.flush()
@@ -71,7 +71,7 @@ def _bootstrap_from_web(parse: Callable[[Iterator[tuple[str, Any]]], None]):
 			parse(ElementTree.iterparse(fp, events=("start", "end",)))
 
 
-def _bootstrap_from_library(parse: Callable[[Iterator[tuple[str, Any]]], None], path=None):
+def _bootstrap_from_library(parse: Callable[[Iterator[Tuple[str, Any]]], None], path=None):
 	from hearthstone_data import get_bountydefs_path
 
 	if path is None:
@@ -86,7 +86,7 @@ def load(path=None, locale="enUS"):
 	if cache_key not in bounty_cache:
 		db = {}
 
-		def parse(context: Iterator[tuple[str, Any]]):
+		def parse(context: Iterator[Tuple[str, Any]]):
 			nonlocal db
 			root = None
 			for action, elem in context:
