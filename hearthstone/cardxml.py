@@ -101,16 +101,16 @@ class CardXML:
 			elif type == "LocString":
 				for loc_element in e:
 					self.strings[tag][loc_element.tag] = loc_element.text
-			elif tag == GameTag.HERO_POWER:
-				self.hero_power = e.attrib.get("cardID")
 			else:
+				if tag == GameTag.HERO_POWER:
+					self.hero_power = e.attrib.get("cardID")
 				self.tags[tag] = value
 
 		for e in xml.findall("./ReferencedTag"):
 			tag, type, value = _unpack_tag_xml(e)
 			self.referenced_tags[tag] = value
 
-		if self.tags.get(GameTag.HERO_POWER):
+		if self.hero_power is None and self.tags.get(GameTag.HERO_POWER):
 			i = int(GameTag.HERO_POWER)
 			t = xml.findall('./Tag[@enumID="%i"]' % (i))
 			if t is not None:
