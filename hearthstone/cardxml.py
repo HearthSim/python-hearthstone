@@ -352,6 +352,7 @@ class CardXML:
 	magnetic = prop(GameTag.MODULAR, bool)
 	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
 	outcast = prop(GameTag.OUTCAST, bool)
+	overheal = prop(GameTag.OVERHEAL, bool)
 	overkill = prop(GameTag.OVERKILL, bool)
 	poisonous = prop(GameTag.POISONOUS, bool)
 	quest = prop(GameTag.QUEST, bool)
