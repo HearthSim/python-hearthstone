@@ -1105,6 +1105,7 @@ class CardSet(IntEnum):
 			CardSet.THE_SUNKEN_CITY,
 			CardSet.RETURN_OF_THE_LICH_KING,
 			CardSet.PATH_OF_ARTHAS,
+			CardSet.BATTLE_OF_THE_BANDS,
 		)
 
 	@property
@@ -2372,6 +2373,7 @@ class ZodiacYear(IntEnum):
 	PHOENIX = 5
 	GRYPHON = 6
 	HYDRA = 7
+	WOLF = 8
 
 	@property
 	def standard_card_sets(self):
