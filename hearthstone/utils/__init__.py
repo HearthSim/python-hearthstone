@@ -361,6 +361,12 @@ UPGRADABLE_CARDS_MAP = {
 	# Imp Swarm
 	"BAR_914t": "BAR_914",
 	"BAR_914t2": "BAR_914",
+	# Harmonic / Dissonant cards
+	"ETC_314t": "ETC_314",  # Harmonic Pop
+	"ETC_379t": "ETC_379",  # Harmonic Mood
+	"ETC_427t": "ETC_427",  # Harmonic Metal
+	"ETC_506t": "ETC_506",  # Harmonic Disco
+	"ETC_717t": "ETC_717",  # Harmonic Hip Hop
 }
 
 
