@@ -108,6 +108,24 @@ DECKSTRING_TEST_DATA = [
 	}
 ]
 
+SIDES_TEST_DATA = [
+	{
+		# https://hearthstone.blizzard.com/deckbuilder?deckcode=AAECAfHhBAH9xAUAAAEDvZ8E%2FcQF09AF%2FcQF3tAF%2FcQFAAA%3D
+		"cards": [(90749, 1)],
+		"heroes": [78065],
+		"format": FormatType.FT_STANDARD,
+		"deckstring": "AAECAfHhBAH9xAUAAAEDvZ8E/cQF09AF/cQF3tAF/cQFAAA=",
+		"sides": [(69565, 1, 90749), (92243, 1, 90749), (92254, 1, 90749)],
+	},
+	{
+		"cards": [(90749, 1), (97532, 2), (90698, 3)],
+		"heroes": [78065],
+		"format": FormatType.FT_STANDARD,
+		"deckstring": "AAECAfHhBAH9xAUB/PkFAcrEBQMBAb2fBP3EBQHT0AX9xAUB3tAFA/3EBQ==",
+		"sides": [(69565, 1, 90749), (92243, 2, 90749), (92254, 3, 90749)],
+	},
+]
+
 
 def _decksorted(cards):
 	return sorted(cards, key=lambda x: x[0])
@@ -146,3 +164,22 @@ def test_deckstrings():
 		assert _decksorted(deck.cards) == _decksorted(deckdata["cards"])
 		assert deck.heroes == deckdata["heroes"]
 		assert deck.format == deckdata["format"]
+
+
+def test_sides():
+	for deckdata in SIDES_TEST_DATA:
+		# Encode tests
+		deck = deckstrings.Deck()
+		deck.cards = deckdata["cards"]
+		deck.heroes = deckdata["heroes"]
+		deck.format = deckdata["format"]
+		deck.sides = deckdata["sides"]
+
+		assert deck.as_deckstring == deckdata["deckstring"]
+
+		# Decode tests
+		deck = deckstrings.Deck.from_deckstring(deckdata["deckstring"])
+		assert _decksorted(deck.cards) == _decksorted(deckdata["cards"])
+		assert deck.heroes == deckdata["heroes"]
+		assert deck.format == deckdata["format"]
+		assert deck.sides == deckdata["sides"]
