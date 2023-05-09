@@ -369,6 +369,7 @@ class CardXML:
 	tradeable = prop(GameTag.TRADEABLE, bool)
 	twinspell = prop(GameTag.TWINSPELL, bool)
 	untouchable = prop(GameTag.UNTOUCHABLE, bool)
+	venomous = prop(GameTag.VENOMOUS, bool)
 
 	##
 	# Tags
