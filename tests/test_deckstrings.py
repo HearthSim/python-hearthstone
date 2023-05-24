@@ -2,10 +2,13 @@ from hearthstone import deckstrings
 from hearthstone.enums import FormatType
 
 
-TEST_DECKSTRING = (
-	"AAECAR8G+LEChwTmwgKhwgLZwgK7BQzquwKJwwKOwwKTwwK5tAK1A/4MqALsuwLrB86uAu0JAA=="
+TEST_DECKSTRING_PRE_SIDEBOARD = (
+	"AAEBAR8G+LEChwTmwgKhwgLZwgK7BQzquwKJwwKOwwKTwwK5tAK1A/4MqALsuwLrB86uAu0JAA=="
 )
-TEST_DECKSTRING_CARDLIST = (
+TEST_DECKSTRING = (
+	"AAEBAR8GhwS7BfixAqHCAtnCAubCAgyoArUD6wftCf4Mzq4CubQC6rsC7LsCicMCjsMCk8MCAAA="
+)
+TEST_DECKSTRING_CARDLIST = [
 	(40426, 2),  # Alleycat
 	(41353, 2),  # Jeweled Macaw
 	(39160, 1),  # Cat Trick
@@ -24,7 +27,43 @@ TEST_DECKSTRING_CARDLIST = (
 	(41305, 1),  # Nesting Roc
 	(699, 1),  # Tundra Rhino
 	(1261, 2),  # Savannah Highmane
+]
+
+TEST_SIDEBOARD_DECKSTRING = (
+	"AAEBAZCaBgjlsASotgSX7wTvkQXipAX9xAXPxgXGxwUQvp8EobYElrcE+dsEuNwEutwE9v"
+	"AEhoMFopkF4KQFlMQFu8QFu8cFuJ4Gz54G0Z4GAAED8J8E/cQFuNkE/cQF/+EE/cQFAAA="
 )
+TEST_SIDEBOARD_DECKSTRING_CARDLIST = [
+	(102223, 2),  # Armor Vendor
+	(69566, 2),  # Psychic Conjurer
+	(102200, 2),  # Shard of the Naaru
+	(71781, 1),  # Sir Finley, Sea Guide
+	(77305, 2),  # The Light! It Burns!
+	(86626, 1),  # Astalor Bloodsworn
+	(91078, 1),  # Audio Amplifier
+	(102225, 2),  # Dirty Rat
+	(90644, 2),  # Mind Eater
+	(91067, 2),  # Power Chord: Synchronize
+	(82310, 2),  # Cathedral of Atonement
+	(77368, 2),  # Identity Theft
+	(90959, 1),  # Love Everlasting
+	(85154, 2),  # Nerubian Vizier
+	(79767, 1),  # Prince Renathal
+	(86624, 2),  # Cannibalize
+	(79990, 2),  # Demolition Renovator
+	(90749, 1),  # E.T.C., Band Manager
+	(72598, 2),  # School Teacher
+	(77370, 2),  # Clean the Scene
+	(90683, 2),  # Harmonic Pop
+	(84207, 1),  # Sister Svalna
+	(72488, 1),  # Blackwater Behemoth
+	(72481, 2),  # Whirlpool
+]
+TEST_SIDEBOARD_DECKSTRING_SIDEBOARD = [
+	(69616, 1, 90749),
+	(76984, 1, 90749),
+	(78079, 1, 90749),
+]
 
 
 DECKSTRING_TEST_DATA = [
@@ -32,25 +71,25 @@ DECKSTRING_TEST_DATA = [
 		"cards": [(1, 2), (2, 2), (3, 2), (4, 2)],
 		"heroes": [7],  # Garrosh Hellscream
 		"format": FormatType.FT_STANDARD,
-		"deckstring": "AAECAQcABAECAwQA",
+		"deckstring": "AAECAQcABAECAwQAAA==",
 	},
 	{
 		"cards": [(8, 1), (179, 1), (2009, 1)],
 		"heroes": [7],
 		"format": FormatType.FT_STANDARD,
-		"deckstring": "AAECAQcDCLMB2Q8AAA==",
+		"deckstring": "AAECAQcDCLMB2Q8AAAA=",
 	},
 	{
 		"cards": [(1, 3), (2, 3), (3, 3), (4, 3)],
 		"heroes": [7],  # Garrosh Hellscream
 		"format": FormatType.FT_WILD,
-		"deckstring": "AAEBAQcAAAQBAwIDAwMEAw==",
+		"deckstring": "AAEBAQcAAAQBAwIDAwMEAwA=",
 	},
 	{
 		"cards": [(1, 1), (2, 1), (3, 1), (4, 1)],
 		"heroes": [40195],  # Maiev Shadowsong
 		"format": FormatType.FT_WILD,
-		"deckstring": "AAEBAYO6AgQBAgMEAAA=",
+		"deckstring": "AAEBAYO6AgQBAgMEAAAA",
 	},
 	{
 		# https://hsreplay.net/decks/mae2HTeLYbTIrSYZiALN9d/
@@ -76,7 +115,7 @@ DECKSTRING_TEST_DATA = [
 		"format": FormatType.FT_STANDARD,
 		"heroes": [41887],  # Tyrande Whisperwind
 		"deckstring": (
-			"AAECAZ/HAgS1uwLcwQK+yALIxwIN68IC+ALyDOUE0QrYwQLRwQLXCvC7AtMKysMCmcICwsMCAA=="
+			"AAECAZ/HAgS1uwLcwQK+yALIxwIN68IC+ALyDOUE0QrYwQLRwQLXCvC7AtMKysMCmcICwsMCAAA="
 		)
 	},
 	{
@@ -103,7 +142,7 @@ DECKSTRING_TEST_DATA = [
 		"format": FormatType.FT_STANDARD,
 		"heroes": [31],  # Rexxar
 		"deckstring": (
-			"AAECAR8GxwPJBLsFmQfZB/gIDI0B2AGoArUDhwSSBe0G6wfbCe0JgQr+DAA="
+			"AAECAR8GxwPJBLsFmQfZB/gIDI0B2AGoArUDhwSSBe0G6wfbCe0JgQr+DAAA"
 		),
 	}
 ]
@@ -116,14 +155,32 @@ def _decksorted(cards):
 def test_empty_deckstring():
 	deck = deckstrings.Deck()
 	deck.heroes = [0]
-	assert deck.as_deckstring == "AAEAAQAAAAA="
+	assert deck.as_deckstring == "AAEAAQAAAAAA"
+
+
+def test_decode_pre_sideboard_deckstring():
+	deck = deckstrings.Deck.from_deckstring(TEST_DECKSTRING_PRE_SIDEBOARD)
+	assert deck.get_dbf_id_list() == _decksorted(TEST_DECKSTRING_CARDLIST)
+	assert deck.get_sideboard_dbf_id_list() == []
+	assert deck.format == FormatType.FT_WILD
+	assert deck.heroes == [31]  # Rexxar
 
 
 def test_decode_deckstring():
 	deck = deckstrings.Deck.from_deckstring(TEST_DECKSTRING)
 	assert deck.get_dbf_id_list() == _decksorted(TEST_DECKSTRING_CARDLIST)
-	assert deck.format == FormatType.FT_STANDARD
+	assert deck.get_sideboard_dbf_id_list() == []
+	assert deck.format == FormatType.FT_WILD
 	assert deck.heroes == [31]  # Rexxar
+
+
+def test_encode_deckstring():
+	deck = deckstrings.Deck()
+	deck.cards = _decksorted(TEST_DECKSTRING_CARDLIST)
+	deck.sideboard = []
+	deck.format = FormatType.FT_WILD
+	deck.heroes = [31]
+	assert deck.as_deckstring == TEST_DECKSTRING
 
 
 def test_reencode_deckstring():
@@ -131,11 +188,36 @@ def test_reencode_deckstring():
 	assert deck.as_deckstring == TEST_DECKSTRING
 
 
-def test_deckstrings():
+def test_decode_sideboard_deckstring():
+	deck = deckstrings.Deck.from_deckstring(TEST_SIDEBOARD_DECKSTRING)
+	assert deck.get_dbf_id_list() == _decksorted(TEST_SIDEBOARD_DECKSTRING_CARDLIST)
+	assert deck.sideboard == _decksorted(TEST_SIDEBOARD_DECKSTRING_SIDEBOARD)
+	assert deck.format == FormatType.FT_WILD
+	assert deck.heroes == [101648]  # Hedanis
+
+
+def test_encode_sideboard_deckstring():
+	deck = deckstrings.Deck()
+	deck.cards = _decksorted(TEST_SIDEBOARD_DECKSTRING_CARDLIST)
+	deck.sideboard = _decksorted(TEST_SIDEBOARD_DECKSTRING_SIDEBOARD)
+	deck.format = FormatType.FT_WILD
+	deck.heroes = [101648]
+	assert deck.as_deckstring == TEST_SIDEBOARD_DECKSTRING
+
+
+def test_reencode_sideboard_deckstring():
+	deck = deckstrings.Deck.from_deckstring(TEST_SIDEBOARD_DECKSTRING)
+	assert deck.as_deckstring == TEST_SIDEBOARD_DECKSTRING
+
+
+def test_deckstrings_regression():
 	for deckdata in DECKSTRING_TEST_DATA:
+		sideboard = deckdata.get("sideboard", [])
+
 		# Encode tests
 		deck = deckstrings.Deck()
 		deck.cards = deckdata["cards"]
+		deck.sideboard = sideboard
 		deck.heroes = deckdata["heroes"]
 		deck.format = deckdata["format"]
 
@@ -144,5 +226,6 @@ def test_deckstrings():
 		# Decode tests
 		deck = deckstrings.Deck.from_deckstring(deckdata["deckstring"])
 		assert _decksorted(deck.cards) == _decksorted(deckdata["cards"])
+		assert _decksorted(deck.sideboard) == _decksorted(sideboard)
 		assert deck.heroes == deckdata["heroes"]
 		assert deck.format == deckdata["format"]
