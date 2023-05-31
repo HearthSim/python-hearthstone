@@ -367,6 +367,31 @@ UPGRADABLE_CARDS_MAP = {
 	"ETC_427t": "ETC_427",  # Harmonic Metal
 	"ETC_506t": "ETC_506",  # Harmonic Disco
 	"ETC_717t": "ETC_717",  # Harmonic Hip Hop
+	# Remixed Dispense-o-bot
+	"JAM_000t": "JAM_000",  # Chilling Dispense-o-bot
+	"JAM_000t2": "JAM_000",  # Merch Dispense-o-bot
+	"JAM_000t3": "JAM_000",  # Money Dispense-o-bot
+	"JAM_000t4": "JAM_000",  # Mystery Dispense-o-bot
+	# Remixed Totemcarver
+	"JAM_012t": "JAM_012",  # Loud Totemcarver
+	"JAM_012t2": "JAM_012",  # Bluesy Totemcarver
+	"JAM_012t3": "JAM_012",  # Blazing Totemcarver
+	"JAM_012t4": "JAM_012",  # Karaoke Totemcarver
+	# Remixed Tuning Fork
+	"JAM_015t": "JAM_015",  # Sharpened Tuning Fork
+	"JAM_015t2": "JAM_015",  # Reinforced Tuning Fork
+	"JAM_015t3": "JAM_015",  # Curved Tuning Fork
+	"JAM_015t4": "JAM_015",  # Backup Tuning Fork
+	# Remixed Rhapsody
+	"JAM_018t": "JAM_018",  # Angsty Rhapsody
+	"JAM_018t2": "JAM_018",  # Resounding Rhapsody
+	"JAM_018t3": "JAM_018",  # Emotional Rhapsody
+	"JAM_018t4": "JAM_018",  # Wailing Rhapsody
+	# Remixed Musician
+	"JAM_033t": "JAM_033",  # Cathedral Musician
+	"JAM_033t2": "JAM_033",  # Tropical Musician
+	"JAM_033t3": "JAM_033",  # Romantic Musician
+	"JAM_033t4": "JAM_033",  # Noise Musician
 }
 
 
