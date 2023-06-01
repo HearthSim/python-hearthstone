@@ -4,7 +4,7 @@ Blizzard Deckstring format support
 
 import base64
 from io import BytesIO
-from typing import IO, List, Tuple
+from typing import IO, List, Optional, Sequence, Tuple
 
 from .enums import FormatType
 
@@ -14,6 +14,7 @@ DECKSTRING_VERSION = 1
 
 CardList = List[int]
 CardIncludeList = List[Tuple[int, int]]
+SideboardList = List[Tuple[int, int, int]]
 
 
 def _read_varint(stream: IO) -> int:
@@ -50,42 +51,64 @@ class Deck:
 	@classmethod
 	def from_deckstring(cls, deckstring: str) -> "Deck":
 		instance = cls()
-		instance.cards, instance.heroes, instance.format = parse_deckstring(deckstring)
+		(
+			instance.cards,
+			instance.heroes,
+			instance.format,
+			instance.sideboard,
+		) = parse_deckstring(deckstring)
 		return instance
 
 	def __init__(self):
 		self.cards: CardIncludeList = []
+		self.sideboard: SideboardList = []
 		self.heroes: CardList = []
 		self.format: FormatType = FormatType.FT_UNKNOWN
 
 	@property
 	def as_deckstring(self) -> str:
-		return write_deckstring(self.cards, self.heroes, self.format)
+		return write_deckstring(self.cards, self.heroes, self.format, self.sideboard)
 
 	def get_dbf_id_list(self) -> CardIncludeList:
 		return sorted(self.cards, key=lambda x: x[0])
 
+	def get_sideboard_dbf_id_list(self) -> SideboardList:
+		return sorted(self.sideboard, key=lambda x: x[0])
 
-def trisort_cards(cards: CardIncludeList) -> Tuple[
-	CardIncludeList, CardIncludeList, CardIncludeList
+
+def trisort_cards(cards: Sequence[tuple]) -> Tuple[
+	List[tuple], List[tuple], List[tuple]
 ]:
-	cards_x1: CardIncludeList = []
-	cards_x2: CardIncludeList = []
-	cards_xn: CardIncludeList = []
+	cards_x1: List[tuple] = []
+	cards_x2: List[tuple] = []
+	cards_xn: List[tuple] = []
 
-	for cardid, count in cards:
+	for card_elem in cards:
+		sideboard_owner = None
+		if len(card_elem) == 3:
+			# Sideboard
+			cardid, count, sideboard_owner = card_elem
+		else:
+			cardid, count = card_elem
+
 		if count == 1:
 			list = cards_x1
 		elif count == 2:
 			list = cards_x2
 		else:
 			list = cards_xn
-		list.append((cardid, count))
+
+		if len(card_elem) == 3:
+			list.append((cardid, count, sideboard_owner))
+		else:
+			list.append((cardid, count))
 
 	return cards_x1, cards_x2, cards_xn
 
 
-def parse_deckstring(deckstring) -> Tuple[CardIncludeList, CardList, FormatType]:
+def parse_deckstring(deckstring) -> (
+	Tuple[CardIncludeList, CardList, FormatType, SideboardList]
+):
 	decoded = base64.b64decode(deckstring)
 	data = BytesIO(decoded)
 
@@ -124,10 +147,42 @@ def parse_deckstring(deckstring) -> Tuple[CardIncludeList, CardList, FormatType]
 		count = _read_varint(data)
 		cards.append((card_id, count))
 
-	return cards, heroes, format
+	sideboard = []
+
+	has_sideboard = data.read(1) == b"\1"
+
+	if has_sideboard:
+		num_sideboard_x1 = _read_varint(data)
+		for i in range(num_sideboard_x1):
+			card_id = _read_varint(data)
+			sideboard_owner = _read_varint(data)
+			sideboard.append((card_id, 1, sideboard_owner))
+
+		num_sideboard_x2 = _read_varint(data)
+		for i in range(num_sideboard_x2):
+			card_id = _read_varint(data)
+			sideboard_owner = _read_varint(data)
+			sideboard.append((card_id, 2, sideboard_owner))
+
+		num_sideboard_xn = _read_varint(data)
+		for i in range(num_sideboard_xn):
+			card_id = _read_varint(data)
+			count = _read_varint(data)
+			sideboard_owner = _read_varint(data)
+			sideboard.append((card_id, count, sideboard_owner))
+
+	return cards, heroes, format, sideboard
 
 
-def write_deckstring(cards: CardIncludeList, heroes: CardList, format: FormatType) -> str:
+def write_deckstring(
+	cards: CardIncludeList,
+	heroes: CardList,
+	format: FormatType,
+	sideboard: Optional[SideboardList] = None,
+) -> str:
+	if sideboard is None:
+		sideboard = []
+
 	data = BytesIO()
 	data.write(b"\0")
 	_write_varint(data, DECKSTRING_VERSION)
@@ -150,6 +205,26 @@ def write_deckstring(cards: CardIncludeList, heroes: CardList, format: FormatTyp
 	for cardid, count in cards_xn:
 		_write_varint(data, cardid)
 		_write_varint(data, count)
+
+	if len(sideboard) > 0:
+		data.write(b"\1")
+
+		sideboard_x1, sideboard_x2, sideboard_xn = trisort_cards(sideboard)
+
+		for cardlist in sideboard_x1, sideboard_x2:
+			_write_varint(data, len(cardlist))
+			for cardid, _, sideboard_owner in cardlist:
+				_write_varint(data, cardid)
+				_write_varint(data, sideboard_owner)
+
+		_write_varint(data, len(cards_xn))
+		for cardid, count, sideboard_owner in sideboard_xn:
+			_write_varint(data, cardid)
+			_write_varint(data, count)
+			_write_varint(data, sideboard_owner)
+
+	else:
+		data.write(b"\0")
 
 	encoded = base64.b64encode(data.getvalue())
 	return encoded.decode("utf-8")
