@@ -1834,6 +1834,18 @@ class MultiClassGroup(IntEnum):
 	ROGUE_WARRIOR = 12
 	PALADIN_WARRIOR = 13
 
+	MAGE_HUNTER = 28
+	HUNTER_DEATHKNIGHT = 29
+	DEATHKNIGHT_PALADIN = 30
+	PALADIN_SHAMAN = 31
+	SHAMAN_WARRIOR = 32
+	WARRIOR_DEMONHUNTER = 33
+	DEMONHUNTER_ROGUE = 34
+	ROGUE_PRIEST = 35
+	PRIEST_DRUID = 36
+	DRUID_WARLOCK = 37
+	WARLOCK_MAGE = 38
+
 	@property
 	def card_classes(self):
 		# Gadgetzan
@@ -1865,6 +1877,30 @@ class MultiClassGroup(IntEnum):
 			return [CardClass.ROGUE, CardClass.WARRIOR]
 		elif self == MultiClassGroup.PALADIN_WARRIOR:
 			return [CardClass.PALADIN, CardClass.WARRIOR]
+
+		# Audiopocalypse
+		if self == MultiClassGroup.MAGE_HUNTER:
+			return [CardClass.MAGE, CardClass.HUNTER]
+		elif self == MultiClassGroup.HUNTER_DEATHKNIGHT:
+			return [CardClass.HUNTER, CardClass.DEATHKNIGHT]
+		elif self == MultiClassGroup.DEATHKNIGHT_PALADIN:
+			return [CardClass.DEATHKNIGHT, CardClass.PALADIN]
+		elif self == MultiClassGroup.PALADIN_SHAMAN:
+			return [CardClass.PALADIN, CardClass.SHAMAN]
+		elif self == MultiClassGroup.SHAMAN_WARRIOR:
+			return [CardClass.SHAMAN, CardClass.WARRIOR]
+		elif self == MultiClassGroup.WARRIOR_DEMONHUNTER:
+			return [CardClass.WARRIOR, CardClass.DEMONHUNTER]
+		elif self == MultiClassGroup.DEMONHUNTER_ROGUE:
+			return [CardClass.DEMONHUNTER, CardClass.ROGUE]
+		elif self == MultiClassGroup.ROGUE_PRIEST:
+			return [CardClass.ROGUE, CardClass.PRIEST]
+		elif self == MultiClassGroup.PRIEST_DRUID:
+			return [CardClass.PRIEST, CardClass.DRUID]
+		elif self == MultiClassGroup.DRUID_WARLOCK:
+			return [CardClass.DRUID, CardClass.WARLOCK]
+		elif self == MultiClassGroup.WARLOCK_MAGE:
+			return [CardClass.WARLOCK, CardClass.MAGE]
 
 		return []
 
