@@ -1073,6 +1073,7 @@ class CardSet(IntEnum):
 	MERCENARIES_DEV = 1705
 	RETURN_OF_THE_LICH_KING = 1776
 	BATTLE_OF_THE_BANDS = 1809
+	TITANS = 1858
 	PATH_OF_ARTHAS = 1869
 
 	# Not actually present...
@@ -1565,7 +1566,10 @@ class BnetGameType(IntEnum):
 	BGT_CASUAL_CLASSIC = 59
 	BGT_MERCENARIES_PVE_COOP = 60
 	BGT_MERCENARIES_FRIENDLY = 61
-	# BGT_LAST = 62
+	BGT_BATTLEGROUNDS_PLAYER_VS_AI = 62,
+	BGT_RANKED_TWIST = 63,
+	BGT_CASUAL_TWIST = 64,
+	# BGT_LAST = 65
 
 	BGT_NEWBIE = BGT_CASUAL_STANDARD_NEWBIE
 	BGT_CASUAL_STANDARD = BGT_CASUAL_STANDARD_NORMAL
@@ -1587,6 +1591,11 @@ STANDARD_GAME_TYPES = [
 	BnetGameType.BGT_RANKED_STANDARD,
 ]
 
+TWIST_GAME_TYPES = [
+	BnetGameType.BGT_CASUAL_TWIST,
+	BnetGameType.BGT_RANKED_TWIST,
+]
+
 WILD_GAME_TYPES = [
 	BnetGameType.BGT_CASUAL_WILD,
 	BnetGameType.BGT_RANKED_WILD,
@@ -1600,6 +1609,7 @@ class FormatType(IntEnum):
 	FT_WILD = 1
 	FT_STANDARD = 2
 	FT_CLASSIC = 3
+	FT_TWIST = 4
 
 	@property
 	def name_global(self):
@@ -1609,6 +1619,8 @@ class FormatType(IntEnum):
 			return "GLOBAL_STANDARD"
 		elif self.name == "FT_CLASSIC":
 			return "GLOBAL_CLASSIC"
+		elif self.name == "FT_TWIST":
+			return "GLOBAL_TWIST"
 
 
 class GameType(IntEnum):
@@ -1657,6 +1669,8 @@ class GameType(IntEnum):
 				return BnetGameType.BGT_RANKED_STANDARD
 			elif format == FormatType.FT_CLASSIC:
 				return BnetGameType.BGT_RANKED_CLASSIC
+			elif format == FormatType.FT_TWIST:
+				return BnetGameType.BGT_RANKED_TWIST
 			else:
 				raise ValueError()
 		if self == GameType.GT_CASUAL:
@@ -1666,6 +1680,8 @@ class GameType(IntEnum):
 				return BnetGameType.BGT_CASUAL_STANDARD
 			elif format == FormatType.FT_CLASSIC:
 				return BnetGameType.BGT_CASUAL_CLASSIC
+			elif format == FormatType.FT_TWIST:
+				return BnetGameType.BGT_CASUAL_TWIST
 			else:
 				raise ValueError()
 
@@ -2085,6 +2101,7 @@ class Booster(IntEnum):
 	GOLDEN_STANDARD_PACK = 716
 	REVENDRETH = 729
 	STORMWIND_GOLDEN = 737
+	TITANS = 819
 	RETURN_OF_THE_LICH_KING = 821
 	ALTERAC_VALLEY_GOLDEN = 841
 	BATTLE_OF_THE_BANDS = 854
