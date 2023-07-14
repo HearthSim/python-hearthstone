@@ -1120,6 +1120,7 @@ class CardSet(IntEnum):
 			CardSet.RETURN_OF_THE_LICH_KING,
 			CardSet.PATH_OF_ARTHAS,
 			CardSet.BATTLE_OF_THE_BANDS,
+			CardSet.TITANS,
 		)
 
 	@property
@@ -1139,7 +1140,7 @@ class CardSet(IntEnum):
 
 	@property
 	def is_standard(self):
-		return self in ZodiacYear.HYDRA.standard_card_sets
+		return self in ZodiacYear.WOLF.standard_card_sets
 
 
 class CardType(IntEnum):
