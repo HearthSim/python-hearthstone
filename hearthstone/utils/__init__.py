@@ -51,7 +51,7 @@ CARDSET_GLOBAL_STRING_MAP = {
 # 2534 and 2523 set. However, in practice, one of these is still encoded using the Race tag,
 # so likely such a card would have RACE = 11 (UNDEAD) and 2523 = 1 (DRAGON).
 #
-# If a new race is introduced, you're expected to add the tag here. You can find out the
+# If a new race is introduced, you"re expected to add the tag here. You can find out the
 # mapping by running patch processing and looking at the RaceTagMap.xml in the output
 # directory.
 CARDRACE_TAG_MAP = {
@@ -326,7 +326,7 @@ UPGRADABLE_CARDS_MAP = {
 	"DMF_248t": "DMF_248",  # Felsteel Executioner
 	"DMF_064t": "DMF_064",  # Carousel Gryphon
 	"DMF_124t": "DMF_124",  # Horrendous Growth
-	"DMF_090t": "DMF_090",  # Don't Feed the Animals
+	"DMF_090t": "DMF_090",  # Don"t Feed the Animals
 	"DMF_105t": "DMF_105",  # Ring Toss
 	"DMF_701t": "DMF_701",  # Dunk Tank
 	"DMF_080t": "DMF_080",  # Fleethoof Pearltusk
@@ -400,6 +400,142 @@ def get_original_card_id(card_id):
 	if str(card_id).startswith("SCH_199t"):
 		return "SCH_199"
 	return UPGRADABLE_CARDS_MAP.get(card_id, card_id)
+
+
+# A map of card ids that have been reprinted in the Wild format.
+# Generated via scripts/dump_reprints.py
+COPIED_CARDS_MAP_WILD = {
+	"WON_003": "AT_041",
+	"WON_009": "OG_313",
+	"WON_010": "OG_188",
+	"WON_011": "GVG_035",
+	"WON_012": "AT_045",
+	"EX1_609": "WON_018",
+	"VAN_EX1_609": "WON_018",
+	"WON_021": "AT_062",
+	"WON_022": "LOE_105",
+	"WON_023": "AT_061",
+	"CORE_AT_061": "AT_061",
+	"WON_024": "AT_063",
+	"WON_025": "AT_063t",
+	"WON_029": "AT_006",
+	"NEW1_012": "WON_031",
+	"VAN_NEW1_012": "WON_031",
+	"WON_033": "GVG_123",
+	"WON_035": "GVG_004",
+	"WON_036": "OG_087",
+	"WON_037": "OG_090",
+	"WON_038": "GVG_007",
+	"WON_045": "KAR_057",
+	"WON_046": "CFM_639",
+	"EX1_354": "WON_048",
+	"VAN_EX1_354": "WON_048",
+	"WON_049": "AT_078",
+	"WON_056": "LOE_006",
+	"WON_057": "KAR_204",
+	"WON_058": "AT_012",
+	"WON_061": "AT_014",
+	"WON_062": "GVG_009",
+	"WON_063": "AT_018",
+	"WON_067": "CFM_691",
+	"WON_070": "CFM_690",
+	"WON_071": "AT_033",
+	"WON_073": "BRM_008",
+	"WON_075": "OG_282",
+	"WON_076": "AT_036",
+	"WON_081": "AT_046",
+	"WON_082": "CFM_707",
+	"WON_083": "KAR_021",
+	"WON_084": "CFM_312",
+	"WON_085": "AT_049",
+	"WON_086": "CFM_310",
+	"WON_093": "AT_024",
+	"WON_095": "GVG_015",
+	"WON_096": "LOE_023",
+	"WON_097": "OG_116",
+	"WON_098": "KAR_205",
+	"WON_099": "AT_021",
+	"CORE_AT_021": "AT_021",
+	"WON_100": "AT_025",
+	"WON_105": "OG_121",
+	"WON_108": "CFM_754",
+	"WON_110": "CFM_752",
+	"WON_111": "OG_301",
+	"WON_114": "GVG_056",
+	"WON_117": "CFM_643",
+	"WON_118": "CFM_715",
+	"WON_124": "OG_284",
+	"WON_125": "OG_283",
+	"WON_127": "OG_162",
+	"WON_128": "FP1_012",
+	"WON_130": "CFM_649",
+	"WON_131": "OG_321",
+	"WON_133": "BRM_028",
+	"WON_134": "OG_131",
+	"WON_135": "OG_280",
+	"WON_136": "CFM_902",
+	"WON_137": "CFM_685",
+	"WON_162": "GVG_046",
+	"WON_300": "CFM_816",
+	"WON_302": "OG_202",
+	"WON_303": "CFM_343",
+	"WON_304": "OG_293",
+	"WON_305": "KAR_065",
+	"CORE_KAR_065": "KAR_065",
+	"WON_306": "GVG_073",
+	"WON_307": "CFM_336",
+	"WON_308": "CFM_760",
+	"WON_309": "KAR_077",
+	"WON_310": "OG_310",
+	"WON_311": "LOE_017",
+	"WON_312": "CFM_815",
+	"WON_313": "OG_334",
+	"WON_314": "GVG_011",
+	"WON_315": "OG_234",
+	"WON_316": "AT_028",
+	"WON_317": "OG_330",
+	"WON_318": "AT_034",
+	"WON_320": "AT_048",
+	"WON_321": "AT_050",
+	"WON_322": "OG_302",
+	"EX1_320": "WON_323",
+	"VAN_EX1_320": "WON_323",
+	"WON_324": "CFM_750",
+	"WON_325": "GVG_050",
+	"WON_326": "CFM_631",
+	"WON_328": "AT_090",
+	"WON_329": "BRM_034",
+	"WON_330": "OG_295",
+	"WON_331": "CFM_321",
+	"WON_332": "CFM_852",
+	"WON_333": "OG_311",
+	"WON_334": "AT_079",
+	"WON_335": "FP1_025",
+	"WON_336": "OG_209",
+	"WON_337": "KAR_091",
+	"WON_338": "BRM_016",
+	"WON_339": "CFM_756",
+	"WON_340": "LOE_012",
+	"CORE_LOE_012": "LOE_012",
+	"WON_341": "AT_001",
+	"WON_342": "AT_015",
+	"WON_344": "AT_007",
+	"WON_347": "CFM_334",
+	"WON_350": "CFM_940",
+	"WON_351": "CFM_325",
+	"EX1_007": "WON_357",
+	"VAN_EX1_007": "WON_357",
+	"CORE_EX1_007": "WON_357",
+	"WON_365": "CFM_039",
+	"WON_366": "CFM_665"
+}
+
+
+def get_copied_card_id_by_format(card_id, format_type):
+	"""Returns a suitable version for stat deduplication in the given FormatType."""
+	if format_type == 1:
+		return COPIED_CARDS_MAP_WILD.get(card_id, card_id)
+	return card_id
 
 
 SCHEME_CARDS = [
