@@ -51,7 +51,7 @@ CARDSET_GLOBAL_STRING_MAP = {
 # 2534 and 2523 set. However, in practice, one of these is still encoded using the Race tag,
 # so likely such a card would have RACE = 11 (UNDEAD) and 2523 = 1 (DRAGON).
 #
-# If a new race is introduced, you"re expected to add the tag here. You can find out the
+# If a new race is introduced, you're expected to add the tag here. You can find out the
 # mapping by running patch processing and looking at the RaceTagMap.xml in the output
 # directory.
 CARDRACE_TAG_MAP = {
@@ -326,7 +326,7 @@ UPGRADABLE_CARDS_MAP = {
 	"DMF_248t": "DMF_248",  # Felsteel Executioner
 	"DMF_064t": "DMF_064",  # Carousel Gryphon
 	"DMF_124t": "DMF_124",  # Horrendous Growth
-	"DMF_090t": "DMF_090",  # Don"t Feed the Animals
+	"DMF_090t": "DMF_090",  # Don't Feed the Animals
 	"DMF_105t": "DMF_105",  # Ring Toss
 	"DMF_701t": "DMF_701",  # Dunk Tank
 	"DMF_080t": "DMF_080",  # Fleethoof Pearltusk
