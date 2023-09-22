@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 
 from hearthstone.cardxml import load
 from hearthstone.enums import CardSet, GameTag
@@ -17,6 +17,10 @@ def dump_reprints():
 			continue
 
 		if copy_of_dbf_id not in dbf_db:
+			continue
+
+		copy_card = dbf_db[copy_of_dbf_id]
+		if not card.is_functional_duplicate_of(copy_card):
 			continue
 
 		pointers[card.dbf_id] = copy_of_dbf_id
@@ -114,7 +118,7 @@ def dump_reprints():
 				continue
 			the_map[c.id] = winner.id
 
-	print(the_map)
+	print(dict(OrderedDict(sorted(the_map.items()))))
 
 
 if __name__ == "__main__":

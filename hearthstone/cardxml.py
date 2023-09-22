@@ -306,6 +306,40 @@ class CardXML:
 
 		return sorted(ret, key=lambda r: r.text_order)
 
+	@property
+	def english_name(self):
+		return self.strings[GameTag.CARDNAME].get("enUS", "")
+
+	@property
+	def english_description(self):
+		return self.strings[GameTag.CARDTEXT_INHAND].get("enUS", "")
+
+	def is_functional_duplicate_of(self, other):
+		"""
+		This method can be used to check whether two cards are functionally identical from a
+		Constructed gameplay perspective. For example, if cards have the same English name,
+		description, stats and races, they're probably the same. However, if for example the
+		mana costs differ, the card is different because one card is strictly better than
+		another one and can be played in different circumstances.
+		You can use this method catch cases where cards are reprinted in different sets and
+		may otherwise appear as duplicates (e.g. by looking at
+		GameTag.DECK_RULE_COUNT_AS_COPY_OF_CARD_ID).
+		"""
+		if not isinstance(other, CardXML):
+			raise ValueError("other must be a CardXML instance")
+
+		english_name = self.english_name
+		return (
+			english_name and
+			other.english_name == english_name and
+			other.description == self.description and
+			other.cost == self.cost and
+			other.health == self.health and
+			other.atk == self.atk and
+			other.type == self.type and
+			set(other.races) == set(self.races)
+		)
+
 	##
 	# Enums
 
