@@ -169,6 +169,7 @@ class GameTag(IntEnum):
 	SPARE_PART = 388
 	FORGETFUL = 389
 	CAN_SUMMON_MAXPLUSONE_MINION = 390
+	OBFUSCATED = 391
 	BURNING = 392
 	OVERLOAD_LOCKED = 393
 	NUM_TIMES_HERO_POWER_USED_THIS_GAME = 394
@@ -951,7 +952,6 @@ class GameTag(IntEnum):
 	DIVINE_SHIELD_READY = 314
 	IGNORE_DAMAGE_OFF = 354
 	NUM_OPTIONS = 359
-	OBFUSCATED = 391
 	LAST_CARD_PLAYED = 397
 	RITUAL = 424
 	PROXY_CTHUN = 434
@@ -1149,7 +1149,9 @@ class CardSet(IntEnum):
 	PATH_OF_ARTHAS = 1869
 	WILD_WEST = 1892
 	WONDERS = 1898
+	WHIZBANGS_WORKSHOP = 1897
 	TUTORIAL = 1904
+	EVENT = 1941
 
 	# Not actually present...
 	TAVERNS_OF_TIME = 1143
@@ -1198,6 +1200,7 @@ class CardSet(IntEnum):
 			CardSet.TITANS,
 			CardSet.WILD_WEST,
 			CardSet.WONDERS,
+			CardSet.WHIZBANGS_WORKSHOP
 		)
 
 	@property
@@ -2019,6 +2022,7 @@ class SpellSchool(IntEnum):
 	FEL = 7
 	PHYSICAL_COMBAT = 8
 	TAVERN = 9
+	SPELLCRAFT = 10
 
 
 class OptionType(IntEnum):
@@ -2530,6 +2534,7 @@ class ZodiacYear(IntEnum):
 	GRYPHON = 6
 	HYDRA = 7
 	WOLF = 8
+	PEGASUS = 9
 
 	@property
 	def standard_card_sets(self):

@@ -180,7 +180,12 @@ STANDARD_SETS = {
 		CardSet.THE_SUNKEN_CITY, CardSet.REVENDRETH, CardSet.RETURN_OF_THE_LICH_KING,
 		CardSet.PATH_OF_ARTHAS, CardSet.BATTLE_OF_THE_BANDS, CardSet.TITANS,
 		CardSet.WILD_WEST
-	]
+	],
+	ZodiacYear.PEGASUS: [
+		CardSet.CORE,
+		CardSet.BATTLE_OF_THE_BANDS, CardSet.TITANS, CardSet.WILD_WEST,
+		CardSet.WHIZBANGS_WORKSHOP
+	],
 }
 
 
@@ -201,6 +206,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.GRYPHON: datetime(2021, 3, 30),
 	ZodiacYear.HYDRA: datetime(2022, 4, 12),
 	ZodiacYear.WOLF: datetime(2023, 4, 11),
+	ZodiacYear.PEGASUS: datetime(2023, 3, 19),
 }
 
 
