@@ -385,6 +385,7 @@ class CardXML:
 	jade_golem = prop(GameTag.JADE_GOLEM, bool)
 	lifesteal = prop(GameTag.LIFESTEAL, bool)
 	magnetic = prop(GameTag.MODULAR, bool)
+	miniaturize = prop(GameTag.MINIATURIZE, bool)
 	one_turn_effect = prop(GameTag.TAG_ONE_TURN_EFFECT, bool)
 	outcast = prop(GameTag.OUTCAST, bool)
 	overheal = prop(GameTag.OVERHEAL, bool)
