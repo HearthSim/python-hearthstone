@@ -373,6 +373,7 @@ class CardXML:
 	dredge = prop(GameTag.DREDGE, bool)
 	echo = prop(GameTag.ECHO, bool)
 	elite = prop(GameTag.ELITE, bool)
+	elusive = prop(GameTag.ELUSIVE, bool)
 	evil_glow = prop(GameTag.EVIL_GLOW, bool)
 	forge = prop(GameTag.FORGE, bool)
 	forgetful = prop(GameTag.FORGETFUL, bool)
