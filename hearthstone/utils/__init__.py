@@ -400,6 +400,12 @@ UPGRADABLE_CARDS_MAP = {
 	"JAM_033t2": "JAM_033",  # Tropical Musician
 	"JAM_033t3": "JAM_033",  # Romantic Musician
 	"JAM_033t4": "JAM_033",  # Noise Musician
+	# Lesser Opal Spellstone
+	"TOY_645t": "TOY_645",
+	"TOY_645t1": "TOY_645",
+	# Lesser Spinel Spellstone
+	"TOY_825t": "TOY_825",
+	"TOY_825t2": "TOY_825",
 }
 
 
