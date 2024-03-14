@@ -556,6 +556,16 @@ SCHEME_CARDS = [
 	"DAL_011",  # Lazul's Scheme
 ]
 
+LACKEY_CARDS = [
+	"DAL_613",
+	"DAL_614",
+	"DAL_615",
+	"DAL_739",
+	"DAL_741",
+	"ULD_616",
+	"DRG_052",
+]
+
 MAESTRA_DISGUISE_DBF_ID = 64674
 
 
