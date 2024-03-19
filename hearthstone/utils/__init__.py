@@ -416,6 +416,34 @@ def get_original_card_id(card_id):
 	return UPGRADABLE_CARDS_MAP.get(card_id, card_id)
 
 
+# https://hearthstone.fandom.com/wiki/Wild_Event
+COPIED_CARDS_WILD_EVENTS_MAP = {
+	"WE1_006": "KAR_009",
+	"WE1_013": "OG_028",
+	"WE1_014": "OG_027",
+	"WE1_015": "BRM_006",
+	"WE1_021": "AT_043",
+	"WE1_022": "CFM_308",
+	"WE1_023": "BRM_002",
+	"WE1_024": "AT_079",
+	"WE1_025": "FP1_020",
+	"WE1_026": "AT_061",
+	"WE1_027": "OG_211",
+	"WE1_028": "CFM_781",
+	"WE1_029": "KAR_069",
+	"WE1_030": "GVG_008",
+	"WE1_031": "GVG_014",
+	"WE1_032": "OG_118",
+	"WE1_033": "AT_072",
+	"WE1_034": "OG_218",
+	"WE1_035": "OG_133",
+	"WE1_036": "EX1_016",
+	"WE1_037": "EX1_298",
+	"WE1_038": "KAR_061",
+	"WE1_039": "BRM_028",
+}
+
+
 # A map of card ids that have been reprinted in the Wild format.
 # Generated via scripts/dump_reprints.py
 COPIED_CARDS_MAP_WILD = {
