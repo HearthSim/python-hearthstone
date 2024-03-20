@@ -406,6 +406,15 @@ UPGRADABLE_CARDS_MAP = {
 	# Lesser Spinel Spellstone
 	"TOY_825t": "TOY_825",
 	"TOY_825t2": "TOY_825",
+	# Zilliax
+	"TOY_330t5": "TOY_330",
+	"TOY_330t6": "TOY_330",
+	"TOY_330t7": "TOY_330",
+	"TOY_330t8": "TOY_330",
+	"TOY_330t9": "TOY_330",
+	"TOY_330t10": "TOY_330",
+	"TOY_330t11": "TOY_330",
+	"TOY_330t12": "TOY_330",
 }
 
 
