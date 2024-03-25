@@ -406,7 +406,10 @@ UPGRADABLE_CARDS_MAP = {
 	# Lesser Spinel Spellstone
 	"TOY_825t": "TOY_825",
 	"TOY_825t2": "TOY_825",
-	# Zilliax
+	# Blossoms
+	"TTN_950t3": "TTN_950",  # Forest Seedlings
+	"TTN_930t": "TTN_930",  # Frost Lotus Seedling
+	# Zilliax Deluxe 3000
 	"TOY_330t5": "TOY_330",
 	"TOY_330t6": "TOY_330",
 	"TOY_330t7": "TOY_330",
