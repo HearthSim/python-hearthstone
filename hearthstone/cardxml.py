@@ -365,6 +365,8 @@ class CardXML:
 	collectible = prop(GameTag.COLLECTIBLE, bool)
 	colossal = prop(GameTag.COLOSSAL, bool)
 	battlecry = prop(GameTag.BATTLECRY, bool)
+	choose_one = prop(GameTag.CHOOSE_ONE, bool)
+	combo = prop(GameTag.COMBO, bool)
 	corrupt = prop(GameTag.CORRUPT, bool)
 	deathrattle = prop(GameTag.DEATHRATTLE, bool)
 	discover = prop(GameTag.DISCOVER, bool)
