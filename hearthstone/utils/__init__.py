@@ -206,7 +206,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.GRYPHON: datetime(2021, 3, 30),
 	ZodiacYear.HYDRA: datetime(2022, 4, 12),
 	ZodiacYear.WOLF: datetime(2023, 4, 11),
-	ZodiacYear.PEGASUS: datetime(2023, 3, 19),
+	ZodiacYear.PEGASUS: datetime(2024, 3, 19),
 }
 
 
