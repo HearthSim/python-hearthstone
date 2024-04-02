@@ -55,25 +55,25 @@ class Deck:
 			instance.cards,
 			instance.heroes,
 			instance.format,
-			instance.sideboard,
+			instance.sideboards,
 		) = parse_deckstring(deckstring)
 		return instance
 
 	def __init__(self):
 		self.cards: CardIncludeList = []
-		self.sideboard: SideboardList = []
+		self.sideboards: SideboardList = []
 		self.heroes: CardList = []
 		self.format: FormatType = FormatType.FT_UNKNOWN
 
 	@property
 	def as_deckstring(self) -> str:
-		return write_deckstring(self.cards, self.heroes, self.format, self.sideboard)
+		return write_deckstring(self.cards, self.heroes, self.format, self.sideboards)
 
 	def get_dbf_id_list(self) -> CardIncludeList:
 		return sorted(self.cards, key=lambda x: x[0])
 
 	def get_sideboard_dbf_id_list(self) -> SideboardList:
-		return sorted(self.sideboard, key=lambda x: x[0])
+		return sorted(self.sideboards, key=lambda x: x[0])
 
 
 def trisort_cards(cards: Sequence[tuple]) -> Tuple[
@@ -192,10 +192,10 @@ def write_deckstring(
 	cards: CardIncludeList,
 	heroes: CardList,
 	format: FormatType,
-	sideboard: Optional[SideboardList] = None,
+	sideboards: Optional[SideboardList] = None,
 ) -> str:
-	if sideboard is None:
-		sideboard = []
+	if sideboards is None:
+		sideboards = []
 
 	data = BytesIO()
 	data.write(b"\0")
@@ -222,24 +222,24 @@ def write_deckstring(
 		_write_varint(data, cardid)
 		_write_varint(data, count)
 
-	if len(sideboard) > 0:
+	if len(sideboards) > 0:
 		data.write(b"\1")
 
-		sideboard_x1, sideboard_x2, sideboard_xn = trisort_cards(sideboard)
+		sideboards_x1, sideboards_x2, sideboards_xn = trisort_cards(sideboards)
 
 		sb_sort_key = lambda x: (x[2], x[0])
 
 		for cardlist in (
-			sorted(sideboard_x1, key=sb_sort_key),
-			sorted(sideboard_x2, key=sb_sort_key)
+			sorted(sideboards_x1, key=sb_sort_key),
+			sorted(sideboards_x2, key=sb_sort_key)
 		):
 			_write_varint(data, len(cardlist))
 			for cardid, _, sideboard_owner in cardlist:
 				_write_varint(data, cardid)
 				_write_varint(data, sideboard_owner)
 
-		_write_varint(data, len(sideboard_xn))
-		for cardid, count, sideboard_owner in sorted(sideboard_xn, key=sb_sort_key):
+		_write_varint(data, len(sideboards_xn))
+		for cardid, count, sideboard_owner in sorted(sideboards_xn, key=sb_sort_key):
 			_write_varint(data, cardid)
 			_write_varint(data, count)
 			_write_varint(data, sideboard_owner)

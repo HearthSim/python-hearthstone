@@ -215,7 +215,7 @@ def test_decode_deckstring():
 def test_encode_deckstring():
 	deck = deckstrings.Deck()
 	deck.cards = _decksorted(TEST_DECKSTRING_CARDLIST)
-	deck.sideboard = []
+	deck.sideboards = []
 	deck.format = FormatType.FT_WILD
 	deck.heroes = [31]
 	assert deck.as_deckstring == TEST_DECKSTRING
@@ -229,7 +229,7 @@ def test_reencode_deckstring():
 def test_decode_sideboard_deckstring():
 	deck = deckstrings.Deck.from_deckstring(TEST_SIDEBOARD_DECKSTRING)
 	assert deck.get_dbf_id_list() == _decksorted(TEST_SIDEBOARD_DECKSTRING_CARDLIST)
-	assert deck.sideboard == _decksorted(TEST_SIDEBOARD_DECKSTRING_SIDEBOARD)
+	assert deck.sideboards == _decksorted(TEST_SIDEBOARD_DECKSTRING_SIDEBOARD)
 	assert deck.format == FormatType.FT_WILD
 	assert deck.heroes == [101648]  # Hedanis
 
@@ -237,7 +237,7 @@ def test_decode_sideboard_deckstring():
 def test_encode_sideboard_deckstring():
 	deck = deckstrings.Deck()
 	deck.cards = _decksorted(TEST_SIDEBOARD_DECKSTRING_CARDLIST)
-	deck.sideboard = _decksorted(TEST_SIDEBOARD_DECKSTRING_SIDEBOARD)
+	deck.sideboards = _decksorted(TEST_SIDEBOARD_DECKSTRING_SIDEBOARD)
 	deck.format = FormatType.FT_WILD
 	deck.heroes = [101648]
 	assert deck.as_deckstring == TEST_SIDEBOARD_DECKSTRING
@@ -260,7 +260,7 @@ def test_encode_canonical_deckstring():
 		(9, 3),
 		(3, 3),
 	]
-	deck.sideboard = [
+	deck.sideboards = [
 		(8, 1, 3),
 		(10, 1, 2),
 		(1, 1, 3),
@@ -282,7 +282,7 @@ def test_decode_canonical_deckstring():
 		(7, 2),
 		(9, 3),
 	]
-	assert deck.sideboard == [
+	assert deck.sideboards == [
 		(10, 1, 2),
 		(1, 1, 3),
 		(8, 1, 3),
@@ -297,7 +297,7 @@ def test_deckstrings_regression():
 		# Encode tests
 		deck = deckstrings.Deck()
 		deck.cards = deckdata["cards"]
-		deck.sideboard = sideboards
+		deck.sideboards = sideboards
 		deck.heroes = deckdata["heroes"]
 		deck.format = deckdata["format"]
 
@@ -306,6 +306,6 @@ def test_deckstrings_regression():
 		# Decode tests
 		deck = deckstrings.Deck.from_deckstring(deckdata["deckstring"])
 		assert deck.cards == _decksorted(deckdata["cards"])
-		assert deck.sideboard == _sbsorted(sideboards)
+		assert deck.sideboards == _sbsorted(sideboards)
 		assert deck.heroes == sorted(deckdata["heroes"])
 		assert deck.format == deckdata["format"]
