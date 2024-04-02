@@ -217,7 +217,7 @@ def write_deckstring(
 				_write_varint(data, cardid)
 				_write_varint(data, sideboard_owner)
 
-		_write_varint(data, len(cards_xn))
+		_write_varint(data, len(sideboard_xn))
 		for cardid, count, sideboard_owner in sideboard_xn:
 			_write_varint(data, cardid)
 			_write_varint(data, count)
