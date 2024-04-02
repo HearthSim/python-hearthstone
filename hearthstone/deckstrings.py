@@ -112,6 +112,8 @@ def parse_deckstring(deckstring) -> (
 	decoded = base64.b64decode(deckstring)
 	data = BytesIO(decoded)
 
+	# Header section
+
 	if data.read(1) != b"\0":
 		raise ValueError("Invalid deckstring")
 
@@ -125,12 +127,18 @@ def parse_deckstring(deckstring) -> (
 	except ValueError:
 		raise ValueError("Unsupported FormatType in deckstring %r" % (format))
 
+	# Heroes section
+
 	heroes: CardList = []
 	num_heroes = _read_varint(data)
 	for i in range(num_heroes):
 		heroes.append(_read_varint(data))
+	heroes.sort()
+
+	# Cards section
 
 	cards: CardIncludeList = []
+
 	num_cards_x1 = _read_varint(data)
 	for i in range(num_cards_x1):
 		card_id = _read_varint(data)
@@ -147,31 +155,37 @@ def parse_deckstring(deckstring) -> (
 		count = _read_varint(data)
 		cards.append((card_id, count))
 
-	sideboard = []
+	cards.sort()
 
-	has_sideboard = data.read(1) == b"\1"
+	# Sideboards section
 
-	if has_sideboard:
-		num_sideboard_x1 = _read_varint(data)
-		for i in range(num_sideboard_x1):
+	sideboards = []
+
+	has_sideboards = data.read(1) == b"\1"
+
+	if has_sideboards:
+		num_sideboards_x1 = _read_varint(data)
+		for i in range(num_sideboards_x1):
 			card_id = _read_varint(data)
 			sideboard_owner = _read_varint(data)
-			sideboard.append((card_id, 1, sideboard_owner))
+			sideboards.append((card_id, 1, sideboard_owner))
 
-		num_sideboard_x2 = _read_varint(data)
-		for i in range(num_sideboard_x2):
+		num_sideboards_x2 = _read_varint(data)
+		for i in range(num_sideboards_x2):
 			card_id = _read_varint(data)
 			sideboard_owner = _read_varint(data)
-			sideboard.append((card_id, 2, sideboard_owner))
+			sideboards.append((card_id, 2, sideboard_owner))
 
-		num_sideboard_xn = _read_varint(data)
-		for i in range(num_sideboard_xn):
+		num_sideboards_xn = _read_varint(data)
+		for i in range(num_sideboards_xn):
 			card_id = _read_varint(data)
 			count = _read_varint(data)
 			sideboard_owner = _read_varint(data)
-			sideboard.append((card_id, count, sideboard_owner))
+			sideboards.append((card_id, count, sideboard_owner))
 
-	return cards, heroes, format, sideboard
+	sideboards.sort(key=lambda x: (x[2], x[0]))
+
+	return cards, heroes, format, sideboards
 
 
 def write_deckstring(
@@ -191,18 +205,20 @@ def write_deckstring(
 	if len(heroes) != 1:
 		raise ValueError("Unsupported hero count %i" % (len(heroes)))
 	_write_varint(data, len(heroes))
-	for hero in heroes:
+	for hero in sorted(heroes):
 		_write_varint(data, hero)
 
 	cards_x1, cards_x2, cards_xn = trisort_cards(cards)
 
-	for cardlist in cards_x1, cards_x2:
+	sort_key = lambda x: x[0]
+
+	for cardlist in sorted(cards_x1, key=sort_key), sorted(cards_x2, key=sort_key):
 		_write_varint(data, len(cardlist))
 		for cardid, _ in cardlist:
 			_write_varint(data, cardid)
 
 	_write_varint(data, len(cards_xn))
-	for cardid, count in cards_xn:
+	for cardid, count in sorted(cards_xn, key=sort_key):
 		_write_varint(data, cardid)
 		_write_varint(data, count)
 
@@ -211,14 +227,19 @@ def write_deckstring(
 
 		sideboard_x1, sideboard_x2, sideboard_xn = trisort_cards(sideboard)
 
-		for cardlist in sideboard_x1, sideboard_x2:
+		sb_sort_key = lambda x: (x[2], x[0])
+
+		for cardlist in (
+			sorted(sideboard_x1, key=sb_sort_key),
+			sorted(sideboard_x2, key=sb_sort_key)
+		):
 			_write_varint(data, len(cardlist))
 			for cardid, _, sideboard_owner in cardlist:
 				_write_varint(data, cardid)
 				_write_varint(data, sideboard_owner)
 
 		_write_varint(data, len(sideboard_xn))
-		for cardid, count, sideboard_owner in sideboard_xn:
+		for cardid, count, sideboard_owner in sorted(sideboard_xn, key=sb_sort_key):
 			_write_varint(data, cardid)
 			_write_varint(data, count)
 			_write_varint(data, sideboard_owner)

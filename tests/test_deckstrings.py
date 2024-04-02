@@ -60,9 +60,9 @@ TEST_SIDEBOARD_DECKSTRING_CARDLIST = [
 	(72481, 2),  # Whirlpool
 ]
 TEST_SIDEBOARD_DECKSTRING_SIDEBOARD = [
-	(69616, 1, 90749),
 	(76984, 1, 90749),
 	(78079, 1, 90749),
+	(69616, 1, 90749),
 ]
 
 
@@ -115,7 +115,7 @@ DECKSTRING_TEST_DATA = [
 		"format": FormatType.FT_STANDARD,
 		"heroes": [41887],  # Tyrande Whisperwind
 		"deckstring": (
-			"AAECAZ/HAgS1uwLcwQK+yALIxwIN68IC+ALyDOUE0QrYwQLRwQLXCvC7AtMKysMCmcICwsMCAAA="
+			"AAECAZ/HAgS1uwLcwQLIxwK+yAIN+ALlBNEK0wrXCvIM8LsC0cEC2MECmcIC68ICwsMCysMCAAA="
 		)
 	},
 	{
@@ -144,12 +144,50 @@ DECKSTRING_TEST_DATA = [
 		"deckstring": (
 			"AAECAR8GxwPJBLsFmQfZB/gIDI0B2AGoArUDhwSSBe0G6wfbCe0JgQr+DAAA"
 		),
+	},
+	{
+		"cards": [
+			(80647, 2),
+			(80818, 1),
+			(91251, 2),
+			(95344, 2),
+			(98285, 1),
+			(100619, 1),
+			(101015, 2),
+			(101016, 1),
+			(101265, 2),
+			(101375, 1),
+			(102418, 2),
+			(102983, 1),
+			(104634, 2),
+			(104636, 2),
+			(104694, 2),
+			(105355, 2),
+			(111315, 1),
+			(111318, 1),
+			(111319, 2),
+		],
+		"format": FormatType.FT_STANDARD,
+		"heroes": [78065],
+		"sideboards": [
+			(110440, 1, 102983),  # incorrectly sorted
+			(104947, 1, 102983),
+			(104950, 1, 102983),
+		],
+		"deckstring": (
+			"AAECAfHhBAiy9wTt/wWLkgaYlQb/lwbHpAbT5QbW5QYLh/YE88gF8OgFl5UGkZcGkqAGurEGvLEG9r"
+			"EGi7cG1+UGAAED87MGx6QG9rMGx6QG6N4Gx6QGAAA="
+		)
 	}
 ]
 
 
 def _decksorted(cards):
 	return sorted(cards, key=lambda x: x[0])
+
+
+def _sbsorted(cards):
+	return sorted(cards, key=lambda x: (x[2], x[0]))
 
 
 def test_empty_deckstring():
@@ -210,14 +248,56 @@ def test_reencode_sideboard_deckstring():
 	assert deck.as_deckstring == TEST_SIDEBOARD_DECKSTRING
 
 
+def test_encode_canonical_deckstring():
+	deck = deckstrings.Deck()
+	deck.cards = [
+		(6, 1),
+		(4, 1),
+		(2, 2),
+		(7, 2),
+		(1, 1),
+		(5, 2),
+		(9, 3),
+		(3, 3),
+	]
+	deck.sideboard = [
+		(8, 1, 3),
+		(10, 1, 2),
+		(1, 1, 3),
+	]
+	deck.heroes = [31]
+	deck.format = FormatType.FT_WILD
+	assert deck.as_deckstring == "AAEBAR8DAQQGAwIFBwIDAwkDAQMKAgEDCAMAAA=="
+
+
+def test_decode_canonical_deckstring():
+	deck = deckstrings.Deck.from_deckstring("AAEBAx8hHgMBBAYDAgUHAgMDCQMBAwoCAQMIAwAA")
+	assert deck.cards == [
+		(1, 1),
+		(2, 2),
+		(3, 3),
+		(4, 1),
+		(5, 2),
+		(6, 1),
+		(7, 2),
+		(9, 3),
+	]
+	assert deck.sideboard == [
+		(10, 1, 2),
+		(1, 1, 3),
+		(8, 1, 3),
+	]
+	deck.heroes = [30, 31, 33]
+
+
 def test_deckstrings_regression():
 	for deckdata in DECKSTRING_TEST_DATA:
-		sideboard = deckdata.get("sideboard", [])
+		sideboards = deckdata.get("sideboards", [])
 
 		# Encode tests
 		deck = deckstrings.Deck()
 		deck.cards = deckdata["cards"]
-		deck.sideboard = sideboard
+		deck.sideboard = sideboards
 		deck.heroes = deckdata["heroes"]
 		deck.format = deckdata["format"]
 
@@ -225,7 +305,7 @@ def test_deckstrings_regression():
 
 		# Decode tests
 		deck = deckstrings.Deck.from_deckstring(deckdata["deckstring"])
-		assert _decksorted(deck.cards) == _decksorted(deckdata["cards"])
-		assert _decksorted(deck.sideboard) == _decksorted(sideboard)
-		assert deck.heroes == deckdata["heroes"]
+		assert deck.cards == _decksorted(deckdata["cards"])
+		assert deck.sideboard == _sbsorted(sideboards)
+		assert deck.heroes == sorted(deckdata["heroes"])
 		assert deck.format == deckdata["format"]
