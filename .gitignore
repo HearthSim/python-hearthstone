@@ -1,0 +1,13 @@
+__pycache__
+build
+hearthstone.egg-info
+coverage.xml
+venv
+
+*.pyc
+.tox
+.vscode
+.env
+.coverage
+.idea
+
