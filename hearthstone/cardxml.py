@@ -3,7 +3,7 @@ from typing import Any, Callable, Iterator, Tuple
 
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
-	MultiClassGroup, PlayReq, Race, Rarity, Role, SpellSchool
+	MultiClassGroup, Race, Rarity, Role, SpellSchool
 )
 from .utils import ElementTree
 from .xmlutils import download_to_tempfile_retry
@@ -59,21 +59,6 @@ def _make_tag_element(element, tagname, tag, value):
 	return e
 
 
-def _read_power_tag(e):
-	ret = {"definition": e.attrib["definition"]}
-	reqs = e.findall("PlayRequirement")
-	if reqs is not None:
-		ret["requirements"] = {}
-		for pr in reqs:
-			reqid = int(pr.attrib["reqID"])
-			try:
-				req = PlayReq(reqid)
-			except ValueError:
-				req = reqid
-			ret["requirements"][req] = int(pr.attrib["param"] or 0)
-	return ret
-
-
 def _unpack_tag_xml(e):
 	value = int(e.attrib["enumID"])
 	try:
@@ -119,10 +104,6 @@ class CardXML:
 		e = xml.findall("MasterPower")
 		self.master_power = e[0] if e else None
 
-		e = xml.findall("Power")
-		for power in e:
-			self.powers.append(_read_power_tag(power))
-
 		self.entourage = [t.attrib["cardID"] for t in xml.findall("EntourageCard")]
 		return self
 
@@ -135,7 +116,6 @@ class CardXML:
 		self.referenced_tags = {}
 		self.master_power = None
 		self.entourage = []
-		self.powers = []
 		self.triggered_power_history_info = []
 
 		self.locale = locale
@@ -197,13 +177,6 @@ class CardXML:
 
 		for entourage in self.entourage:
 			ElementTree.SubElement(ret, "EntourageCard", cardID=entourage)
-
-		for power in self.powers:
-			ep = ElementTree.SubElement(ret, "Power", definition=power["definition"])
-			reqs = power.get("requirements", {})
-			for reqid, param in reqs.items():
-				er = ElementTree.SubElement(ep, "PlayRequirement", reqID=str(int(reqid)))
-				er.attrib["param"] = str(param or "")
 
 		for tphi in self.triggered_power_history_info:
 			e = ElementTree.SubElement(ret, "TriggeredPowerHistoryInfo")
