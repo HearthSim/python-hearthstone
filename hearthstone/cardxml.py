@@ -101,10 +101,6 @@ class CardXML:
 			if t is not None:
 				self.hero_power = t[0].attrib.get("cardID")
 
-		e = xml.findall("MasterPower")
-		self.master_power = e[0] if e else None
-
-		self.entourage = [t.attrib["cardID"] for t in xml.findall("EntourageCard")]
 		return self
 
 	def __init__(self, id, locale="enUS"):
@@ -114,9 +110,6 @@ class CardXML:
 		self.tags = {}
 		self.hero_power = None
 		self.referenced_tags = {}
-		self.master_power = None
-		self.entourage = []
-		self.triggered_power_history_info = []
 
 		self.locale = locale
 
@@ -142,10 +135,6 @@ class CardXML:
 		ret = ElementTree.Element("Entity", CardID=self.id, ID=str(self.dbf_id))
 		if self.version:
 			ret.attrib["version"] = str(self.version)
-
-		if self.master_power:
-			master_power = ElementTree.SubElement(ret, "MasterPower")
-			master_power.text = self.master_power
 
 		for tag in LOCALIZED_TAGS:
 			value = self.strings[tag]
@@ -174,14 +163,6 @@ class CardXML:
 
 		for tag, value in sorted(self.referenced_tags.items()):
 			e = _make_tag_element(ret, "ReferencedTag", tag, value)
-
-		for entourage in self.entourage:
-			ElementTree.SubElement(ret, "EntourageCard", cardID=entourage)
-
-		for tphi in self.triggered_power_history_info:
-			e = ElementTree.SubElement(ret, "TriggeredPowerHistoryInfo")
-			e.attrib["effectIndex"] = str(tphi["effectIndex"])
-			e.attrib["showInHistory"] = str(tphi["showInHistory"])
 
 		return ret
 
