@@ -397,9 +397,9 @@ dbf_cache: dict = {}
 XML_URL = "https://api.hearthstonejson.com/v1/latest/CardDefs.xml"
 
 
-def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None]):
+def _bootstrap_from_web(url: str, parse: Callable[[Iterator[Tuple[str, Any]]], None]):
 	with tempfile.TemporaryFile(mode="rb+") as fp:
-		if download_to_tempfile_retry(XML_URL, fp):
+		if download_to_tempfile_retry(url, fp):
 			fp.flush()
 			fp.seek(0)
 
@@ -416,7 +416,7 @@ def _bootstrap_from_library(parse: Callable[[Iterator[Tuple[str, Any]]], None], 
 		parse(ElementTree.iterparse(f, events=("start", "end",)))
 
 
-def _load(path, locale, cache, attr):
+def _load(path, locale, cache, attr, url=None):
 	cache_key = (path, locale)
 	if cache_key not in cache:
 		db = {}
@@ -446,7 +446,7 @@ def _load(path, locale, cache, attr):
 				has_lib = False
 
 			if not has_lib:
-				_bootstrap_from_web(parse)
+				_bootstrap_from_web(url or XML_URL, parse)
 
 		if not db:
 			_bootstrap_from_library(parse, path=path)
@@ -456,9 +456,9 @@ def _load(path, locale, cache, attr):
 	return cache[cache_key]
 
 
-def load(path=None, locale="enUS"):
-	return _load(path, locale, cardid_cache, "id")
+def load(path=None, locale="enUS", url=None):
+	return _load(path, locale, cardid_cache, "id", url)
 
 
-def load_dbf(path=None, locale="enUS"):
-	return _load(path, locale, dbf_cache, "dbf_id")
+def load_dbf(path=None, locale="enUS", url=None):
+	return _load(path, locale, dbf_cache, "dbf_id", url)
