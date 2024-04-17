@@ -7,14 +7,12 @@ A Hearthstone Python library containing:
 
 * A CardDefs.xml parser (`hearthstone.cardxml`)
 * A DbfXml parser (`hearthstone.dbf`)
+* A deck code encoder and decoder (`hearthstone.deckstrings`)
 * Hearthstone enums as IntEnum (`hearthstone.enums`)
 
-The log parser previously in `hearthstone.hslog` has moved to the
-[python-hslog project](https://github.com/HearthSim/python-hslog).
-
-The CardDefs.xml data for the latest build is available in the
+The CardDefs.xml data for the latest build can optionally be installed from the
 [python-hearthstone-data repository](https://github.com/HearthSim/python-hearthstone-data)
-or on PyPI with `pip install hearthstone_data`.
+or on PyPI with `pip install hearthstone_data`. Otherwise, they will be download at runtime.
 
 
 ## Requirements
