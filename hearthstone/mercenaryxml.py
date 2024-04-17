@@ -191,9 +191,12 @@ mercenary_cache: Dict[Tuple[str, str], Tuple[Dict[int, MercenaryXML], Any]] = {}
 XML_URL = "https://api.hearthstonejson.com/v1/latest/MercenaryDefs.xml"
 
 
-def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None]):
+def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None], url=None):
+	if url is None:
+		url = XML_URL
+
 	with tempfile.TemporaryFile(mode="rb+") as fp:
-		if download_to_tempfile_retry(XML_URL, fp):
+		if download_to_tempfile_retry(url, fp):
 			fp.flush()
 			fp.seek(0)
 
@@ -210,7 +213,7 @@ def _bootstrap_from_library(parse: Callable[[Iterator[Tuple[str, Any]]], None], 
 		parse(ElementTree.iterparse(f, events=("start", "end",)))
 
 
-def load(path=None, locale="enUS"):
+def load(locale="enUS", path=None, url=None):
 	cache_key = (path, locale)
 	if cache_key not in mercenary_cache:
 		db = {}
@@ -232,7 +235,7 @@ def load(path=None, locale="enUS"):
 					root.clear()  # type: ignore
 
 		if path is None:
-			_bootstrap_from_web(parse)
+			_bootstrap_from_web(parse, url=url)
 
 		if not db:
 			_bootstrap_from_library(parse, path=path)

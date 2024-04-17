@@ -397,7 +397,10 @@ dbf_cache: dict = {}
 XML_URL = "https://api.hearthstonejson.com/v1/latest/CardDefs.xml"
 
 
-def _bootstrap_from_web(url: str, parse: Callable[[Iterator[Tuple[str, Any]]], None]):
+def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None], url=None):
+	if url is None:
+		url = XML_URL
+
 	with tempfile.TemporaryFile(mode="rb+") as fp:
 		if download_to_tempfile_retry(url, fp):
 			fp.flush()
@@ -446,7 +449,7 @@ def _load(path, locale, cache, attr, url=None):
 				has_lib = False
 
 			if not has_lib:
-				_bootstrap_from_web(url or XML_URL, parse)
+				_bootstrap_from_web(parse, url=url)
 
 		if not db:
 			_bootstrap_from_library(parse, path=path)
