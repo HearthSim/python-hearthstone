@@ -2492,19 +2492,31 @@ class ZodiacYear(IntEnum):
 if __name__ == "__main__":
 	import json
 	import sys
+	from collections import OrderedDict
 
-	all_enums = {
-		k: dict(v.__members__) for k, v in globals().items() if (  # type:ignore
-			isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
-		)
-	}
+	def get_enum_key(enum, name):
+		val = enum[name].value
+		canonical_name = enum[name].name
+		if canonical_name == name:
+			return -100_000 + val
+		return val
+
+	# Consistently sort, but keep aliases at the end
+	all_enums = OrderedDict(sorted(
+		[
+			(
+				k, OrderedDict(sorted(v.__members__.items(), key=lambda x: get_enum_key(v, x[0])))
+			) for k, v in globals().items()
+			if isinstance(v, type) and issubclass(v, IntEnum) and k != "IntEnum"
+		],
+		key=lambda x: x[0]
+	))
 
 	def _print_enums(enums, format):
 		ret = []
 		linefmt = "\t%s = %i,"
-		for enum in sorted(enums):
-			sorted_pairs = sorted(enums[enum].items(), key=lambda k: k[1])
-			lines = "\n".join(linefmt % (name, value) for name, value in sorted_pairs)
+		for enum in enums:
+			lines = "\n".join(linefmt % (name, value) for name, value in enums[enum].items())
 			ret.append(format % (enum, lines))
 		print("\n\n".join(ret))
 
@@ -2518,4 +2530,4 @@ if __name__ == "__main__":
 	elif format == "--cs":
 		_print_enums(all_enums, "public enum %s {\n%s\n}")
 	else:
-		print(json.dumps(dict(sorted(all_enums.items(), key=lambda x: x[0])), sort_keys=False))
+		print(json.dumps(all_enums, sort_keys=False))
