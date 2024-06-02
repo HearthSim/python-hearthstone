@@ -2518,4 +2518,4 @@ if __name__ == "__main__":
 	elif format == "--cs":
 		_print_enums(all_enums, "public enum %s {\n%s\n}")
 	else:
-		print(json.dumps(all_enums, sort_keys=True))
+		print(json.dumps(dict(sorted(all_enums.items(), key=lambda x: x[0])), sort_keys=False))
