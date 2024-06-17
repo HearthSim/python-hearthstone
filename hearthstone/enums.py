@@ -439,7 +439,6 @@ class GameTag(IntEnum):
 	PLAYER_TECH_LEVEL = 1377
 	BACON_HERO_POWER_ACTIVATED = 1398
 	USE_FAST_ACTOR_TRANSITION_ANIMATIONS = 1402
-	DECK_RULE_COUNT_AS_COPY_OF_CARD_ID = 1413
 	STUDY = 1414
 	BACON_ODD_PLAYER_OUT = 1415
 	BACON_IS_KEL_THUZAD = 1423
@@ -886,6 +885,8 @@ class GameTag(IntEnum):
 	BACON_TRIPLED_BASE_MINION_ID3 = 3500
 	QUEST_HIDE_PROGRESS = 3523
 	TRANSFORM = 3562
+	BACON_DONT_SHOW_PAIR_TRIPLE_DISCOVER_VFX = 3661
+	FALLBACK_ENCHANTMENT_PORTRAIT_DBID = 3664
 
 	InvisibleDeathrattle = 335
 	ImmuneToSpellpower = 349
@@ -1021,6 +1022,7 @@ class GameTag(IntEnum):
 	AVRANK = 2324
 	MERCS_DISCOVER = 2665
 	TOPDECK = 377
+	DECK_RULE_COUNT_AS_COPY_OF_CARD_ID = 1413
 
 	# Missing/guessed, only present in logs
 	# Note: the names of these can change at any time!
@@ -1176,6 +1178,7 @@ class CardSet(IntEnum):
 	GANGS_RESERVE = 26
 	UNGORO = 27  # Journey to Un'Goro
 	ICECROWN = 1001  # Knights of the Frozen Throne
+	TB_DEV = 1003
 	LOOTAPALOOZA = 1004  # Kobolds & Catacombs
 	GILNEAS = 1125  # The Witchwood
 	BOOMSDAY = 1127  # The Boomsday Project
@@ -1209,6 +1212,7 @@ class CardSet(IntEnum):
 	WONDERS = 1898
 	WHIZBANGS_WORKSHOP = 1897
 	TUTORIAL = 1904
+	ISLAND_VACATION = 1905  # Perils in Paradise
 	EVENT = 1941
 
 	# Not actually present...
@@ -1258,7 +1262,8 @@ class CardSet(IntEnum):
 			CardSet.TITANS,
 			CardSet.WILD_WEST,
 			CardSet.WONDERS,
-			CardSet.WHIZBANGS_WORKSHOP
+			CardSet.WHIZBANGS_WORKSHOP,
+			CardSet.ISLAND_VACATION,
 		)
 
 	@property
