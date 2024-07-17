@@ -113,6 +113,20 @@ SECRET_COSTS = {
 	CardClass.WARRIOR: 0,
 }
 
+VISITING_TOURISTS = {
+	CardClass.DEATHKNIGHT: "VAC_503",
+	CardClass.DRUID: "VAC_340",
+	CardClass.HUNTER: "VAC_957",
+	CardClass.MAGE: "VAC_519",
+	CardClass.PALADIN: "VAC_424",
+	CardClass.PRIEST: "VAC_501",
+	CardClass.ROGUE: "VAC_507",
+	CardClass.SHAMAN: "VAC_437",
+	CardClass.WARLOCK: "VAC_336",
+	CardClass.WARRIOR: "VAC_413",
+	CardClass.DEMONHUNTER: "VAC_450",
+}
+
 
 CRAFTING_COSTS = {
 	Rarity.COMMON: (40, 400),
