@@ -118,7 +118,7 @@ class Game(Entity):
 		elif not self.setup_done:
 			self.initial_entities.append(entity)
 
-		# Update player.starting_hero for Maestra of the Masquerade
+		# Infer player class and card from "Maestra of the Masquerade" revealing herself
 		if (
 			entity.type == CardType.HERO and
 			entity.tags.get(GameTag.CREATOR_DBID) == MAESTRA_DISGUISE_DBF_ID
@@ -132,10 +132,29 @@ class Game(Entity):
 				# one.
 				player.initial_hero_entity_id = entity.id
 
-				# At this point we know that Maestra must be in the starting of the player,
-				# because otherwise the reveal would not happen. Manually add it to the list
-				# of starting cards
+				# At this point we know that Maestra must be in the starting deck of the
+				# player, because otherwise the reveal would not happen. Manually add it to
+				# the list of starting cards
 				player._known_starting_card_ids.add("SW_050")
+
+		# Infer Tourists when they reveal themselves
+		if (
+			entity.tags.get(GameTag.ZONE) == Zone.REMOVEDFROMGAME and
+			entity.tags.get(GameTag.TOURIST) == 1
+		):
+			# This might be the fake Tourist that the game pops up to explain why a card was
+			# present in the player's deck. Double-check that the card was created by the
+			# Tourist VFX enchantment.
+			creator_id = entity.tags.get(GameTag.CREATOR)
+			creator = self.find_entity_by_id(creator_id) if creator_id else None
+			creator_is_vfx = (
+				getattr(creator, "card_id") == "VAC_422e"
+				if creator is not None else False
+			)
+			player = entity.controller
+			tourist_card_id = getattr(entity, "card_id")
+			if creator_is_vfx and player is not None and tourist_card_id is not None:
+				player._known_starting_card_ids.add(tourist_card_id)
 
 	def reset(self) -> None:
 		for entity in self.entities:
@@ -214,15 +233,14 @@ class Player(Entity):
 		Blade) and well-known transforms (e.g. Spellstones, Unidentified Objects, Worgens)
 		so that the initial card id is included rather than the final card id.
 		"""
-		ret = list(self._known_starting_card_ids)
-
 		original_card_ids = [
 			get_original_card_id(entity.initial_card_id)
 			for entity in self.initial_deck if entity.initial_card_id
 		]
-		ret = ret + [card_id for card_id in original_card_ids if card_id not in ret]
-
-		return ret
+		return original_card_ids + [
+			card_id for card_id in self._known_starting_card_ids
+			if card_id not in original_card_ids
+		]
 
 	@property
 	def entities(self) -> Iterator[Entity]:

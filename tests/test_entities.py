@@ -308,6 +308,46 @@ class TestPlayer:
 
 		assert player.known_starting_deck_list == [WISP, SOULEATERS_SCYTHE]
 
+	def test_known_starting_deck_list_with_tourist(self, game, player):
+		HAMM = "VAC_340"
+		TOURIST_VFX_ENCHANTMENT = "VAC_422e"
+
+		tourist = Card(4, None)
+		tourist.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(tourist)
+
+		vfx = Card(5, None)
+		vfx.tags.update({
+			GameTag.ZONE: Zone.SETASIDE,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(vfx)
+		vfx.reveal(TOURIST_VFX_ENCHANTMENT, {
+			GameTag.CARDTYPE: CardType.ENCHANTMENT,
+			GameTag.ATTACHED: player.id,
+			GameTag.CREATOR: tourist.id,
+		})
+
+		# At some point we play an out-of-class card, and a fake tourist is shown
+		fake_tourist = Card(6, HAMM)
+		fake_tourist.tags.update({
+			GameTag.CONTROLLER: player.player_id,
+			GameTag.CREATOR: vfx.id,
+			GameTag.ZONE: Zone.REMOVEDFROMGAME,
+			GameTag.TOURIST: 1,
+			GameTag.DRUID_TOURIST: 1,
+		})
+		game.register_entity(fake_tourist)
+
+		assert player.known_starting_deck_list == [HAMM]
+
+		tourist.reveal(HAMM, {})
+
+		assert player.known_starting_deck_list == [HAMM]
+
 
 class TestCard:
 	def test_card(self):
