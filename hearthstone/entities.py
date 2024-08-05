@@ -140,7 +140,7 @@ class Game(Entity):
 		# Infer Tourists when they reveal themselves
 		if (
 			entity.tags.get(GameTag.ZONE) == Zone.REMOVEDFROMGAME and
-			entity.tags.get(GameTag.TOURIST) == 1
+			entity.tags.get(GameTag.TOURIST, 0) > 0
 		):
 			# This might be the fake Tourist that the game pops up to explain why a card was
 			# present in the player's deck. Double-check that the card was created by the

@@ -337,7 +337,7 @@ class TestPlayer:
 			GameTag.CONTROLLER: player.player_id,
 			GameTag.CREATOR: vfx.id,
 			GameTag.ZONE: Zone.REMOVEDFROMGAME,
-			GameTag.TOURIST: 1,
+			GameTag.TOURIST: 2,
 			GameTag.DRUID_TOURIST: 1,
 		})
 		game.register_entity(fake_tourist)
