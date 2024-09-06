@@ -1185,9 +1185,9 @@ class CardClass(IntEnum):
 		return self != CardClass.WHIZBANG and self.default_hero
 
 	@property
-	def visiting_tourist(self):
+	def visiting_tourists(self):
 		from .utils import VISITING_TOURISTS
-		return VISITING_TOURISTS.get(self, None)
+		return VISITING_TOURISTS.get(self, [])
 
 	@property
 	def name_global(self):
