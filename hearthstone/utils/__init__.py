@@ -116,11 +116,11 @@ SECRET_COSTS = {
 VISITING_TOURISTS = {
 	CardClass.DEATHKNIGHT: ["VAC_503"],
 	CardClass.DRUID: ["VAC_340"],
-	CardClass.HUNTER: ["VAC_957"],
+	CardClass.HUNTER: ["VAC_957", "WORK_013"],
 	CardClass.MAGE: ["VAC_519"],
 	CardClass.PALADIN: ["VAC_424"],
 	CardClass.PRIEST: ["VAC_501"],
-	CardClass.ROGUE: ["VAC_507"],
+	CardClass.ROGUE: ["VAC_507", "WORK_063"],
 	CardClass.SHAMAN: ["VAC_437"],
 	CardClass.WARLOCK: ["VAC_336"],
 	CardClass.WARRIOR: ["VAC_413"],
