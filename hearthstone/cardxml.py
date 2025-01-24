@@ -1,5 +1,5 @@
 import tempfile
-from typing import Any, Callable, Iterator, Tuple
+from typing import Any, Callable, Iterator, Optional, Sequence, Tuple
 
 from .enums import (
 	CardClass, CardSet, CardType, Faction, GameTag,
@@ -131,22 +131,35 @@ class CardXML:
 	def __repr__(self):
 		return "<%s: %r>" % (self.id, self.name)
 
-	def to_xml(self):
+	def to_xml(
+		self,
+		tags: Optional[Sequence[GameTag]] = None,
+		locales: Optional[Sequence[str]] = None
+	):
 		ret = ElementTree.Element("Entity", CardID=self.id, ID=str(self.dbf_id))
 		if self.version:
 			ret.attrib["version"] = str(self.version)
 
 		for tag in LOCALIZED_TAGS:
+			if tags is not None and tag not in tags:
+				continue
+
 			value = self.strings[tag]
 			if value:
 				e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
 				e.attrib["type"] = "LocString"
 				for locale, localized_value in sorted(value.items()):
+					if locales is not None and locale not in locales:
+						continue
+
 					if localized_value:
 						loc_element = ElementTree.SubElement(e, locale)
 						loc_element.text = str(localized_value)
 
 		for tag in STRING_TAGS:
+			if tags is not None and tag not in tags:
+				continue
+
 			value = self.strings[tag]
 			if value:
 				e = ElementTree.SubElement(ret, "Tag", enumID=str(int(tag)), name=tag.name)
@@ -154,6 +167,9 @@ class CardXML:
 				e.text = value
 
 		for tag, value in sorted(self.tags.items()):
+			if tags is not None and tag not in tags:
+				continue
+
 			if value:
 				e = _make_tag_element(ret, "Tag", tag, value)
 
@@ -162,6 +178,9 @@ class CardXML:
 					e.attrib["cardID"] = self.hero_power
 
 		for tag, value in sorted(self.referenced_tags.items()):
+			if tags and tag not in tags:
+				continue
+
 			e = _make_tag_element(ret, "ReferencedTag", tag, value)
 
 		return ret
