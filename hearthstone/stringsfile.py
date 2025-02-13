@@ -25,6 +25,7 @@ def load_json(fp) -> StringsDict:
 
 
 def load_txt(fp) -> StringsDict:
+	fp = map(lambda x: x.replace("\0", ""), fp)
 	reader = csv.DictReader(
 		filter(lambda row: row.strip() and not row.startswith("#"), fp),
 		delimiter="\t"

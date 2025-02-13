@@ -26,3 +26,14 @@ def test_load_blank_line():
 			"TEXT": "The only escape is death!"
 		}
 	}
+
+
+def test_handle_null_bytes():
+	NULL_BYTE_STRING = """TAG	TEXT	COMMENT	AUDIOFILE
+SOME_STRING_KEY	There's a bad null byte at the end!\0"""  # noqa: W291
+
+	assert load_txt(StringIO(NULL_BYTE_STRING)) == {
+		"SOME_STRING_KEY": {
+			"TEXT": "There's a bad null byte at the end!",
+		}
+	}
