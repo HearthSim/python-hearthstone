@@ -1322,6 +1322,7 @@ class CardSet(IntEnum):
 	ISLAND_VACATION = 1905  # Perils in Paradise
 	SPACE = 1935  # Great Dark Beyond
 	EVENT = 1941
+	EMERALD_DREAM = 1946
 
 	# Not actually present...
 	TAVERNS_OF_TIME = 1143
