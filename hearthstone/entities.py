@@ -147,12 +147,9 @@ class Game(Entity):
 			# Tourist VFX enchantment.
 			creator_id = entity.tags.get(GameTag.CREATOR)
 			creator = self.find_entity_by_id(creator_id) if creator_id else None
-			creator_is_vfx = (
-				getattr(creator, "card_id") == "VAC_422e"
-				if creator is not None else False
-			)
+			creator_is_vfx = getattr(creator, "card_id", None) == "VAC_422e"
 			player = entity.controller
-			tourist_card_id = getattr(entity, "card_id")
+			tourist_card_id = getattr(entity, "card_id", None)
 			if creator_is_vfx and player is not None and tourist_card_id is not None:
 				player._known_starting_card_ids.add(tourist_card_id)
 
