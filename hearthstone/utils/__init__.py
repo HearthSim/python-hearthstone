@@ -199,7 +199,12 @@ STANDARD_SETS = {
 		CardSet.CORE,
 		CardSet.BATTLE_OF_THE_BANDS, CardSet.TITANS, CardSet.WILD_WEST,
 		CardSet.EVENT, CardSet.WHIZBANGS_WORKSHOP, CardSet.ISLAND_VACATION,
-		CardSet.SPACE, CardSet.EVENT, CardSet.EMERALD_DREAM, CardSet.THE_LOST_CITY
+		CardSet.SPACE, CardSet.EVENT,
+	],
+	ZodiacYear.RAPTOR: [
+		CardSet.CORE, CardSet.EVENT,
+		CardSet.WHIZBANGS_WORKSHOP, CardSet.ISLAND_VACATION, CardSet.SPACE,
+		CardSet.EMERALD_DREAM, CardSet.THE_LOST_CITY,
 	],
 }
 
@@ -222,6 +227,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.HYDRA: datetime(2022, 4, 12),
 	ZodiacYear.WOLF: datetime(2023, 4, 11),
 	ZodiacYear.PEGASUS: datetime(2024, 3, 19),
+	ZodiacYear.RAPTOR: datetime(2025, 3, 25),
 }
 
 
