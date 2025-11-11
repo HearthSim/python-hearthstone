@@ -439,6 +439,9 @@ UPGRADABLE_CARDS_MAP = {
 	"TOY_330t10": "TOY_330",
 	"TOY_330t11": "TOY_330",
 	"TOY_330t12": "TOY_330",
+	# Lady Azshara
+	"TIME_211t1t": "TIME_211t1",  # The Well of Eternity
+	"TIME_211t2t": "TIME_211t2",  # Zin-Azshari
 }
 
 
