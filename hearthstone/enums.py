@@ -1498,6 +1498,7 @@ class CardSet(IntEnum):
 			CardSet.EMERALD_DREAM,
 			CardSet.THE_LOST_CITY,
 			CardSet.TIME_TRAVEL,
+			CardSet.CATACLYSM,
 		)
 
 	@property
