@@ -1529,7 +1529,7 @@ class CardSet(IntEnum):
 
 	@property
 	def is_standard(self):
-		return self in ZodiacYear.RAPTOR.standard_card_sets
+		return self in ZodiacYear.SCARAB.standard_card_sets
 
 
 class CardType(IntEnum):
@@ -2756,6 +2756,7 @@ class ZodiacYear(IntEnum):
 	WOLF = 8
 	PEGASUS = 9
 	RAPTOR = 10
+	SCARAB = 11
 
 	@property
 	def standard_card_sets(self):
