@@ -370,6 +370,7 @@ class CardXML:
 	spare_part = prop(GameTag.SPARE_PART, bool)
 	spellburst = prop(GameTag.SPELLBURST, bool)
 	start_of_game = prop(GameTag.START_OF_GAME, bool)
+	stealth = prop(GameTag.STEALTH, bool)
 	taunt = prop(GameTag.TAUNT, bool)
 	titan = prop(GameTag.TITAN, bool)
 	topdeck = prop(GameTag.TOPDECK, bool)
