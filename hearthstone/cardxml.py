@@ -368,6 +368,7 @@ class CardXML:
 	rush = prop(GameTag.RUSH, bool)
 	secret = prop(GameTag.SECRET, bool)
 	sidequest = prop(GameTag.SIDEQUEST, bool)
+	sigil = prop(GameTag.SIGIL, bool)
 	spare_part = prop(GameTag.SPARE_PART, bool)
 	spellburst = prop(GameTag.SPELLBURST, bool)
 	start_of_game = prop(GameTag.START_OF_GAME, bool)
