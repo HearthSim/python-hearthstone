@@ -362,6 +362,7 @@ class CardXML:
 	overkill = prop(GameTag.OVERKILL, bool)
 	poisonous = prop(GameTag.POISONOUS, bool)
 	quest = prop(GameTag.QUEST, bool)
+	questline = prop(GameTag.QUESTLINE, bool)
 	reborn = prop(GameTag.REBORN, bool)
 	ritual = prop(GameTag.RITUAL, bool)
 	rush = prop(GameTag.RUSH, bool)
