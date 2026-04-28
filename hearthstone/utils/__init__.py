@@ -204,7 +204,12 @@ STANDARD_SETS = {
 	ZodiacYear.RAPTOR: [
 		CardSet.CORE, CardSet.EVENT,
 		CardSet.WHIZBANGS_WORKSHOP, CardSet.ISLAND_VACATION, CardSet.SPACE,
+		CardSet.EMERALD_DREAM, CardSet.THE_LOST_CITY, CardSet.TIME_TRAVEL, CardSet.CATACLYSM
+	],
+	ZodiacYear.SCARAB: [
+		CardSet.CORE, CardSet.EVENT,
 		CardSet.EMERALD_DREAM, CardSet.THE_LOST_CITY, CardSet.TIME_TRAVEL,
+		CardSet.CATACLYSM
 	],
 }
 
@@ -228,6 +233,7 @@ ZODIAC_ROTATION_DATES = {
 	ZodiacYear.WOLF: datetime(2023, 4, 11),
 	ZodiacYear.PEGASUS: datetime(2024, 3, 19),
 	ZodiacYear.RAPTOR: datetime(2025, 3, 25),
+	ZodiacYear.SCARAB: datetime(2026, 3, 17),
 }
 
 
