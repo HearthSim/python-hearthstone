@@ -18,6 +18,7 @@ class Entity:
 		self.tags: GameTagsDict = {}
 		self.initial_creator = 0
 		self.initial_zone: Zone = Zone.INVALID
+		self.initial_zone_position = 0
 		self._initial_controller = 0
 
 	def __repr__(self):
@@ -113,6 +114,7 @@ class Game(Entity):
 		entity.game = self
 		self._entities[entity.id] = entity
 		entity.initial_zone = entity.zone
+		entity.initial_zone_position = entity.tags.get(GameTag.ZONE_POSITION, 0)
 
 		if isinstance(entity, Player):
 			self.players.append(entity)
