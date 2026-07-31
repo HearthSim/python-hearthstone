@@ -3,7 +3,7 @@ from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union, cast
 from hearthstone.utils import MAESTRA_DISGUISE_DBF_ID, get_original_card_id
 
 from .enums import CardSet, CardType, GameTag, State, Step, Zone
-from .types import GameTagsDict
+from .typedefs import GameTagsDict
 
 
 STARTING_HERO_SETS = (CardSet.HERO_SKINS, )
