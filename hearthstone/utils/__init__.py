@@ -602,15 +602,20 @@ MAESTRA_DISGUISE_DBF_ID = 64674
 
 
 if __name__ == "__main__":
+	from enum import IntEnum
+
+	def _cs_value(value):
+		# IntEnum stringifies to its value since Python 3.11, but C# needs the member name
+		if isinstance(value, IntEnum):
+			return "%s.%s" % (type(value).__name__, value.name)
+		return str(value)
+
 	def _print_cs_dicts(dicts_and_names, tl_format, format):
 		ret = []
 		linefmt = "\t\t{ %d, %s }"
 		for name, dict in dicts_and_names:
-			keytype = int
-			valtype = list(dict.values())[0].__class__
-
 			lines = ",\n".join(
-				linefmt % (keytype(key), valtype(value))
+				linefmt % (int(key), _cs_value(value))
 				for key, value in dict.items()
 				if key is not None
 			)
