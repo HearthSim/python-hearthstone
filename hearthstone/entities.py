@@ -354,9 +354,18 @@ class Card(Entity):
 
 	def _update_tags(self, tags: GameTagsDict) -> None:
 		super()._update_tags(tags)
-		if self.is_original_entity and self.initial_creator is None:
-			creator = tags.get(GameTag.CREATOR, 0)
-			if creator:
+		if self.is_original_entity and not self.initial_creator:
+			# DISPLAYED_CREATOR is included because cards generated into the deck at the
+			# start of the game (eg. by Azalina Soulsever) only get tagged with it before
+			# they are revealed. Once they are revealed, reveal() has already cleared
+			# is_original_entity and it is too late to capture the creator.
+			creator = tags.get(GameTag.CREATOR, 0) or tags.get(GameTag.DISPLAYED_CREATOR, 0)
+
+			# A card is never created by itself. Cards that generate other cards can end up
+			# tagged as their own DISPLAYED_CREATOR (eg. Direhorn Hatchling, whose
+			# Deathrattle shuffles a Direhorn Matriarch into the deck); that does not make
+			# them generated cards.
+			if creator and creator != self.id:
 				self.initial_creator = creator
 
 	def reveal(self, card_id: str, tags: GameTagsDict) -> None:

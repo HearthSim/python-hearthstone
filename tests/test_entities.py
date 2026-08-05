@@ -130,6 +130,67 @@ class TestPlayer:
 
 		assert list(player.initial_deck) == [wisp, scythe]
 
+	def test_initial_deck_with_cards_generated_at_start_of_game(self, game, player):
+		# Azalina Soulsever has a 20 card deck rule and generates the remaining cards
+		# into the deck during CREATE_GAME, before the game is set up.
+		azalina = Card(5, None)
+		azalina.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(azalina)
+		azalina.reveal("JAIL_430", {GameTag.CARDTYPE: CardType.MINION})
+
+		# The generated cards are created knowing nothing but their zone. The creator
+		# only follows as a separate tag change...
+		generated = Card(6, None)
+		generated.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(generated)
+		generated.tag_change(GameTag.DISPLAYED_CREATOR, azalina.id)
+
+		# ...and they are only revealed much later, once they are drawn.
+		generated.reveal("CS2_231", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CREATOR: azalina.id,
+			GameTag.DISPLAYED_CREATOR: azalina.id,
+		})
+
+		assert generated.initial_creator == azalina.id
+		assert list(player.initial_deck) == [azalina]
+
+	def test_initial_deck_with_card_that_is_its_own_creator(self, game, player):
+		# Direhorn Hatchling tags itself as its own DISPLAYED_CREATOR when its Deathrattle
+		# shuffles a Direhorn Matriarch into the deck. It is still an original deck card.
+		hatchling = Card(5, None)
+		hatchling.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(hatchling)
+		hatchling.reveal("UNG_957", {GameTag.CARDTYPE: CardType.MINION})
+		hatchling.tag_change(GameTag.DISPLAYED_CREATOR, hatchling.id)
+
+		assert hatchling.initial_creator == 0
+		assert list(player.initial_deck) == [hatchling]
+
+	def test_initial_deck_with_game_entity_as_creator(self, game, player):
+		# Monster Hunt / Dungeon Run decks are created by the game entity (CREATOR=1).
+		# Those cards are the player's deck and must be kept.
+		card = Card(5, None)
+		card.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(card)
+		card.tag_change(GameTag.CREATOR, game.id)
+		card.reveal("CS2_231", {GameTag.CARDTYPE: CardType.MINION})
+
+		assert card.initial_creator == game.id
+		assert list(player.initial_deck) == [card]
+
 	def test_known_starting_deck_list(self, game, player):
 		WISP = "CS2_231"
 
