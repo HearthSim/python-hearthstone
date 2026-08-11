@@ -166,7 +166,8 @@ class TestPlayer:
 	):
 		# Commander Beatrix shuffles 10 copies of her sideboard card into the deck
 		# during CREATE_GAME, before the game is set up. The card was picked during
-		# deckbuilding, so the copies are part of the submitted deck list.
+		# deckbuilding, so the copies are part of the submitted deck list. She reveals
+		# herself first, which is what lets us recognise her as the creator.
 		beatrix = Card(5, None)
 		beatrix.tags.update({
 			GameTag.ZONE: Zone.DECK,
@@ -202,6 +203,41 @@ class TestPlayer:
 		assert copy.initial_card_id == "CS2_231"
 		assert list(player.initial_deck) == [beatrix, copy]
 		assert player.known_starting_deck_list == ["JAIL_397", "CS2_231"]
+
+	def test_initial_deck_with_unlisted_sideboard_card_creating_during_setup(
+		self, game, player
+	):
+		# Only the sideboards we know join the deck at the start of the game count. Having
+		# a sideboard is not enough on its own: a card that creates something in the deck
+		# during setup for any other reason must not have it counted as a deck card, which
+		# is why START_OF_GAME_SIDEBOARD_CARDS is an explicit list.
+		etc = Card(5, None)
+		etc.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(etc)
+		etc.reveal("ETC_080", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.MAX_SIDEBOARD_CARDS: 3,
+		})
+
+		generated = Card(6, None)
+		generated.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(generated)
+		generated.tag_change(GameTag.DISPLAYED_CREATOR, etc.id)
+		generated.reveal("CS2_231", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CREATOR: etc.id,
+			GameTag.DISPLAYED_CREATOR: etc.id,
+		})
+
+		assert not generated.is_original_entity
+		assert generated.initial_card_id is None
+		assert list(player.initial_deck) == [etc]
 
 	def test_initial_deck_with_sideboard_cards_created_after_setup(self, game, player):
 		# E.T.C., Band Manager also has a sideboard, but its cards are created once it is
