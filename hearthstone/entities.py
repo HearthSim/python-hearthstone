@@ -1,6 +1,8 @@
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union, cast
 
-from hearthstone.utils import MAESTRA_DISGUISE_DBF_ID, get_original_card_id
+from hearthstone.utils import (
+	MAESTRA_DISGUISE_DBF_ID, START_OF_GAME_SIDEBOARD_CARDS, get_original_card_id
+)
 
 from .enums import CardSet, CardType, GameTag, State, Step, Zone
 from .typedefs import GameTagsDict
@@ -220,9 +222,9 @@ class Player(Entity):
 				continue
 
 			# Allow CREATOR=1 because of monster hunt decks.
-			# Cards shuffled into the deck at the start of the game by a card with a
-			# sideboard (eg. Commander Beatrix) are part of the deck list the player
-			# submitted, so they belong here too.
+			# Cards shuffled into the deck at the start of the game by one of the cards in
+			# START_OF_GAME_SIDEBOARD_CARDS (eg. Commander Beatrix) are part of the deck
+			# list the player submitted, so they belong here too.
 			# Everything else is likely a false positive.
 			if entity.initial_creator > 1 and not entity.is_sideboard_deck_card:
 				continue
@@ -337,8 +339,9 @@ class Card(Entity):
 
 	def _is_sideboard_deck_card(self, creator_id: int) -> bool:
 		"""
-		Whether this card was shuffled into the deck during setup by a card that has a
-		sideboard (eg. Commander Beatrix, who adds copies of her sideboard card).
+		Whether this card was shuffled into the deck during setup by one of the cards in
+		START_OF_GAME_SIDEBOARD_CARDS (eg. Commander Beatrix, who adds copies of her
+		sideboard card).
 
 		Those copies are created after the initial deck is dumped and carry a creator, but
 		their identity is picked during deckbuilding and they are part of the deck list the
@@ -352,7 +355,8 @@ class Card(Entity):
 			return False
 
 		creator = self.game.find_entity_by_id(creator_id)
-		return bool(creator and creator.tags.get(GameTag.MAX_SIDEBOARD_CARDS, 0))
+		creator_card_id = getattr(creator, "initial_card_id", None)
+		return creator_card_id in START_OF_GAME_SIDEBOARD_CARDS
 
 	@property
 	def is_sideboard_deck_card(self) -> bool:

@@ -600,6 +600,14 @@ SCHEME_CARDS = [
 
 MAESTRA_DISGUISE_DBF_ID = 64674
 
+# Cards whose sideboard is shuffled into the deck at the start of the game. Those copies
+# are picked during deckbuilding, so they are part of the deck list the player submitted -
+# unlike the sideboards of eg. E.T.C., Band Manager, which are only created once the card
+# is played.
+START_OF_GAME_SIDEBOARD_CARDS = [
+	"JAIL_397",  # Commander Beatrix
+]
+
 
 if __name__ == "__main__":
 	from enum import IntEnum
