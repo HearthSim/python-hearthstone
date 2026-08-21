@@ -1,3 +1,5 @@
+import sys
+
 from hearthstone import cardxml
 from hearthstone.enums import GameTag, Race
 
@@ -27,3 +29,16 @@ def test_races():
 		Race.UNDEAD,
 		Race.DRAGON,
 	]
+
+
+def test_cardxml_load_without_hearthstone_data(monkeypatch):
+	from hearthstone_data import get_carddefs_path
+	path = get_carddefs_path()
+
+	monkeypatch.setattr(cardxml, "cardid_cache", {})
+	monkeypatch.setitem(sys.modules, "hearthstone_data", None)
+
+	db, _ = cardxml.load(path=path)
+
+	assert db
+	assert db["EX1_001"].name == "Lightwarden"
