@@ -72,9 +72,9 @@ def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None]):
 
 
 def _bootstrap_from_library(parse: Callable[[Iterator[Tuple[str, Any]]], None], path=None):
-	if path is None:
-		from hearthstone_data import get_bountydefs_path
+	from hearthstone_data import get_bountydefs_path
 
+	if path is None:
 		path = get_bountydefs_path()
 
 	with open(path, "rb") as f:

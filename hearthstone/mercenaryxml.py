@@ -204,9 +204,9 @@ def _bootstrap_from_web(parse: Callable[[Iterator[Tuple[str, Any]]], None], url=
 
 
 def _bootstrap_from_library(parse: Callable[[Iterator[Tuple[str, Any]]], None], path=None):
-	if path is None:
-		from hearthstone_data import get_mercenarydefs_path
+	from hearthstone_data import get_mercenarydefs_path
 
+	if path is None:
 		path = get_mercenarydefs_path()
 
 	with open(path, "rb") as f:
