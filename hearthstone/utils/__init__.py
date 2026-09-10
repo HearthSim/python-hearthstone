@@ -209,7 +209,7 @@ STANDARD_SETS = {
 	ZodiacYear.SCARAB: [
 		CardSet.CORE, CardSet.EVENT,
 		CardSet.EMERALD_DREAM, CardSet.THE_LOST_CITY, CardSet.TIME_TRAVEL,
-		CardSet.CATACLYSM
+		CardSet.CATACLYSM, CardSet.ESCAPEFROM_VIOLET_HOLD
 	],
 }
 
@@ -600,17 +600,30 @@ SCHEME_CARDS = [
 
 MAESTRA_DISGUISE_DBF_ID = 64674
 
+# Cards whose sideboard is shuffled into the deck at the start of the game. Those copies
+# are picked during deckbuilding, so they are part of the deck list the player submitted -
+# unlike the sideboards of eg. E.T.C., Band Manager, which are only created once the card
+# is played.
+START_OF_GAME_SIDEBOARD_CARDS = [
+	"JAIL_397",  # Commander Beatrix
+]
+
 
 if __name__ == "__main__":
+	from enum import IntEnum
+
+	def _cs_value(value):
+		# IntEnum stringifies to its value since Python 3.11, but C# needs the member name
+		if isinstance(value, IntEnum):
+			return "%s.%s" % (type(value).__name__, value.name)
+		return str(value)
+
 	def _print_cs_dicts(dicts_and_names, tl_format, format):
 		ret = []
 		linefmt = "\t\t{ %d, %s }"
 		for name, dict in dicts_and_names:
-			keytype = int
-			valtype = list(dict.values())[0].__class__
-
 			lines = ",\n".join(
-				linefmt % (keytype(key), valtype(value))
+				linefmt % (int(key), _cs_value(value))
 				for key, value in dict.items()
 				if key is not None
 			)

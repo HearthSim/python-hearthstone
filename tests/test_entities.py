@@ -130,6 +130,178 @@ class TestPlayer:
 
 		assert list(player.initial_deck) == [wisp, scythe]
 
+	def test_initial_deck_with_cards_generated_at_start_of_game(self, game, player):
+		# Azalina Soulsever has a 20 card deck rule and generates the remaining cards
+		# into the deck during CREATE_GAME, before the game is set up.
+		azalina = Card(5, None)
+		azalina.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(azalina)
+		azalina.reveal("JAIL_430", {GameTag.CARDTYPE: CardType.MINION})
+
+		# The generated cards are created knowing nothing but their zone. The creator
+		# only follows as a separate tag change...
+		generated = Card(6, None)
+		generated.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(generated)
+		generated.tag_change(GameTag.DISPLAYED_CREATOR, azalina.id)
+
+		# ...and they are only revealed much later, once they are drawn.
+		generated.reveal("CS2_231", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CREATOR: azalina.id,
+			GameTag.DISPLAYED_CREATOR: azalina.id,
+		})
+
+		assert generated.initial_creator == azalina.id
+		assert list(player.initial_deck) == [azalina]
+
+	def test_initial_deck_with_sideboard_cards_shuffled_in_at_start_of_game(
+		self, game, player
+	):
+		# Commander Beatrix shuffles 10 copies of her sideboard card into the deck
+		# during CREATE_GAME, before the game is set up. The card was picked during
+		# deckbuilding, so the copies are part of the submitted deck list. She reveals
+		# herself first, which is what lets us recognise her as the creator.
+		beatrix = Card(5, None)
+		beatrix.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(beatrix)
+		beatrix.reveal("JAIL_397", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.MAX_SIDEBOARD_CARDS: 1,
+		})
+
+		# The copies are created knowing nothing but their zone, and the creator only
+		# follows as a separate tag change.
+		copy = Card(6, None)
+		copy.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(copy)
+		copy.tag_change(GameTag.DISPLAYED_CREATOR, beatrix.id)
+
+		# Once drawn, the copy is revealed with its real card id - alongside the creator
+		# tags that would normally mark it as a generated card.
+		copy.reveal("CS2_231", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CREATOR: beatrix.id,
+			GameTag.DISPLAYED_CREATOR: beatrix.id,
+			GameTag.CREATOR_DBID: 126621,
+		})
+
+		assert copy.initial_creator == beatrix.id
+		assert copy.is_original_entity
+		assert copy.initial_card_id == "CS2_231"
+		assert list(player.initial_deck) == [beatrix, copy]
+		assert player.known_starting_deck_list == ["JAIL_397", "CS2_231"]
+
+	def test_initial_deck_with_unlisted_sideboard_card_creating_during_setup(
+		self, game, player
+	):
+		# Only the sideboards we know join the deck at the start of the game count. Having
+		# a sideboard is not enough on its own: a card that creates something in the deck
+		# during setup for any other reason must not have it counted as a deck card, which
+		# is why START_OF_GAME_SIDEBOARD_CARDS is an explicit list.
+		etc = Card(5, None)
+		etc.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(etc)
+		etc.reveal("ETC_080", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.MAX_SIDEBOARD_CARDS: 3,
+		})
+
+		generated = Card(6, None)
+		generated.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(generated)
+		generated.tag_change(GameTag.DISPLAYED_CREATOR, etc.id)
+		generated.reveal("CS2_231", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CREATOR: etc.id,
+			GameTag.DISPLAYED_CREATOR: etc.id,
+		})
+
+		assert not generated.is_original_entity
+		assert generated.initial_card_id is None
+		assert list(player.initial_deck) == [etc]
+
+	def test_initial_deck_with_sideboard_cards_created_after_setup(self, game, player):
+		# E.T.C., Band Manager also has a sideboard, but its cards are created once it is
+		# played, long after setup. Those are not deck cards.
+		etc = Card(5, None)
+		etc.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(etc)
+		etc.reveal("ETC_080", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.MAX_SIDEBOARD_CARDS: 3,
+		})
+
+		game.tag_change(GameTag.NEXT_STEP, Step.MAIN_ACTION)
+
+		band_card = Card(6, None)
+		band_card.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(band_card)
+		band_card.tag_change(GameTag.DISPLAYED_CREATOR, etc.id)
+		band_card.reveal("CS2_231", {
+			GameTag.CARDTYPE: CardType.MINION,
+			GameTag.CREATOR: etc.id,
+			GameTag.DISPLAYED_CREATOR: etc.id,
+		})
+
+		assert not band_card.is_original_entity
+		assert band_card.initial_card_id is None
+		assert list(player.initial_deck) == [etc]
+
+	def test_initial_deck_with_card_that_is_its_own_creator(self, game, player):
+		# Direhorn Hatchling tags itself as its own DISPLAYED_CREATOR when its Deathrattle
+		# shuffles a Direhorn Matriarch into the deck. It is still an original deck card.
+		hatchling = Card(5, None)
+		hatchling.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(hatchling)
+		hatchling.reveal("UNG_957", {GameTag.CARDTYPE: CardType.MINION})
+		hatchling.tag_change(GameTag.DISPLAYED_CREATOR, hatchling.id)
+
+		assert hatchling.initial_creator == 0
+		assert list(player.initial_deck) == [hatchling]
+
+	def test_initial_deck_with_game_entity_as_creator(self, game, player):
+		# Monster Hunt / Dungeon Run decks are created by the game entity (CREATOR=1).
+		# Those cards are the player's deck and must be kept.
+		card = Card(5, None)
+		card.tags.update({
+			GameTag.ZONE: Zone.DECK,
+			GameTag.CONTROLLER: player.player_id,
+		})
+		game.register_entity(card)
+		card.tag_change(GameTag.CREATOR, game.id)
+		card.reveal("CS2_231", {GameTag.CARDTYPE: CardType.MINION})
+
+		assert card.initial_creator == game.id
+		assert list(player.initial_deck) == [card]
+
 	def test_known_starting_deck_list(self, game, player):
 		WISP = "CS2_231"
 
