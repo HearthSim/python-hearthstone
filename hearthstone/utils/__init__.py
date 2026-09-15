@@ -100,6 +100,7 @@ CARDRACE_TAG_MAP = {
 	Race.GOLEM: 2586,
 	Race.HARPY: 2587,
 	Race.VULPERA: 2588,
+	Race.ABERRATION: 4756,
 	# See comment at start of dictionary for how to identify the value for newly added races
 }
 REVERSE_CARDRACE_TAG_MAP = {v: k for k, v in CARDRACE_TAG_MAP.items()}
@@ -209,7 +210,7 @@ STANDARD_SETS = {
 	ZodiacYear.SCARAB: [
 		CardSet.CORE, CardSet.EVENT,
 		CardSet.EMERALD_DREAM, CardSet.THE_LOST_CITY, CardSet.TIME_TRAVEL,
-		CardSet.CATACLYSM, CardSet.ESCAPEFROM_VIOLET_HOLD
+		CardSet.CATACLYSM, CardSet.ESCAPEFROM_VIOLET_HOLD, CardSet.BE
 	],
 }
 
